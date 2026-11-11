@@ -15,7 +15,7 @@ space exploration.
 
 ```bash
 # backend
-cd backend && uvicorn main:app --reload --port 8000
+cd backend && uvicorn app.main:app --reload --port 8000
 
 # frontend
 cd frontend && npm install && npm run dev
