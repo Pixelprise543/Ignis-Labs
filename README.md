@@ -25,4 +25,9 @@ Copy `.env.example` to `.env` and fill in your values. Never commit `.env`.
 
 ## Team
 
-TODO
+- Manav
+- Saanvi
+- Akshaj
+- Tanvi
+- Arnav
+- Joshita
