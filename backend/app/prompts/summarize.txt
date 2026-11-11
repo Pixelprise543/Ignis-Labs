@@ -1,9 +1,0 @@
-Summarise this microgravity combustion record for a fire-safety analyst.
-
-Record:
-{record}
-
-Rules:
-- Use only facts present in the record. Never invent numbers.
-- Plain text, at most 80 words.
-- Lead with what was burned and on what platform.
