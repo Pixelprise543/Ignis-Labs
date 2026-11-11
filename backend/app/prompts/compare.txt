@@ -1,0 +1,10 @@
+Compare these microgravity combustion experiments for a fire-safety analyst.
+
+{records}
+
+Cover:
+- where the experiments agree
+- where they conflict or cover different regimes
+- what each one adds that the others do not
+
+Cite record ids in square brackets.

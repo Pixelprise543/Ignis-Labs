@@ -23,6 +23,12 @@ cd frontend && npm install && npm run dev
 
 Copy `.env.example` to `.env` and fill in your values. Never commit `.env`.
 
+Vite reads env from `frontend/`, not the repo root, so copy the template there too:
+
+```bash
+cp frontend/.env.example frontend/.env
+```
+
 ## Team
 
 - Manav
