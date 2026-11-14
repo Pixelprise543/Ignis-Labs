@@ -25,4 +25,9 @@ export default tseslint.config(
       '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_', varsIgnorePattern: '^_' }],
     },
   },
+  {
+    // Entry point: it mounts the app, so there is nothing to fast-refresh.
+    files: ['src/main.tsx'],
+    rules: { 'react-refresh/only-export-components': 'off' },
+  },
 )
