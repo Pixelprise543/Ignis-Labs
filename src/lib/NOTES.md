@@ -54,7 +54,7 @@ Read `AGENTS.md` at the repo root for the frozen contract and ownership rules.
 ## Next steps
 
 - Phase 1A: `src/lib/scenarios.ts` (done)
-- Phase 1B: `data/experiments.ts` - 20 experiments, real sources (done)
+- Phase 1B: `data/experiments/*.ts` - 20 experiments, real sources (done)
 - Phase 1C: `src/lib/data.ts` accessors (done)
 - Phase 1D: `src/store/useIgnis.ts`, `src/store/urlSync.ts` (done)
 - Phase 1E: `src/lib/scoring.ts`, `src/lib/search.ts` (done)
@@ -62,7 +62,8 @@ Read `AGENTS.md` at the repo root for the frozen contract and ownership rules.
 - Phase 1G: insights, materials, coverage, simulator, playbook, brief (done)
 - Phase 1H: `scripts/validate-data.ts` real gate, `tests/*` (done)
 - Phase 1I: refresh the graph after PC2/PC3 merges; fix broken integration points in
-  PC1 files only.
+  PC1 files only. No PC2/PC3 branch exists on origin yet; the graph is current at
+  `346e868` and the PC1 suite passes.
 
 ## Traps
 
