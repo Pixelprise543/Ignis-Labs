@@ -98,7 +98,7 @@ export function InsightCard({ insight, compact = false, showActions = true }: In
             <CitationChip key={id} id={id} />
           ))}
           {insight.evidenceIds.length === 0 ? (
-            <span className="text-xs text-ig-alarm">No linked experiment. Do not rely on this.</span>
+            <span className="rounded-control border border-ig-alarm px-1.5 py-0.5 text-xs text-ig-frost">No linked experiment. Do not rely on this.</span>
           ) : null}
         </div>
 
@@ -106,13 +106,13 @@ export function InsightCard({ insight, compact = false, showActions = true }: In
           <div className="mt-3 flex flex-wrap gap-3 border-t border-ig-line pt-2 text-xs">
             <Link
               to="/simulator"
-              className="inline-flex items-center gap-1 text-ig-flame-blue hover:underline"
+              className="inline-flex items-center gap-1 text-ig-frost hover:underline"
             >
               Model this risk <ArrowUpRight size={12} aria-hidden="true" />
             </Link>
             <Link
               to="/playbook"
-              className="inline-flex items-center gap-1 text-ig-flame-blue hover:underline"
+              className="inline-flex items-center gap-1 text-ig-frost hover:underline"
             >
               Open the playbook <ArrowUpRight size={12} aria-hidden="true" />
             </Link>

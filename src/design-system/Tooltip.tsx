@@ -38,7 +38,7 @@ export function Tooltip({ label, children, className }: TooltipProps) {
         <span
           role="tooltip"
           id={id}
-          className="absolute left-0 top-full z-40 mt-1 w-64 rounded-control border border-ig-line bg-ig-raised p-2 text-xs font-normal leading-5 text-ig-frost"
+          className="absolute left-0 top-full z-40 mt-1 w-64 rounded-control border border-ig-line bg-ig-raised p-2 text-xs font-normal leading-5 text-ig-frost shadow-none"
         >
           {label}
         </span>

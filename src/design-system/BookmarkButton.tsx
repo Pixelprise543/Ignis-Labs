@@ -31,7 +31,7 @@ export function BookmarkButton({ experimentId, name, className }: BookmarkButton
       className={clsx(
         "inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-control border transition-colors",
         saved
-          ? "border-ig-amber bg-ig-raised text-ig-amber"
+          ? "border-ig-amber bg-ig-raised text-ig-frost"
           : "border-ig-line text-ig-muted hover:bg-ig-raised hover:text-ig-frost",
         className,
       )}

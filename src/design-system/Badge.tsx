@@ -15,14 +15,14 @@ import { Tooltip } from "./Tooltip";
 
 export type BadgeTone = "neutral" | "gold" | "olive" | "amber" | "ember" | "alarm";
 
-// Text + border carry the tone; the surface stays flat.
+// Border + icon carry the tone; text stays dark for contrast on light surfaces.
 const toneClasses: Record<BadgeTone, string> = {
   neutral: "border-ig-line text-ig-muted",
-  gold: "border-ig-flame-blue text-ig-flame-blue",
-  olive: "border-ig-quench text-ig-quench",
-  amber: "border-ig-amber text-ig-amber",
-  ember: "border-ig-ember text-ig-ember",
-  alarm: "border-ig-alarm text-ig-alarm",
+  gold: "border-ig-flame-blue text-ig-frost",
+  olive: "border-ig-quench text-ig-frost",
+  amber: "border-ig-amber text-ig-frost",
+  ember: "border-ig-ember text-ig-frost",
+  alarm: "border-ig-alarm text-ig-frost",
 };
 
 const badgeBase =

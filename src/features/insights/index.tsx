@@ -1,4 +1,3 @@
-import { Sparkles } from "lucide-react";
 import { useMemo, useState } from "react";
 import type { Insight, Severity } from "@/contracts/types";
 import { getInsights, useIgnis } from "@/app/data";
@@ -78,7 +77,6 @@ export function InsightsPage() {
           </div>
           <Button
             variant="secondary"
-            icon={<Sparkles size={15} aria-hidden="true" />}
             onClick={() => setDrawerOpen(true)}
           >
             Ask Ignis
@@ -92,7 +90,7 @@ export function InsightsPage() {
             {scenario.pressureKPa ? scenario.pressureKPa.toFixed(1) : "—"} kPa
           </span>
           {scenario.assumption ? (
-            <span className="text-ig-amber"> Assumed values, verify before use.</span>
+            <span className="text-ig-frost"> Assumed values, verify before use.</span>
           ) : null}
         </p>
       </header>

@@ -1,5 +1,5 @@
 import { clsx } from "clsx";
-import { AlertTriangle, ArrowDownRight, ArrowUpRight, Info, RotateCcw, Sparkles } from "lucide-react";
+import { AlertTriangle, ArrowDownRight, ArrowUpRight, Info, RotateCcw } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import type { ReactNode } from "react";
 import type { Severity } from "@/contracts/types";
@@ -14,10 +14,10 @@ interface LevelDisplay {
 }
 
 const LEVEL_DISPLAY: Record<Severity, LevelDisplay> = {
-  info: { label: "Low risk", tone: "olive", fill: "bg-ig-quench", text: "text-ig-quench" },
-  caution: { label: "Caution", tone: "amber", fill: "bg-ig-amber", text: "text-ig-amber" },
-  high: { label: "High risk", tone: "ember", fill: "bg-ig-ember", text: "text-ig-ember" },
-  critical: { label: "Critical", tone: "alarm", fill: "bg-ig-alarm", text: "text-ig-alarm" },
+  info: { label: "Low risk", tone: "olive", fill: "bg-ig-quench", text: "text-ig-frost" },
+  caution: { label: "Caution", tone: "amber", fill: "bg-ig-amber", text: "text-ig-frost" },
+  high: { label: "High risk", tone: "ember", fill: "bg-ig-ember", text: "text-ig-frost" },
+  critical: { label: "Critical", tone: "alarm", fill: "bg-ig-alarm", text: "text-ig-frost" },
 };
 
 function SliderField({
@@ -183,7 +183,7 @@ export function SimulatorPage() {
               onChange={setO2}
               hint={
                 o2 > 30 ? (
-                  <span className="text-ig-amber">Above 30% O2, the dataset is thin. Treat this as a range, not a point.</span>
+                  <span className="text-ig-frost">Above 30% O2, the dataset is thin. Treat this as a range, not a point.</span>
                 ) : (
                   "Cabin air is about 21% oxygen."
                 )
@@ -229,7 +229,7 @@ export function SimulatorPage() {
                   setPressure(scenario.pressureKPa);
                   setFlow(0);
                 }}
-                className="inline-flex items-center gap-1 rounded-control px-2 py-1 text-xs text-ig-flame-blue hover:bg-ig-raised"
+                className="inline-flex items-center gap-1 rounded-control px-2 py-1 text-xs text-ig-frost hover:bg-ig-raised"
               >
                 <RotateCcw size={12} aria-hidden="true" />
                 Reset to scenario
@@ -279,7 +279,6 @@ export function SimulatorPage() {
               <Button
                 variant="secondary"
                 size="sm"
-                icon={<Sparkles size={14} aria-hidden="true" />}
                 onClick={() => setDrawerOpen(true)}
               >
                 Ask Ignis about this run
@@ -298,14 +297,21 @@ export function SimulatorPage() {
                       <span
                         className={clsx(
                           "inline-flex items-center gap-1 text-xs",
-                          driver.direction === "raises" ? "text-ig-ember" : "text-ig-quench",
+                          "text-ig-frost",
                         )}
                       >
-                        {driver.direction === "raises" ? (
-                          <ArrowUpRight size={12} aria-hidden="true" />
-                        ) : (
-                          <ArrowDownRight size={12} aria-hidden="true" />
-                        )}
+                        <span
+                          className={clsx(
+                            "shrink-0",
+                            driver.direction === "raises" ? "text-ig-ember" : "text-ig-quench",
+                          )}
+                        >
+                          {driver.direction === "raises" ? (
+                            <ArrowUpRight size={12} aria-hidden="true" />
+                          ) : (
+                            <ArrowDownRight size={12} aria-hidden="true" />
+                          )}
+                        </span>
                         {driver.direction === "raises" ? "Raises risk" : "Lowers risk"}
                       </span>
                     </div>
@@ -387,7 +393,7 @@ export function SimulatorPage() {
             ))}
           </ul>
           <p className="mt-3 flex gap-2 border-t border-ig-line pt-3 text-xs leading-5 text-ig-muted">
-            <Info size={14} aria-hidden="true" className="mt-0.5 shrink-0 text-ig-flame-blue" />
+            <Info size={14} aria-hidden="true" className="mt-0.5 shrink-0 text-ig-frost" />
             Material baselines are qualitative indices for planning, not measured ignition thresholds.
           </p>
         </Panel>

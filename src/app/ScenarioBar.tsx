@@ -65,7 +65,7 @@ export function ScenarioBar() {
                   "relative h-8 shrink-0 rounded-control px-3 text-sm font-medium transition-colors",
                   active
                     ? "bg-ig-raised text-ig-frost"
-                    : "text-ig-muted hover:bg-ig-raised hover:text-ig-frost",
+                    : "text-ig-frost hover:bg-ig-raised",
                 )}
               >
                 {active ? (
@@ -91,8 +91,8 @@ export function ScenarioBar() {
             </span>
           </p>
           {scenario.assumption ? (
-            <span className="inline-flex items-center gap-1 text-xs text-ig-amber">
-              <AlertTriangle size={12} aria-hidden="true" />
+            <span className="inline-flex items-center gap-1 text-xs text-ig-frost">
+              <AlertTriangle size={12} aria-hidden="true" className="text-ig-amber" />
               <span>Assumed values</span>
             </span>
           ) : null}

@@ -1,4 +1,4 @@
-import { ArrowRight, Sparkles, X } from "lucide-react";
+import { ArrowRight, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import {
@@ -70,7 +70,7 @@ export function OnboardingGuide({ scenarioLabel, onAsk }: OnboardingGuideProps) 
           <li key={step.title} className="flex gap-2.5">
             <span
               aria-hidden="true"
-              className="ig-num mt-0.5 grid h-6 w-6 shrink-0 place-items-center rounded-full border border-ig-line text-xs text-ig-flame-blue"
+              className="ig-num mt-0.5 grid h-6 w-6 shrink-0 place-items-center rounded-full border border-ig-line text-xs text-ig-frost"
             >
               {index + 1}
             </span>
@@ -84,7 +84,7 @@ export function OnboardingGuide({ scenarioLabel, onAsk }: OnboardingGuideProps) 
         <li className="flex gap-2.5">
           <span
             aria-hidden="true"
-            className="ig-num mt-0.5 grid h-6 w-6 shrink-0 place-items-center rounded-full border border-ig-line text-xs text-ig-flame-blue"
+            className="ig-num mt-0.5 grid h-6 w-6 shrink-0 place-items-center rounded-full border border-ig-line text-xs text-ig-frost"
           >
             3
           </span>
@@ -97,14 +97,13 @@ export function OnboardingGuide({ scenarioLabel, onAsk }: OnboardingGuideProps) 
               <button
                 type="button"
                 onClick={onAsk}
-                className="inline-flex items-center gap-1 text-xs text-ig-flame-blue hover:underline"
+                className="inline-flex items-center gap-1 text-xs text-ig-frost hover:underline"
               >
-                <Sparkles size={12} aria-hidden="true" />
                 Ask Ignis
               </button>
               <Link
                 to="/insights"
-                className="inline-flex items-center gap-1 text-xs text-ig-flame-blue hover:underline"
+                className="inline-flex items-center gap-1 text-xs text-ig-frost hover:underline"
               >
                 Browse insights <ArrowRight size={12} aria-hidden="true" />
               </Link>

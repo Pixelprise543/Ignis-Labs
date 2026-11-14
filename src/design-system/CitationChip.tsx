@@ -51,7 +51,7 @@ export function CitationChip({ id, label, onSelect, className }: CitationChipPro
         "inline-flex min-w-0 max-w-full items-center gap-1 rounded-control border px-1.5 py-0.5 text-xs",
         experiment
           ? "border-ig-line bg-ig-raised text-ig-muted hover:text-ig-frost"
-          : "border-ig-alarm text-ig-alarm",
+          : "bg-ig-alarm text-ig-on-accent border-transparent",
         className,
       )}
     >

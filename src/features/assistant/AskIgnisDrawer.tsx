@@ -1,4 +1,3 @@
-import { Sparkles } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -105,7 +104,6 @@ export function AskIgnisDrawer() {
       onClose={() => setDrawerOpen(false)}
       title={
         <span className="inline-flex items-center gap-2">
-          <Sparkles size={14} aria-hidden="true" className="text-ig-flame-blue" />
           Ask Ignis
         </span>
       }
@@ -162,7 +160,7 @@ export function AskIgnisDrawer() {
             </span>
           </p>
           {scenario.assumption ? (
-            <p className="mt-1 text-xs text-ig-amber">
+            <p className="mt-1 text-xs text-ig-frost">
               These values are assumptions. Verify them before relying on an answer.
             </p>
           ) : null}
@@ -227,7 +225,7 @@ export function AskIgnisDrawer() {
                   </p>
                 )}
                 {message.response.invalidCitationsRemoved > 0 ? (
-                  <p className="mt-2 text-[11px] text-ig-amber">
+                  <p className="mt-2 text-[11px] text-ig-frost">
                     Removed <span className="ig-num">{message.response.invalidCitationsRemoved}</span>{" "}
                     citation(s) that did not map to a real experiment.
                   </p>
@@ -248,7 +246,7 @@ export function AskIgnisDrawer() {
         </div>
 
         {error ? (
-          <p role="alert" className="rounded-control border border-ig-alarm px-3 py-2 text-sm text-ig-alarm">
+          <p role="alert" className="rounded-control border border-ig-alarm px-3 py-2 text-sm text-ig-frost">
             {error}
           </p>
         ) : null}

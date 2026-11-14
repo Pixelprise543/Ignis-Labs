@@ -1,5 +1,5 @@
 import { Command } from "cmdk";
-import { HelpCircle, Sparkles, Star } from "lucide-react";
+import { HelpCircle, Star } from "lucide-react";
 import { useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { SCENARIOS, getExperiments, useIgnis } from "@/app/data";
@@ -139,7 +139,6 @@ export function CommandPalette() {
                 setDrawerOpen(true);
               }}
             >
-              <Sparkles size={15} aria-hidden="true" />
               <span>Ask Ignis</span>
             </Command.Item>
             <Command.Item

@@ -6,7 +6,6 @@ import {
   LayoutGrid,
   ListOrdered,
   SlidersHorizontal,
-  Sparkles,
 } from "lucide-react";
 import { useMemo, useState } from "react";
 import type { FormEvent } from "react";
@@ -123,7 +122,7 @@ export function HomePage() {
                 {scenario.pressureKPa ? scenario.pressureKPa.toFixed(1) : "—"} kPa
               </span>
               {scenario.assumption ? (
-                <span className="text-xs text-ig-amber">Assumed values, verify before use</span>
+                <span className="text-xs text-ig-frost">Assumed values, verify before use</span>
               ) : null}
             </div>
           </div>
@@ -145,9 +144,8 @@ export function HomePage() {
             <button
               type="button"
               onClick={() => setDrawerOpen(true)}
-              className="inline-flex h-10 items-center gap-2 rounded-control px-3 text-sm font-medium text-ig-flame-blue hover:bg-ig-raised"
+              className="inline-flex h-10 items-center gap-2 rounded-control px-3 text-sm font-medium text-ig-frost hover:bg-ig-raised"
             >
-              <Sparkles size={15} aria-hidden="true" />
               Ask Ignis
             </button>
           </div>
@@ -192,7 +190,7 @@ export function HomePage() {
           </div>
           <Link
             to="/insights"
-            className="inline-flex items-center gap-1 text-xs text-ig-flame-blue hover:underline"
+            className="inline-flex items-center gap-1 text-xs text-ig-frost hover:underline"
           >
             All insights <ArrowRight size={12} aria-hidden="true" />
           </Link>
@@ -256,7 +254,7 @@ export function HomePage() {
                   <div className="flex items-center gap-2">
                     <Link
                       to={`/explore?selected=${experiment.id}`}
-                      className="text-xs text-ig-flame-blue hover:underline"
+                      className="text-xs text-ig-frost hover:underline"
                     >
                       Open
                     </Link>

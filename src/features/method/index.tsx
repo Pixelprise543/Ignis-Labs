@@ -107,7 +107,7 @@ export function MethodPage() {
             an explanation and the experiments behind it. The nearest supporting experiments are
             matched by gravity and oxygen.
           </p>
-          <p className="text-ig-amber">
+          <p className="text-ig-frost">
             These are decision-support estimates, not physics simulations, ignition thresholds or
             probabilities. A score of 60 does not mean a 60% chance of fire.
           </p>

@@ -1,4 +1,4 @@
-import { Check, Download, FileText, Printer, Sparkles } from "lucide-react";
+import { Check, Download, FileText, Printer } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -80,7 +80,6 @@ export function BriefPage() {
           </Button>
           <Button
             size="sm"
-            icon={<Sparkles size={14} aria-hidden="true" />}
             onClick={() => setDrawerOpen(true)}
           >
             Ask Ignis
@@ -89,7 +88,7 @@ export function BriefPage() {
       </header>
 
       {error ? (
-        <p role="alert" className="rounded-control border border-ig-alarm px-3 py-2 text-sm text-ig-alarm">
+        <p role="alert" className="rounded-control border border-ig-alarm px-3 py-2 text-sm text-ig-frost">
           {error}
         </p>
       ) : null}

@@ -1,4 +1,4 @@
-import { ClipboardCheck, DoorClosed, Flame, Printer, Search, Sparkles, Wind } from "lucide-react";
+import { ClipboardCheck, DoorClosed, Flame, Printer, Search, Wind } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { useMemo } from "react";
 import type { PlaybookStep } from "@/contracts/types";
@@ -67,7 +67,6 @@ export function PlaybookPage() {
             </Button>
             <Button
               size="sm"
-              icon={<Sparkles size={14} aria-hidden="true" />}
               onClick={() => setDrawerOpen(true)}
             >
               Ask Ignis
@@ -82,7 +81,7 @@ export function PlaybookPage() {
             {scenario.pressureKPa.toFixed(1)} kPa
           </span>
           {scenario.assumption ? (
-            <span className="text-ig-amber"> Assumed values, verify before use.</span>
+            <span className="text-ig-frost"> Assumed values, verify before use.</span>
           ) : null}
         </p>
       </header>
@@ -98,7 +97,7 @@ export function PlaybookPage() {
               <Panel
                 title={
                   <span className="inline-flex items-center gap-2">
-                    <Icon size={15} aria-hidden="true" className="text-ig-flame-blue" />
+                    <Icon size={15} aria-hidden="true" className="text-ig-frost" />
                     {phase.label}
                     <span className="ig-num text-xs font-normal text-ig-muted">
                       {phaseIndex + 1}/{PHASES.length}

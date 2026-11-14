@@ -40,6 +40,11 @@
   color: var(--ig-frost);
 }
 
+.ig-markdown a {
+  color: var(--ig-frost);
+  text-decoration: underline;
+}
+
 .ig-markdown ul,
 .ig-markdown ol {
   padding-left: 1.25rem;
@@ -58,7 +63,7 @@
 }
 
 .ig-markdown a {
-  color: var(--ig-flame-blue);
+  color: var(--ig-frost);
   text-decoration: underline;
 }
 

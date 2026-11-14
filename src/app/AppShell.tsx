@@ -1,5 +1,5 @@
 import { clsx } from "clsx";
-import { Command as CommandIcon, Menu, Sparkles, X } from "lucide-react";
+import { Command as CommandIcon, Menu, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { Link, NavLink, useLocation } from "react-router-dom";
 import { NAV_GROUPS, ROUTES, routesByGroup } from "./nav";
@@ -24,7 +24,7 @@ function Brand({ compact = false }: { compact?: boolean }) {
       <span className="min-w-0">
         <span className="block text-sm font-semibold leading-tight text-ig-frost">Ignis</span>
         {compact ? null : (
-          <span className="block text-xs leading-tight text-ig-muted">Fire safety intelligence</span>
+          <span className="block text-xs leading-tight text-ig-muted">Fire safety insights</span>
         )}
       </span>
     </Link>
@@ -86,7 +86,6 @@ function SideRail({ onOpenPalette, onOpenAsk }: { onOpenPalette: () => void; onO
           onClick={onOpenAsk}
           className="flex h-9 w-full items-center gap-2 rounded-control bg-ig-flame-blue px-2.5 text-sm font-medium text-ig-on-accent hover:bg-ig-amber"
         >
-          <Sparkles size={16} aria-hidden="true" />
           Ask Ignis
         </button>
         <button
@@ -125,8 +124,7 @@ function MobileHeader({ onOpenPalette, onOpenAsk }: { onOpenPalette: () => void;
           onClick={onOpenAsk}
           className="inline-flex h-9 items-center gap-1.5 rounded-control bg-ig-flame-blue px-2.5 text-sm font-medium text-ig-on-accent hover:bg-ig-amber"
         >
-          <Sparkles size={14} aria-hidden="true" />
-          Ask
+          Ask Ignis
         </button>
       </div>
     </div>
@@ -149,7 +147,7 @@ function MobileTabs({ onMore }: { onMore: () => void }) {
             className={({ isActive }) =>
               clsx(
                 "relative flex min-h-14 flex-col items-center justify-center gap-0.5 px-1 text-[11px]",
-                isActive ? "text-ig-flame-blue" : "text-ig-muted",
+                isActive ? "text-ig-frost" : "text-ig-muted",
               )
             }
           >
@@ -189,7 +187,7 @@ function MoreSheet({ open, onClose }: { open: boolean; onClose: () => void }) {
 
   return (
     <div className="fixed inset-0 z-50 flex flex-col justify-end lg:hidden">
-      <div aria-hidden="true" className="absolute inset-0 bg-ig-vacuum/80" onClick={onClose} />
+      <div aria-hidden="true" className="absolute inset-0 bg-[#2b221a]/55" onClick={onClose} />
       <div
         ref={panelRef}
         role="dialog"
@@ -232,7 +230,6 @@ function MoreSheet({ open, onClose }: { open: boolean; onClose: () => void }) {
           }}
           className="mt-3 flex h-10 w-full items-center justify-center gap-2 rounded-control bg-ig-flame-blue text-sm font-medium text-ig-on-accent hover:bg-ig-amber"
         >
-          <Sparkles size={16} aria-hidden="true" />
           Ask Ignis
         </button>
       </div>
@@ -288,7 +285,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 you rely on a number.
               </p>
               <p className="mt-1">
-                <Link to="/method" className="text-ig-flame-blue hover:underline">
+                <Link to="/method" className="text-ig-frost hover:underline">
                   How the scoring and evidence work
                 </Link>
               </p>
