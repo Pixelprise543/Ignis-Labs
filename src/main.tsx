@@ -1,6 +1,7 @@
 import { StrictMode, type ComponentType } from 'react'
 import { createRoot } from 'react-dom/client'
 import '@/design-system/theme.css'
+import { initUrlSync } from '@/store/urlSync'
 
 const container = document.getElementById('root')
 if (!container) throw new Error('Root element #root is missing from index.html')
@@ -44,6 +45,11 @@ function MissingShell() {
 }
 
 async function start() {
+  // Apply a shared URL to the store before the first render, so a pasted link
+  // opens on its scenario instead of flashing the default. Calling this twice is
+  // harmless: each caller gets its own disposer.
+  initUrlSync()
+
   for (const load of Object.values(appModules)) {
     const mod = await load()
     if (typeof mod.default === 'function') {

@@ -193,6 +193,31 @@ describe('initUrlSync: history and cleanup', () => {
   })
 })
 
+describe('initUrlSync: idempotency', () => {
+  it('keeps the other caller\'s binding alive until both dispose', () => {
+    const first = initUrlSync()
+    const second = initUrlSync()
+
+    first()
+    useIgnis.getState().setScenario(getScenario('mars'))
+    expect(readUrl().get('scenario')).toBe('mars')
+
+    second()
+    const before = window.location.search
+    useIgnis.getState().setScenario(getScenario('eva'))
+    expect(window.location.search).toBe(before)
+  })
+
+  it('ignores a repeated dispose', () => {
+    const off = initUrlSync()
+    off()
+    expect(() => off()).not.toThrow()
+    const before = window.location.search
+    useIgnis.getState().setScenario(getScenario('mars'))
+    expect(window.location.search).toBe(before)
+  })
+})
+
 describe('initUrlSync: round trip', () => {
   it('reproduces a full session from its own URL', () => {
     dispose = initUrlSync()
