@@ -26,6 +26,36 @@ export type GravityBand = (typeof GRAVITY_BANDS)[number]
 export const O2_BANDS = ['<= 21%', '21-30%', '> 30%', 'not specified'] as const
 export type O2Band = (typeof O2_BANDS)[number]
 
+/**
+ * Band metadata for grid views: the display label the cells carry plus the
+ * predicate that decides membership. Keeping both together stops a view from
+ * drawing an axis that disagrees with getCoverage().
+ */
+export interface CoverageBand {
+  id: string
+  label: string
+  matches: (value: number) => boolean
+}
+
+export const COVERAGE_GRAVITY_BANDS: CoverageBand[] = [
+  { id: 'microgravity', label: 'microgravity', matches: (gravityG) => gravityG < 0.01 },
+  {
+    id: 'partial-gravity',
+    label: 'partial-gravity',
+    matches: (gravityG) => gravityG >= 0.01 && gravityG < 0.9,
+  },
+  { id: 'normal-gravity', label: 'normal-gravity', matches: (gravityG) => gravityG >= 0.9 },
+]
+
+/** The band a missing oxygen fraction falls into. A real band, not an error. */
+export const O2_NOT_REPORTED_BAND = 'not specified'
+
+export const COVERAGE_O2_BANDS: CoverageBand[] = [
+  { id: '<= 21%', label: '<= 21%', matches: (o2Percent) => o2Percent <= 21 },
+  { id: '21-30%', label: '21-30%', matches: (o2Percent) => o2Percent > 21 && o2Percent <= 30 },
+  { id: '> 30%', label: '> 30%', matches: (o2Percent) => o2Percent > 30 },
+]
+
 const SCENARIOS_BY_BAND: Record<GravityBand, ScenarioId[]> = {
   microgravity: ['iss', 'eva', 'custom'],
   'partial-gravity': ['lunar', 'mars', 'custom'],

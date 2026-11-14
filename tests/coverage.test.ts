@@ -1,5 +1,13 @@
 import { describe, expect, it } from 'vitest'
-import { getCoverage, getGaps } from '@/lib/coverage'
+import {
+  COVERAGE_GRAVITY_BANDS,
+  COVERAGE_O2_BANDS,
+  GRAVITY_BANDS,
+  O2_BANDS,
+  O2_NOT_REPORTED_BAND,
+  getCoverage,
+  getGaps,
+} from '@/lib/coverage'
 import { getExperiments } from '@/lib/data'
 import { getScenario } from '@/lib/scenarios'
 
@@ -108,5 +116,52 @@ describe('getGaps', () => {
     const first = getGaps(getScenario('lunar'))
     first.pop()
     expect(getGaps(getScenario('lunar'))).toHaveLength(4)
+  })
+})
+
+describe('band metadata', () => {
+  it('labels the gravity bands with the values the cells carry', () => {
+    expect(COVERAGE_GRAVITY_BANDS.map((band) => band.label)).toEqual([...GRAVITY_BANDS])
+    expect(COVERAGE_GRAVITY_BANDS.map((band) => band.id)).toEqual([...GRAVITY_BANDS])
+    for (const band of COVERAGE_GRAVITY_BANDS) {
+      expect(getCoverage().some((cell) => cell.gravityBand === band.label)).toBe(true)
+    }
+  })
+
+  it('labels the numeric oxygen bands, with the missing band named separately', () => {
+    expect(COVERAGE_O2_BANDS.map((band) => band.label)).toEqual(
+      O2_BANDS.filter((band) => band !== O2_NOT_REPORTED_BAND),
+    )
+    expect(O2_NOT_REPORTED_BAND).toBe('not specified')
+    expect(new Set([...COVERAGE_O2_BANDS.map((band) => band.label), O2_NOT_REPORTED_BAND])).toEqual(
+      new Set(O2_BANDS),
+    )
+  })
+
+  it('matches exactly one gravity band per gravity value, including both edges', () => {
+    for (const gravityG of [0, 0.009, 0.01, 0.5, 0.899, 0.9, 1, 3.7]) {
+      const matched = COVERAGE_GRAVITY_BANDS.filter((band) => band.matches(gravityG))
+      expect(matched, `gravity ${gravityG}`).toHaveLength(1)
+    }
+    expect(COVERAGE_GRAVITY_BANDS.find((band) => band.matches(0))?.label).toBe('microgravity')
+    expect(COVERAGE_GRAVITY_BANDS.find((band) => band.matches(0.16))?.label).toBe('partial-gravity')
+    expect(COVERAGE_GRAVITY_BANDS.find((band) => band.matches(1))?.label).toBe('normal-gravity')
+  })
+
+  it('matches exactly one numeric oxygen band per value, including both edges', () => {
+    for (const o2Percent of [0, 21, 21.5, 30, 30.1, 100]) {
+      const matched = COVERAGE_O2_BANDS.filter((band) => band.matches(o2Percent))
+      expect(matched, `oxygen ${o2Percent}`).toHaveLength(1)
+    }
+    expect(COVERAGE_O2_BANDS.find((band) => band.matches(21))?.label).toBe('<= 21%')
+    expect(COVERAGE_O2_BANDS.find((band) => band.matches(30))?.label).toBe('21-30%')
+    expect(COVERAGE_O2_BANDS.find((band) => band.matches(30.1))?.label).toBe('> 30%')
+  })
+
+  it('agrees with the cells the dataset produces', () => {
+    for (const cell of getCoverage()) {
+      expect(GRAVITY_BANDS).toContain(cell.gravityBand)
+      expect(O2_BANDS).toContain(cell.o2Band)
+    }
   })
 })
