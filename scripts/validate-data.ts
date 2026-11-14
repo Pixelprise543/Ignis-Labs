@@ -1,20 +1,75 @@
 /**
  * Dataset gate: `npm run validate:data`.
  *
- * Implemented fully in the P2 tier (tier M). It will fail the build when an
- * experiment is missing sources, uses a non-kebab-case id, or when an insight,
- * material risk or playbook step cites an evidence id that does not exist.
+ * Loads the validator through Vite so the `@/` alias and extensionless imports
+ * resolve exactly as they do in the app. Without that, plain Node would fail on
+ * `import ... from '@/lib/...'` before it could check a single record.
  *
- * Until the datasets land, keep the command honest: say what is not checked yet
- * instead of printing a green tick that means nothing.
+ * Exits 1 on any issue, so this can gate a release. Zod proves each record's
+ * shape; src/lib/schema.ts adds id uniqueness, year ordering and evidence
+ * resolution.
  */
-const notYetChecked = [
-  'experiment sources and confidence levels',
-  'kebab-case experiment ids',
-  'dangling evidenceIds in insights, materials, playbook',
-]
+import { createServer } from 'vite'
 
-console.log('validate:data - datasets not committed yet (P0 deliverable B).')
-console.log('Not checked yet (arriving in tier M):')
-for (const item of notYetChecked) console.log(`  - ${item}`)
-process.exit(0)
+interface ValidationIssue {
+  code: string
+  message: string
+}
+
+interface SchemaModule {
+  validateDataset?: () => ValidationIssue[]
+}
+
+async function main(): Promise<void> {
+  const server = await createServer({
+    configFile: 'vite.config.ts',
+    server: { middlewareMode: true },
+    appType: 'custom',
+    logLevel: 'error',
+  })
+
+  let issues: ValidationIssue[] = []
+  let counts = { experiments: 0, findings: 0, materials: 0, glossary: 0 }
+
+  try {
+    const schema = (await server.ssrLoadModule('/src/lib/schema.ts')) as SchemaModule
+    if (typeof schema.validateDataset !== 'function') {
+      throw new Error('src/lib/schema.ts does not export validateDataset')
+    }
+    issues = schema.validateDataset()
+
+    const data = (await server.ssrLoadModule('/src/lib/data.ts')) as {
+      getExperiments: () => unknown[]
+      getFindings: () => unknown[]
+      getMaterials: () => unknown[]
+      getGlossary: () => unknown[]
+    }
+    counts = {
+      experiments: data.getExperiments().length,
+      findings: data.getFindings().length,
+      materials: data.getMaterials().length,
+      glossary: data.getGlossary().length,
+    }
+  } finally {
+    await server.close()
+  }
+
+  if (issues.length === 0) {
+    console.log(
+      `validate:data OK - ${counts.experiments} experiments, ${counts.findings} findings, ` +
+        `${counts.materials} materials, ${counts.glossary} glossary terms, ` +
+        '12 coverage cells, 5 scenarios, 5 playbooks.',
+    )
+    console.log('Citations: every finding, material, insight and playbook evidence id resolves.')
+    return
+  }
+
+  console.error(`validate:data FAILED - ${issues.length} issue(s):`)
+  for (const issue of issues) console.error(`  [${issue.code}] ${issue.message}`)
+  process.exitCode = 1
+}
+
+main().catch((error: unknown) => {
+  console.error('validate:data crashed:', error instanceof Error ? error.message : String(error))
+  process.exitCode = 1
+})

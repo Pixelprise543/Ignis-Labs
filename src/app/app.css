@@ -1,0 +1,208 @@
+/**
+ * PC3 shell styles. Flat-only: no gradients, glows, blurs or shadows.
+ * Tailwind handles layout; this file holds scroll and markdown details that
+ * cannot be expressed cleanly with utilities.
+ */
+
+/* Horizontal scenario strip: keep the native scroll, hide the bar. */
+.ig-scroll-x {
+  scrollbar-width: none;
+  overscroll-behavior-x: contain;
+}
+
+.ig-scroll-x::-webkit-scrollbar {
+  display: none;
+}
+
+.ig-scroll-y {
+  overscroll-behavior-y: contain;
+}
+
+/* --- SI markdown ---------------------------------------------------------- */
+
+.ig-markdown {
+  font-size: 0.875rem;
+  line-height: 1.6;
+  color: var(--ig-frost);
+  overflow-wrap: anywhere;
+}
+
+.ig-markdown > * + * {
+  margin-top: 0.75rem;
+}
+
+.ig-markdown h1,
+.ig-markdown h2,
+.ig-markdown h3,
+.ig-markdown h4 {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--ig-frost);
+}
+
+.ig-markdown ul,
+.ig-markdown ol {
+  padding-left: 1.25rem;
+}
+
+.ig-markdown ul {
+  list-style: disc;
+}
+
+.ig-markdown ol {
+  list-style: decimal;
+}
+
+.ig-markdown li + li {
+  margin-top: 0.25rem;
+}
+
+.ig-markdown a {
+  color: var(--ig-flame-blue);
+  text-decoration: underline;
+}
+
+.ig-markdown code {
+  border: 1px solid var(--ig-line);
+  border-radius: var(--ig-radius-control);
+  background: var(--ig-raised);
+  padding: 0.05rem 0.3rem;
+  font-size: 0.8em;
+}
+
+.ig-markdown pre {
+  overflow-x: auto;
+  border: 1px solid var(--ig-line);
+  border-radius: var(--ig-radius-panel);
+  background: var(--ig-raised);
+  padding: 0.75rem;
+}
+
+.ig-markdown pre code {
+  border: 0;
+  background: transparent;
+  padding: 0;
+}
+
+.ig-markdown blockquote {
+  border-left: 2px solid var(--ig-flame-blue);
+  padding-left: 0.75rem;
+  color: var(--ig-muted);
+}
+
+.ig-markdown table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.8125rem;
+}
+
+.ig-markdown th,
+.ig-markdown td {
+  border: 1px solid var(--ig-line);
+  padding: 0.35rem 0.5rem;
+  text-align: left;
+}
+
+.ig-markdown th {
+  color: var(--ig-muted);
+  font-weight: 500;
+}
+
+/* --- Command palette ------------------------------------------------------ */
+
+.ig-cmd [cmdk-group-heading] {
+  padding: 0.5rem 0.5rem 0.25rem;
+  font-size: 0.75rem;
+  color: var(--ig-muted);
+}
+
+.ig-cmd [cmdk-item] {
+  display: flex;
+  min-height: 2.25rem;
+  cursor: pointer;
+  align-items: center;
+  gap: 0.5rem;
+  border-radius: var(--ig-radius-control);
+  padding: 0 0.5rem;
+  font-size: 0.875rem;
+  color: var(--ig-muted);
+}
+
+.ig-cmd [cmdk-item][data-selected="true"] {
+  background: var(--ig-raised);
+  color: var(--ig-frost);
+}
+
+.ig-cmd [cmdk-item][data-disabled="true"] {
+  opacity: 0.5;
+}
+
+.ig-cmd [cmdk-separator] {
+  height: 1px;
+  margin: 0.25rem 0;
+  background: var(--ig-line);
+}
+
+/* --- Print ---------------------------------------------------------------- */
+
+/**
+ * Brief and Playbook are print/PDF targets. The screen theme is dark, so print
+ * flips to a light sheet: paper is white, ink is near-black, chrome is gone.
+ * Flat rules still apply, so there are no shadows or gradients here either.
+ */
+@media print {
+  @page {
+    margin: 14mm;
+  }
+
+  html,
+  body {
+    background: #ffffff !important;
+  }
+
+  /* Shell chrome, overlays and action toolbars do not belong on paper. */
+  aside,
+  nav[aria-label="Main"],
+  section[aria-label="Active scenario"],
+  [role="dialog"],
+  header button,
+  .ig-print-hide,
+  footer,
+  .fixed {
+    display: none !important;
+  }
+
+  main {
+    max-width: none !important;
+    padding: 0 !important;
+  }
+
+  * {
+    color: #111111 !important;
+    border-color: #b9b2a7 !important;
+    background-image: none !important;
+    box-shadow: none !important;
+    text-shadow: none !important;
+  }
+
+  .ig-markdown a {
+    text-decoration: underline;
+  }
+
+  .ig-markdown h1,
+  .ig-markdown h2,
+  .ig-markdown h3 {
+    break-after: avoid;
+  }
+
+  .ig-markdown table,
+  .ig-markdown pre,
+  .ig-markdown blockquote {
+    break-inside: avoid;
+  }
+
+  .ig-markdown {
+    max-height: none !important;
+    overflow: visible !important;
+  }
+}
