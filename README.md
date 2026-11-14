@@ -8,6 +8,10 @@ insight, material risk, simulator baseline, playbook and brief follows it.
 Built for the NASA Space Apps 2026 challenge *"Flame in Freefall: SI-Powered Fire
 Safety Insights from Microgravity Combustion Data"*.
 
+**Live:** https://pixelprise543.github.io/Ignis-Labs/ — deployed from `main` by
+`.github/workflows/deploy-pages.yml`. GitHub Pages is static, so `api/si.ts` does
+not run there and Ask Ignis answers from the deterministic offline fallback.
+
 ## What it does
 
 - **Summarize** — evidence-linked insights in plain language, each naming the
