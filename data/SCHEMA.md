@@ -101,9 +101,15 @@ retrieved and read, so do not paste a plausible-looking link from memory.
 
 ## Validation
 
-`node --experimental-strip-types scripts/validate-data.ts` (wired as
-`npm run validate:data` from tier M) enforces uniqueness of experiment ids,
-finding ids and metric keys per record, non-empty sources, confidence enum,
-`years[0] <= years[1]`, and that every metric with `value !== null` has a numeric
-unit string. It cannot check whether a sentence is true; that is what the
-`verified`/`curated` split is for.
+`npm run validate:data` enforces, per record: the full contract shape (zod),
+uniqueness of experiment ids, finding ids and metric keys, non-empty sources with
+a URL, the confidence enum, `years[0] <= years[1]`, and at least one metric and
+one finding. Across the catalogue it checks that every material, insight and
+playbook `evidenceIds` entry resolves to a real finding, that glossary `related`
+ids resolve, and that the 12-cell coverage grid lists each experiment once.
+
+The script loads the validator through Vite, not plain Node, because the data
+modules import `@/contracts/types` and each other without extensions.
+
+It cannot check whether a sentence is true; that is what the `verified` /
+`curated` split is for.
