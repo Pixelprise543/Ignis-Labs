@@ -7,7 +7,7 @@ import type { RouteDefinition } from "./nav";
 import { ScenarioBar } from "./ScenarioBar";
 import { useIgnis } from "./data";
 import { AskIgnisDrawer } from "@/features/assistant";
-import { Button } from "@/design-system";
+import { Button, ThemeToggle } from "@/design-system";
 
 function Brand() {
   return (
@@ -74,6 +74,7 @@ function TopBar({ onOpenAsk }: { onOpenAsk: () => void }) {
           >
             Ask Ignis
           </Button>
+          <ThemeToggle />
         </div>
       </div>
     </header>

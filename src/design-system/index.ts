@@ -27,3 +27,5 @@ export type { TermProps } from "./Term";
 
 export { CitationChip } from "./CitationChip";
 export type { CitationChipProps } from "./CitationChip";
+
+export { ThemeToggle } from "./ThemeToggle";

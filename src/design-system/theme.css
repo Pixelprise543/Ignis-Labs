@@ -38,6 +38,30 @@
   --ig-radius-control: 6px;
 }
 
+[data-theme="dark"] {
+  color-scheme: dark;
+
+  /* Surfaces - deep navy */
+  --ig-vacuum: #020617;
+  --ig-hull: #0f172a;
+  --ig-raised: #1e293b;
+  --ig-line: #334155;
+
+  /* Text - light on dark */
+  --ig-frost: #f1f5f9;
+  --ig-muted: #94a3b8;
+
+  /* Accents - brighter on dark for contrast */
+  --ig-flame-blue: #60a5fa;   /* primary accent - light blue */
+  --ig-quench: #34d399;       /* accent/CTA - green */
+  --ig-amber: #fbbf24;        /* warning */
+  --ig-ember: #fb923c;        /* danger */
+  --ig-alarm: #f87171;        /* destructive */
+
+  /* Derived */
+  --ig-on-accent: #020617;
+}
+
 @theme inline {
   --color-ig-vacuum: var(--ig-vacuum);
   --color-ig-hull: var(--ig-hull);
