@@ -1,0 +1,35 @@
+/**
+ * Flame Orb motion and other tiny flat-only animations.
+ * Imported from src/app/App.tsx (PC3-owned), never from main.tsx.
+ */
+
+@keyframes ig-orb-breathe {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.015);
+  }
+}
+
+.ig-orb-pulse {
+  animation: ig-orb-breathe 6s ease-in-out infinite;
+  transform-origin: center;
+  will-change: transform;
+}
+
+.ig-orb-pulse[data-paused="true"] {
+  animation-play-state: paused;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ig-orb-pulse {
+    animation: none;
+  }
+}
+
+/* Hide the native range track styling so the thumb can stay flat and solid. */
+.ig-range {
+  accent-color: var(--ig-flame-blue);
+}
