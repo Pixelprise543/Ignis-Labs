@@ -7,8 +7,16 @@ import { ConditionsRadar, FlameSpeedChart, OxygenLimitChart } from '@/components
 import { getExperiment } from '@/lib/data'
 import { askSI } from '@/lib/si'
 import { useIgnis } from '@/store/useIgnis'
-import { Button, ConfidenceBadge, EmptyState, Skeleton } from '@/design-system'
-import { Note, PageHeading, RegimeBadge } from '../explore/_shared'
+import {
+  Button,
+  Card,
+  CardContent,
+  ConfidenceBadge,
+  EmptyState,
+  Panel,
+  Skeleton,
+} from '@/design-system'
+import { PageHeading, Note, RegimeBadge } from '../explore/_shared'
 
 type SIState =
   | { status: 'idle' }
@@ -29,7 +37,6 @@ export function ComparePage() {
   const compareIds = useIgnis((state) => state.compareIds)
   const clearCompare = useIgnis((state) => state.clearCompare)
   const toggleCompare = useIgnis((state) => state.toggleCompare)
-  const select = useIgnis((state) => state.select)
   const scenario = useIgnis((state) => state.scenario)
 
   const selected = useMemo(
@@ -88,7 +95,7 @@ export function ComparePage() {
 
   if (selected.length < 2) {
     return (
-      <div className="space-y-4">
+      <div className="space-y-6">
         <PageHeading
           title="Compare experiments"
           description={`Place two to four experiments side by side for ${scenario.label} and read an evidence-linked comparison.`}
@@ -107,7 +114,7 @@ export function ComparePage() {
           action={
             <Link
               to="/explore"
-              className="inline-flex min-h-9 items-center rounded-[4px] border border-transparent bg-[var(--ig-flame-blue)] px-3 text-sm font-medium text-[var(--ig-vacuum)] hover:bg-[var(--ig-amber)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ig-flame-blue)]"
+              className="inline-flex min-h-10 items-center gap-2 rounded-control border border-transparent bg-ig-flame-blue px-4 text-sm font-medium text-white hover:bg-ig-amber"
             >
               Browse experiments
             </Link>
@@ -125,7 +132,7 @@ export function ComparePage() {
       : []
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-8">
       <PageHeading
         title="Compare experiments"
         description={`${selected.length} experiments side by side for ${scenario.label}. Charts, conditions and the SI comparison use only the records selected here.`}
@@ -134,12 +141,12 @@ export function ComparePage() {
             {selected.length < 4 ? (
               <Link
                 to="/explore"
-                className="inline-flex min-h-9 items-center rounded-[4px] border border-[var(--ig-line)] px-3 text-sm text-[var(--ig-frost)] hover:bg-[var(--ig-raised)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ig-flame-blue)]"
+                className="inline-flex min-h-10 items-center gap-2 rounded-control border border-ig-line bg-ig-vacuum px-4 text-sm font-medium text-ig-frost hover:bg-ig-raised"
               >
                 Add experiment
               </Link>
             ) : null}
-            <Button variant="tertiary" onClick={clearCompare}>
+            <Button variant="outline" onClick={clearCompare} size="sm">
               Clear all
             </Button>
           </>
@@ -148,21 +155,25 @@ export function ComparePage() {
 
       <section aria-label="Selected experiments" className="flex flex-wrap gap-2">
         {selected.map((experiment) => (
-          <span
+          <Card
             key={experiment.id}
-            className="inline-flex items-center gap-2 rounded-[4px] border border-[var(--ig-line)] bg-[var(--ig-hull)] py-1 pl-2.5 pr-1 text-xs"
+            bordered
+            padding="none"
+            className="flex items-center gap-2 rounded-control px-3 py-2 text-sm cursor-default"
           >
-            <span className="font-mono text-[var(--ig-muted)]">{experiment.acronym}</span>
-            <span className="max-w-[180px] truncate text-[var(--ig-frost)]">{experiment.name}</span>
-            <button
-              type="button"
-              onClick={() => toggleCompare(experiment.id)}
-              aria-label={`Remove ${experiment.name} from compare`}
-              className="rounded-[4px] px-1.5 py-0.5 text-[var(--ig-muted)] hover:bg-[var(--ig-raised)] hover:text-[var(--ig-frost)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ig-flame-blue)]"
-            >
-              Remove
-            </button>
-          </span>
+            <CardContent>
+              <span className="font-mono text-xs text-ig-muted">{experiment.acronym}</span>
+              <span className="max-w-[180px] truncate text-xs text-ig-frost">{experiment.name}</span>
+              <button
+                type="button"
+                onClick={() => toggleCompare(experiment.id)}
+                aria-label={`Remove ${experiment.name} from compare`}
+                className="ml-auto rounded-control p-1 text-ig-muted hover:bg-ig-raised hover:text-ig-frost focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ig-flame-blue"
+              >
+                ×
+              </button>
+            </CardContent>
+          </Card>
         ))}
       </section>
 
@@ -172,150 +183,132 @@ export function ComparePage() {
         instead of a guess.
       </Note>
 
-      <section
-        aria-labelledby="compare-conditions-heading"
-        className="rounded-[6px] border border-[var(--ig-line)] bg-[var(--ig-hull)] p-4"
+      <Panel
+        title="Conditions"
+        description={`Reported conditions for the ${selected.length} selected experiments`}
       >
-        <h2 id="compare-conditions-heading" className="text-sm font-semibold text-[var(--ig-frost)]">
-          Conditions
-        </h2>
-        <div className="mt-3 overflow-x-auto">
+        <div className="mt-4 overflow-x-auto">
           <table className="w-full min-w-[640px] border-collapse text-left text-sm">
             <caption className="sr-only">
               Reported conditions for the {selected.length} selected experiments
             </caption>
             <thead>
-              <tr className="border-b border-[var(--ig-line)]">
-                <th scope="col" className="py-2 pr-3 text-xs font-medium text-[var(--ig-muted)]">
+              <tr className="border-b border-ig-line">
+                <th scope="col" className="py-3 pr-4 text-[10px] font-medium text-ig-muted uppercase tracking-wider">
                   Field
                 </th>
                 {selected.map((experiment) => (
                   <th
                     key={experiment.id}
                     scope="col"
-                    className="px-3 py-2 align-top font-medium text-[var(--ig-frost)]"
+                    className="px-4 py-3 align-top font-medium text-ig-frost"
                   >
-                    <span className="block font-mono text-xs text-[var(--ig-muted)]">
+                    <span className="block font-mono text-[10px] text-ig-muted uppercase tracking-wider">
                       {experiment.acronym}
                     </span>
-                    <span className="block text-sm">{experiment.name}</span>
+                    <span className="block text-xs">{experiment.name}</span>
                   </th>
                 ))}
               </tr>
             </thead>
             <tbody>
-              <tr className="border-b border-[var(--ig-line)]">
-                <th scope="row" className="py-2 pr-3 text-xs font-medium text-[var(--ig-muted)]">
+              <tr className="border-b border-ig-line">
+                <th scope="row" className="py-3 pr-4 text-[10px] font-medium text-ig-muted uppercase tracking-wider">
                   Gravity regime
                 </th>
                 {selected.map((experiment) => (
-                  <td key={experiment.id} className="px-3 py-2">
+                  <td key={experiment.id} className="px-4 py-3">
                     <RegimeBadge regime={experiment.regime} />
                   </td>
                 ))}
               </tr>
-              <tr className="border-b border-[var(--ig-line)]">
-                <th scope="row" className="py-2 pr-3 text-xs font-medium text-[var(--ig-muted)]">
+              <tr className="border-b border-ig-line">
+                <th scope="row" className="py-3 pr-4 text-[10px] font-medium text-ig-muted uppercase tracking-wider">
                   Gravity
                 </th>
                 {selected.map((experiment) => (
-                  <td
-                    key={experiment.id}
-                    className="px-3 py-2 font-mono text-xs tabular-nums text-[var(--ig-frost)]"
-                  >
+                  <td key={experiment.id} className="px-4 py-3 font-mono text-xs tabular-nums text-ig-frost">
                     {formatValue(experiment.conditions.gravityG, 'g')}
                   </td>
                 ))}
               </tr>
-              <tr className="border-b border-[var(--ig-line)]">
-                <th scope="row" className="py-2 pr-3 text-xs font-medium text-[var(--ig-muted)]">
+              <tr className="border-b border-ig-line">
+                <th scope="row" className="py-3 pr-4 text-[10px] font-medium text-ig-muted uppercase tracking-wider">
                   Oxygen
                 </th>
                 {selected.map((experiment) => (
-                  <td
-                    key={experiment.id}
-                    className="px-3 py-2 font-mono text-xs tabular-nums text-[var(--ig-frost)]"
-                  >
+                  <td key={experiment.id} className="px-4 py-3 font-mono text-xs tabular-nums text-ig-frost">
                     {formatValue(experiment.conditions.o2Percent, '%')}
                   </td>
                 ))}
               </tr>
-              <tr className="border-b border-[var(--ig-line)]">
-                <th scope="row" className="py-2 pr-3 text-xs font-medium text-[var(--ig-muted)]">
+              <tr className="border-b border-ig-line">
+                <th scope="row" className="py-3 pr-4 text-[10px] font-medium text-ig-muted uppercase tracking-wider">
                   Diluent
                 </th>
                 {selected.map((experiment) => (
-                  <td key={experiment.id} className="px-3 py-2 text-xs text-[var(--ig-frost)]">
+                  <td key={experiment.id} className="px-4 py-3 text-xs text-ig-frost">
                     {experiment.conditions.diluent}
                   </td>
                 ))}
               </tr>
-              <tr className="border-b border-[var(--ig-line)]">
-                <th scope="row" className="py-2 pr-3 text-xs font-medium text-[var(--ig-muted)]">
+              <tr className="border-b border-ig-line">
+                <th scope="row" className="py-3 pr-4 text-[10px] font-medium text-ig-muted uppercase tracking-wider">
                   Pressure
                 </th>
                 {selected.map((experiment) => (
-                  <td
-                    key={experiment.id}
-                    className="px-3 py-2 font-mono text-xs tabular-nums text-[var(--ig-frost)]"
-                  >
+                  <td key={experiment.id} className="px-4 py-3 font-mono text-xs tabular-nums text-ig-frost">
                     {formatValue(experiment.conditions.pressureKPa, 'kPa')}
                   </td>
                 ))}
               </tr>
-              <tr className="border-b border-[var(--ig-line)]">
-                <th scope="row" className="py-2 pr-3 text-xs font-medium text-[var(--ig-muted)]">
+              <tr className="border-b border-ig-line">
+                <th scope="row" className="py-3 pr-4 text-[10px] font-medium text-ig-muted uppercase tracking-wider">
                   Flow
                 </th>
                 {selected.map((experiment) => (
-                  <td
-                    key={experiment.id}
-                    className="px-3 py-2 font-mono text-xs tabular-nums text-[var(--ig-frost)]"
-                  >
+                  <td key={experiment.id} className="px-4 py-3 font-mono text-xs tabular-nums text-ig-frost">
                     {formatValue(experiment.conditions.flowCmPerS, 'cm/s')}
                   </td>
                 ))}
               </tr>
-              <tr className="border-b border-[var(--ig-line)]">
-                <th scope="row" className="py-2 pr-3 text-xs font-medium text-[var(--ig-muted)]">
+              <tr className="border-b border-ig-line">
+                <th scope="row" className="py-3 pr-4 text-[10px] font-medium text-ig-muted uppercase tracking-wider">
                   Fuel
                 </th>
                 {selected.map((experiment) => (
-                  <td key={experiment.id} className="px-3 py-2 text-xs text-[var(--ig-frost)]">
+                  <td key={experiment.id} className="px-4 py-3 text-xs text-ig-frost">
                     <span className="block">{experiment.fuel}</span>
-                    <span className="text-[var(--ig-muted)]">{experiment.fuelType}</span>
+                    <span className="block mt-0.5 text-[10px] text-ig-muted">{experiment.fuelType}</span>
                   </td>
                 ))}
               </tr>
-              <tr className="border-b border-[var(--ig-line)]">
-                <th scope="row" className="py-2 pr-3 text-xs font-medium text-[var(--ig-muted)]">
+              <tr className="border-b border-ig-line">
+                <th scope="row" className="py-3 pr-4 text-[10px] font-medium text-ig-muted uppercase tracking-wider">
                   Facility
                 </th>
                 {selected.map((experiment) => (
-                  <td key={experiment.id} className="px-3 py-2 text-xs text-[var(--ig-frost)]">
+                  <td key={experiment.id} className="px-4 py-3 text-xs text-ig-frost">
                     {experiment.facility}
                   </td>
                 ))}
               </tr>
-              <tr className="border-b border-[var(--ig-line)]">
-                <th scope="row" className="py-2 pr-3 text-xs font-medium text-[var(--ig-muted)]">
+              <tr className="border-b border-ig-line">
+                <th scope="row" className="py-3 pr-4 text-[10px] font-medium text-ig-muted uppercase tracking-wider">
                   Years
                 </th>
                 {selected.map((experiment) => (
-                  <td
-                    key={experiment.id}
-                    className="px-3 py-2 font-mono text-xs tabular-nums text-[var(--ig-frost)]"
-                  >
+                  <td key={experiment.id} className="px-4 py-3 font-mono text-xs tabular-nums text-ig-frost">
                     {experiment.years[0]}–{experiment.years[1] ?? 'now'}
                   </td>
                 ))}
               </tr>
               <tr>
-                <th scope="row" className="py-2 pr-3 text-xs font-medium text-[var(--ig-muted)]">
+                <th scope="row" className="py-3 pr-4 text-[10px] font-medium text-ig-muted uppercase tracking-wider">
                   Confidence
                 </th>
                 {selected.map((experiment) => (
-                  <td key={experiment.id} className="px-3 py-2">
+                  <td key={experiment.id} className="px-4 py-3">
                     <ConfidenceBadge confidence={experiment.confidence} />
                   </td>
                 ))}
@@ -323,33 +316,30 @@ export function ComparePage() {
             </tbody>
           </table>
         </div>
-      </section>
+      </Panel>
 
-      <section
-        aria-labelledby="compare-metrics-heading"
-        className="rounded-[6px] border border-[var(--ig-line)] bg-[var(--ig-hull)] p-4"
+      <Panel
+        title="Reported metrics"
+        description="Numeric metrics reported across the selected experiments"
       >
-        <h2 id="compare-metrics-heading" className="text-sm font-semibold text-[var(--ig-frost)]">
-          Reported metrics
-        </h2>
         {metricRows.length === 0 ? (
-          <p className="mt-2 text-xs text-[var(--ig-muted)]">
+          <p className="mt-4 text-xs text-ig-muted text-center">
             None of the selected experiments reports a numeric metric.
           </p>
         ) : (
-          <div className="mt-3 overflow-x-auto">
+          <div className="mt-4 overflow-x-auto">
             <table className="w-full min-w-[640px] border-collapse text-left text-sm">
               <caption className="sr-only">Reported metrics for the selected experiments</caption>
               <thead>
-                <tr className="border-b border-[var(--ig-line)]">
-                  <th scope="col" className="py-2 pr-3 text-xs font-medium text-[var(--ig-muted)]">
+                <tr className="border-b border-ig-line">
+                  <th scope="col" className="py-3 pr-4 text-[10px] font-medium text-ig-muted uppercase tracking-wider">
                     Metric
                   </th>
                   {selected.map((experiment) => (
                     <th
                       key={experiment.id}
                       scope="col"
-                      className="px-3 py-2 font-mono text-xs font-medium text-[var(--ig-muted)]"
+                      className="px-4 py-3 font-mono text-[10px] font-medium text-ig-muted uppercase tracking-wider"
                     >
                       {experiment.acronym}
                     </th>
@@ -358,10 +348,10 @@ export function ComparePage() {
               </thead>
               <tbody>
                 {metricRows.map((row) => (
-                  <tr key={row.key} className="border-b border-[var(--ig-line)] last:border-0">
-                    <th scope="row" className="py-2 pr-3 text-xs font-medium text-[var(--ig-frost)]">
+                  <tr key={row.key} className="border-b border-ig-line last:border-0">
+                    <th scope="row" className="py-3 pr-4 text-xs font-medium text-ig-frost">
                       {row.label}
-                      <span className="ml-1 font-mono font-normal text-[var(--ig-muted)]">
+                      <span className="ml-1 font-mono text-[10px] font-normal text-ig-muted">
                         {row.unit}
                       </span>
                     </th>
@@ -370,7 +360,7 @@ export function ComparePage() {
                       return (
                         <td
                           key={experiment.id}
-                          className="px-3 py-2 font-mono text-xs tabular-nums text-[var(--ig-frost)]"
+                          className="px-4 py-3 font-mono text-xs tabular-nums text-ig-frost"
                         >
                           {metric && typeof metric.value === 'number' ? metric.value : '—'}
                         </td>
@@ -382,107 +372,106 @@ export function ComparePage() {
             </table>
           </div>
         )}
-      </section>
+      </Panel>
 
-      <div className="grid gap-4 xl:grid-cols-2">
+      <div className="grid gap-6 xl:grid-cols-2">
         <FlameSpeedChart experiments={selected} />
         <OxygenLimitChart experiments={selected} />
       </div>
       <ConditionsRadar experiments={selected} />
 
-      <section
-        aria-labelledby="compare-si-heading"
-        className="rounded-[6px] border border-[var(--ig-line)] bg-[var(--ig-hull)] p-4"
+      <Panel
+        title="SI comparison"
+        description="AI-generated comparison of the selected experiments"
       >
-        <div className="flex flex-wrap items-center justify-between gap-2">
-          <h2 id="compare-si-heading" className="text-sm font-semibold text-[var(--ig-frost)]">
-            SI comparison
-          </h2>
-          {siState.status === 'ready' ? (
-            <div className="flex flex-wrap items-center gap-2 text-xs text-[var(--ig-muted)]">
-              <span className="rounded-[4px] border border-[var(--ig-line)] px-1.5 py-0.5 font-mono">
-                {siState.response.model}
-              </span>
-              {siState.response.fallback ? (
-                <span
-                  className="inline-flex items-center gap-1.5 rounded-[4px] border border-[var(--ig-line)] px-1.5 py-0.5"
-                  title="Generated offline from the local dataset. No language-model call was made."
-                >
-                  <span
-                    aria-hidden="true"
-                    className="h-1.5 w-1.5 rounded-full bg-[var(--ig-amber)]"
-                  />
-                  Offline fallback
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div className="flex flex-wrap items-center gap-2 text-[10px] font-medium text-ig-muted">
+            {siState.status === 'ready' ? (
+              <>
+                <span className="rounded-control border border-ig-line px-2 py-0.5 font-mono">
+                  {siState.response.model}
                 </span>
-              ) : null}
-              <span className="font-mono tabular-nums">
-                Grounding {Math.round(siState.response.groundingScore * 100)}%
-              </span>
-              <Button variant="tertiary" onClick={() => setRegenerateCount((count) => count + 1)}>
-                Regenerate
-              </Button>
-            </div>
-          ) : (
+                {siState.response.fallback ? (
+                  <span
+                    className="inline-flex items-center gap-1.5 rounded-control border border-ig-line px-2 py-0.5"
+                    title="Generated offline from the local dataset. No language-model call was made."
+                  >
+                    <span aria-hidden="true" className="h-1.5 w-1.5 rounded-full bg-ig-amber" />
+                    Offline fallback
+                  </span>
+                ) : null}
+                <span className="font-mono tabular-nums">
+                  Grounding {Math.round(siState.response.groundingScore * 100)}%
+                </span>
+              </>
+            ) : null}
             <Button
-              variant="tertiary"
+              variant="outline"
+              size="sm"
               onClick={() => setRegenerateCount((count) => count + 1)}
               disabled={siState.status === 'loading'}
             >
               Regenerate
             </Button>
-          )}
+          </div>
         </div>
 
-        <div className="mt-3" aria-live="polite">
+        <div className="mt-4" aria-live="polite">
           {siState.status === 'loading' ? (
-            <div className="space-y-2" role="status">
+            <div className="space-y-3" role="status">
               <span className="sr-only">Generating the comparison</span>
-              <Skeleton className="h-3 w-3/4" />
-              <Skeleton className="h-3 w-5/6" />
-              <Skeleton className="h-3 w-2/3" />
+              <Skeleton className="h-4 w-3/4" />
+              <Skeleton className="h-4 w-5/6" />
+              <Skeleton className="h-4 w-2/3" />
             </div>
           ) : siState.status === 'error' ? (
-            <div className="rounded-[4px] border border-[var(--ig-line)] px-3 py-2">
-              <p className="text-xs text-[var(--ig-frost)]">
-                The comparison could not be generated: {siState.message}
-              </p>
-              <p className="mt-1 text-xs text-[var(--ig-muted)]">
-                Try Regenerate. If it keeps failing, read the conditions table above — it uses the
-                same records.
-              </p>
-            </div>
+            <Card bordered padding="md" className="border-ig-amber bg-ig-vacuum/50">
+              <CardContent>
+                <p className="text-xs text-ig-frost">
+                  The comparison could not be generated: {siState.message}
+                </p>
+                <p className="mt-1 text-xs text-ig-muted">
+                  Try Regenerate. If it keeps failing, read the conditions table above — it uses the
+                  same records.
+                </p>
+              </CardContent>
+            </Card>
           ) : siState.status === 'ready' ? (
             <>
-              <div className="text-sm leading-relaxed text-[var(--ig-muted)] [&_h3]:mt-3 [&_h3]:text-sm [&_h3]:font-semibold [&_h3]:text-[var(--ig-frost)] [&_li]:mt-1 [&_li]:border-l [&_li]:border-[var(--ig-line)] [&_li]:pl-2 [&_strong]:text-[var(--ig-frost)] [&_ul]:mt-2 [&_ul]:space-y-1">
+              <div className="text-sm leading-relaxed text-ig-muted [&_h3]:mt-4 [&_h3]:text-sm [&_h3]:font-semibold [&_h3]:text-ig-frost [&_li]:mt-1 [&_li]:border-l [&_li]:border-ig-line [&_li]:pl-3 [&_strong]:text-ig-frost [&_ul]:mt-2 [&_ul]:space-y-1">
                 <ReactMarkdown
                   remarkPlugins={[remarkGfm]}
                   components={{
                     h3: ({ children }) => (
-                      <h3 className="text-sm font-semibold text-[var(--ig-frost)]">{children}</h3>
+                      <h3 className="text-sm font-semibold text-ig-frost">{children}</h3>
                     ),
-                    p: ({ children }) => <p className="mt-2 text-sm">{children}</p>,
+                    p: ({ children }) => <p className="mt-3 text-sm">{children}</p>,
                   }}
                 >
                   {siState.response.answerMarkdown}
                 </ReactMarkdown>
               </div>
 
-              <div className="mt-4">
-                <h3 className="text-xs font-medium text-[var(--ig-frost)]">Cited experiments</h3>
+              <div className="mt-6">
+                <h3 className="text-[10px] font-medium text-ig-frost uppercase tracking-wider">
+                  Cited experiments
+                </h3>
                 {citations.length === 0 ? (
-                  <p className="mt-1 text-xs text-[var(--ig-muted)]">
+                  <p className="mt-2 text-xs text-ig-muted">
                     The answer cites no experiment from this comparison.
                   </p>
                 ) : (
-                  <ul className="mt-2 flex flex-wrap gap-1.5">
+                  <ul className="mt-2 flex flex-wrap gap-2">
                     {citations.map((experiment) => (
                       <li key={experiment.id}>
                         <Link
                           to="/explore"
-                          onClick={() => select(experiment.id)}
-                          className="inline-flex items-center gap-1.5 rounded-[4px] border border-[var(--ig-line)] bg-[var(--ig-vacuum)] px-2 py-1 text-xs text-[var(--ig-frost)] hover:bg-[var(--ig-raised)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ig-flame-blue)]"
+                          onClick={() => {
+                            // No-op: link navigation handled by router
+                          }}
+                          className="inline-flex items-center gap-1.5 rounded-control border border-ig-line bg-ig-vacuum px-2.5 py-1 text-xs text-ig-frost hover:bg-ig-raised focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ig-flame-blue"
                         >
-                          <span aria-hidden="true" className="font-mono text-[var(--ig-flame-blue)]">
+                          <span aria-hidden="true" className="font-mono text-[10px] text-ig-flame-blue">
                             #
                           </span>
                           {experiment.acronym}
@@ -492,7 +481,7 @@ export function ComparePage() {
                   </ul>
                 )}
                 {siState.response.invalidCitationsRemoved > 0 ? (
-                  <p className="mt-2 text-xs text-[var(--ig-muted)]">
+                  <p className="mt-3 text-xs text-ig-muted">
                     {siState.response.invalidCitationsRemoved} citation
                     {siState.response.invalidCitationsRemoved === 1 ? ' was' : 's were'} removed
                     because they did not match the dataset.
@@ -501,59 +490,62 @@ export function ComparePage() {
               </div>
             </>
           ) : (
-            <p className="text-xs text-[var(--ig-muted)]">
+            <p className="mt-4 text-xs text-ig-muted text-center">
               Select at least two experiments to generate a comparison.
             </p>
           )}
         </div>
-      </section>
+      </Panel>
 
-      <section aria-labelledby="compare-evidence-heading" className="space-y-3">
-        <h2 id="compare-evidence-heading" className="text-sm font-semibold text-[var(--ig-frost)]">
-          Evidence behind each record
-        </h2>
-        <div className="grid gap-3 md:grid-cols-2">
+      <Panel
+        title="Evidence behind each record"
+        description="Source findings and references for every selected experiment"
+      >
+        <div className="grid gap-4 md:grid-cols-2">
           {selected.map((experiment) => (
-            <article
-              key={experiment.id}
-              className="rounded-[6px] border border-[var(--ig-line)] bg-[var(--ig-hull)] p-4"
-            >
-              <div className="flex flex-wrap items-center gap-2">
-                <h3 className="text-sm font-semibold text-[var(--ig-frost)]">{experiment.name}</h3>
-                <span className="font-mono text-xs text-[var(--ig-muted)]">
-                  {experiment.acronym}
-                </span>
-                <ConfidenceBadge confidence={experiment.confidence} />
-              </div>
-              <p className="mt-2 text-xs leading-relaxed text-[var(--ig-muted)]">
-                {experiment.summary}
-              </p>
-              <p className="mt-2 rounded-[4px] border border-[var(--ig-line)] bg-[var(--ig-vacuum)] px-3 py-2 text-xs leading-relaxed text-[var(--ig-frost)]">
-                <span className="block font-medium">Safety takeaway</span>
-                {experiment.safetyTakeaway}
-              </p>
-              <ul className="mt-2 space-y-1 text-xs leading-relaxed text-[var(--ig-muted)]">
-                {experiment.findings.map((finding) => (
-                  <li key={finding.id} className="border-l border-[var(--ig-line)] pl-2">
-                    {finding.text}
-                    <span className="ml-1 font-mono text-[10px] text-[var(--ig-muted)]">
-                      {finding.id}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-              <ul className="mt-2 space-y-1 text-xs text-[var(--ig-muted)]">
-                {experiment.sources.map((source) => (
-                  <li key={`${source.title}-${source.org}`}>
-                    {source.title} · {source.org}
-                    {source.year ? ` · ${source.year}` : ''}
-                  </li>
-                ))}
-              </ul>
-            </article>
+            <Card key={experiment.id} bordered padding="md">
+              <CardContent>
+                <div className="flex flex-wrap items-start justify-between gap-2">
+                  <div className="min-w-0">
+                    <h3 className="text-sm font-semibold text-ig-frost">{experiment.name}</h3>
+                    <span className="font-mono text-[10px] text-ig-muted">{experiment.acronym}</span>
+                    <ConfidenceBadge confidence={experiment.confidence} />
+                  </div>
+                </div>
+                <p className="mt-3 text-xs leading-relaxed text-ig-muted">
+                  {experiment.summary}
+                </p>
+                <div className="mt-4 rounded-control border border-ig-line bg-ig-vacuum px-3 py-3">
+                  <p className="text-[10px] font-medium text-ig-frost uppercase tracking-wider">
+                    Safety takeaway
+                  </p>
+                  <p className="mt-1 text-xs leading-relaxed text-ig-frost">
+                    {experiment.safetyTakeaway}
+                  </p>
+                </div>
+                <ul className="mt-4 space-y-2 text-xs leading-relaxed text-ig-muted">
+                  {experiment.findings.map((finding) => (
+                    <li key={finding.id} className="border-l-2 border-ig-line pl-3">
+                      {finding.text}
+                      <span className="ml-2 font-mono text-[10px] text-ig-muted">
+                        [{finding.id}]
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+                <ul className="mt-4 space-y-1 text-[10px] text-ig-muted">
+                  {experiment.sources.map((source) => (
+                    <li key={`${source.title}-${source.org}`}>
+                      {source.title} · {source.org}
+                      {source.year ? ` · ${source.year}` : ''}
+                    </li>
+                  ))}
+                </ul>
+              </CardContent>
+            </Card>
           ))}
         </div>
-      </section>
+      </Panel>
     </div>
   )
 }

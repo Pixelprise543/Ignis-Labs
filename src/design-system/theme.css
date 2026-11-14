@@ -1,40 +1,40 @@
 /* ==========================================================================
-   Ignis - Professional light theme
-   Design tokens for a clean, trustworthy interface.
-   Flat rules: no gradients, glows, blurs, or drop shadows.
-   Depth from 1px borders and surface steps only.
+   Ignis - Professional theme (per ui-ux-pro-max design system)
+   Pattern: Minimalism & Swiss Style — clean, simple, spacious, functional
+   Primary: Navy (#1E3A5F)   Accent/CTA: Green (#059669)
+   Background: #F8FAFC   Foreground: #0F172A
    ========================================================================== */
 
 @import 'tailwindcss';
-@import '@fontsource-variable/inter';
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Work+Sans:wght@300;400;500;600;700&display=swap');
 @import '@fontsource/jetbrains-mono/400.css';
 @import '@fontsource/jetbrains-mono/500.css';
 
 :root {
   color-scheme: light;
 
-  /* Surfaces - crisp white with subtle steps */
+  /* Surfaces */
   --ig-vacuum: #ffffff;
-  --ig-hull: #f7f5f1;
-  --ig-raised: #efe9e0;
-  --ig-line: #d9cfc1;
+  --ig-hull: #f8fafc;
+  --ig-raised: #f1f5f9;
+  --ig-line: #e2e8f0;
 
-  /* Text - high contrast for readability */
-  --ig-frost: #14100d;
-  --ig-muted: #5a5045;
+  /* Text */
+  --ig-frost: #0f172a;
+  --ig-muted: #475569;
 
-  /* Accents - professional, restrained */
-  --ig-flame-blue: #b45309;   /* primary accent */
-  --ig-quench: #15803d;       /* success / safe */
-  --ig-amber: #d97706;        /* warning */
-  --ig-ember: #c2410c;        /* danger / critical */
-  --ig-alarm: #dc2626;        /* alarm */
+  /* Accents - professional navy + green */
+  --ig-flame-blue: #1e3a5f;   /* primary accent - navy */
+  --ig-quench: #059669;       /* accent/CTA - green */
+  --ig-amber: #b45309;        /* warning */
+  --ig-ember: #c2410c;        /* danger */
+  --ig-alarm: #dc2626;        /* destructive */
 
   /* Derived */
   --ig-on-accent: #ffffff;
 
   /* Shape */
-  --ig-radius-panel: 10px;
+  --ig-radius-panel: 8px;
   --ig-radius-control: 6px;
 }
 
@@ -52,10 +52,11 @@
   --color-ig-alarm: var(--ig-alarm);
   --color-ig-on-accent: var(--ig-on-accent);
 
-  --radius-panel: 10px;
+  --radius-panel: 8px;
   --radius-control: 6px;
 
-  --font-sans: 'Inter Variable', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-sans: 'Outfit', 'Work Sans', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-serif: ui-serif, Georgia, Cambria, 'Times New Roman', Times, serif;
   --font-mono: 'JetBrains Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace;
 
   --spacing: 0.25rem;
@@ -88,7 +89,7 @@
     font-size: 2rem;
     font-weight: 700;
     line-height: 1.25;
-    letter-spacing: -0.01em;
+    letter-spacing: -0.02em;
   }
 
   h2 {
@@ -102,12 +103,6 @@
     font-size: 1.25rem;
     font-weight: 600;
     line-height: 1.4;
-  }
-
-  p {
-    font-size: 0.9375rem;
-    line-height: 1.6;
-    text-wrap: pretty;
   }
 
   .text-sm {
@@ -136,7 +131,7 @@
   }
 
   ::selection {
-    background-color: var(--ig-ember);
+    background-color: var(--ig-flame-blue);
     color: var(--ig-on-accent);
   }
 
