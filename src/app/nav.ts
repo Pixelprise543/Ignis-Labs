@@ -1,21 +1,7 @@
 import type { LucideIcon } from "lucide-react";
-import {
-  BookA,
-  BookOpen,
-  Clock,
-  Compass,
-  FileText,
-  GitCompare,
-  Home,
-  Info,
-  LayoutGrid,
-  Lightbulb,
-  ListOrdered,
-  Map,
-  SlidersHorizontal,
-} from "lucide-react";
+import { Compass, FileText, Home, SlidersHorizontal } from "lucide-react";
 
-export type NavGroup = "Overview" | "Explore data" | "Decide" | "Learn";
+export type NavGroup = "Overview" | "Explore data" | "Decide";
 
 export type NavIcon = LucideIcon;
 
@@ -50,62 +36,6 @@ export const ROUTES: RouteDefinition[] = [
     icon: Compass,
   },
   {
-    path: "/compare",
-    label: "Compare",
-    folder: "compare",
-    exportName: "ComparePage",
-    group: "Explore data",
-    icon: GitCompare,
-  },
-  {
-    path: "/rankings",
-    label: "Rankings",
-    folder: "rankings",
-    exportName: "RankingsPage",
-    group: "Explore data",
-    icon: ListOrdered,
-  },
-  {
-    path: "/materials",
-    label: "Materials",
-    folder: "materials",
-    exportName: "MaterialsPage",
-    group: "Explore data",
-    icon: LayoutGrid,
-  },
-  {
-    path: "/coverage",
-    label: "Coverage",
-    folder: "coverage",
-    exportName: "CoveragePage",
-    group: "Explore data",
-    icon: Map,
-  },
-  {
-    path: "/timeline",
-    label: "Timeline",
-    folder: "timeline",
-    exportName: "TimelinePage",
-    group: "Explore data",
-    icon: Clock,
-  },
-  {
-    path: "/insights",
-    label: "Insights",
-    folder: "insights",
-    exportName: "InsightsPage",
-    group: "Decide",
-    icon: Lightbulb,
-  },
-  {
-    path: "/playbook",
-    label: "Playbook",
-    folder: "playbook",
-    exportName: "PlaybookPage",
-    group: "Decide",
-    icon: BookOpen,
-  },
-  {
     path: "/simulator",
     label: "Simulator",
     folder: "simulator",
@@ -121,25 +51,9 @@ export const ROUTES: RouteDefinition[] = [
     group: "Decide",
     icon: FileText,
   },
-  {
-    path: "/glossary",
-    label: "Glossary",
-    folder: "glossary",
-    exportName: "GlossaryPage",
-    group: "Learn",
-    icon: BookA,
-  },
-  {
-    path: "/method",
-    label: "Method",
-    folder: "method",
-    exportName: "MethodPage",
-    group: "Learn",
-    icon: Info,
-  },
 ];
 
-export const NAV_GROUPS: NavGroup[] = ["Overview", "Explore data", "Decide", "Learn"];
+export const NAV_GROUPS: NavGroup[] = ["Overview", "Explore data", "Decide"];
 
 export function routesByGroup(group: NavGroup): RouteDefinition[] {
   return ROUTES.filter((route) => route.group === group);
