@@ -10,6 +10,8 @@ Owner: PC3 (Ignis Labs). Branch: `pc3-experience`. Repo:
 - P0 shipped: app shell, lazy routes + EmptyState fallback for missing pages,
   Scenario Bar, design-system primitives, Home, Insights, Ask Ignis drawer.
 - P1 shipped: Simulator, Playbook, Brief, Glossary, Method, Command palette.
+- P2 shipped: onboarding guide, saved experiments, shared dialog focus handling,
+  print stylesheet, Playwright smoke suite, README and docs.
 - PC1's `pc1-core` is merged in: real 20-experiment dataset, scoring, insights,
   materials, coverage, simulator, playbook and brief now drive every PC3 page.
 - `src/app/_stubs.ts` is deleted. Every data/store import goes through
@@ -57,12 +59,21 @@ Owner: PC3 (Ignis Labs). Branch: `pc3-experience`. Repo:
 - The simulator follows the scenario bar until the user edits a slider, and
   the driver bars show each driver's share of the score (PC1 weights are
   points, not 0..1 fractions).
+- Onboarding is a dismissible panel, not a modal. Dismissal lives in
+  `localStorage` under `ignis.start-here-dismissed.v1`; the palette can reopen
+  it through the `onboarding.ts` event channel instead of a new store field.
+- Saved experiments are a Home surface plus a palette group. The star is a real
+  `aria-pressed` toggle. PC2's Explore page can reuse `BookmarkButton` from the
+  design system.
+- `useDialogFocus` gives the palette and mobile More sheet the same focus trap,
+  Escape handling, scroll lock and focus restore that `Drawer` already had.
+- Evidence chips now shrink (`min-w-0` + truncate); a finding's full text used
+  to set a wide min-content width that overflowed Home at 375px.
 
 ## Next
 
-1. Push `pc3-experience` (blocked: GitHub says `Joshita-566` lacks permission
-   to `Pixelprise543/Ignis-Labs`; operator must add the account or supply a
-   token).
-2. After push: tag `p0-done-pc3` (needs operator approval, O4).
-3. INTEGRATE: merge PC2's branch, refresh graph, build, report.
-4. Optional polish left: bookmarks UI (store field exists), onboarding hints.
+1. Tag `p0-done-pc3` after operator approval (O4).
+2. INTEGRATE: wait for PC2's branch and `p0-done-pc2`, then merge, refresh the
+   graph, build and report.
+3. Optional polish left: none known in PC3. Watch for integration changes to the
+   shared contract and re-run the sweep after merging PC2.

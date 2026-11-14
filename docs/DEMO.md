@@ -14,6 +14,10 @@ npm run preview   # or: npm run dev
 Open the app at 1440px wide. Have the browser console open: there should be no
 errors.
 
+The start-here guide is dismissible and does not block any step. If you want a
+clean screen, dismiss it; ask the palette for “Show the start-here guide” to
+bring it back.
+
 ## Script
 
 1. **Home → Mars transit** (10s)

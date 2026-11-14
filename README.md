@@ -18,6 +18,8 @@ Safety Insights from Microgravity Combustion Data"*.
   evidence-coverage map, and a one-click mission safety brief.
 - **Ask** — a grounded assistant that answers only from the dataset, cites
   experiment ids, and works offline with no API key.
+- **Keep track** — a dismissible start-here guide, saved experiments and a
+  command palette that reaches views, scenarios and saved records.
 
 ## Quick start
 

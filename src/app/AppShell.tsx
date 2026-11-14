@@ -1,11 +1,12 @@
 import { clsx } from "clsx";
 import { Command as CommandIcon, Menu, Sparkles, X } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link, NavLink, useLocation } from "react-router-dom";
 import { NAV_GROUPS, ROUTES, routesByGroup } from "./nav";
 import type { RouteDefinition } from "./nav";
 import { ScenarioBar } from "./ScenarioBar";
 import { useIgnis } from "./data";
+import { useDialogFocus } from "./useDialogFocus";
 import { AskIgnisDrawer } from "@/features/assistant";
 import { CommandPalette } from "@/features/palette";
 
@@ -181,15 +182,8 @@ function MobileTabs({ onMore }: { onMore: () => void }) {
 
 function MoreSheet({ open, onClose }: { open: boolean; onClose: () => void }) {
   const { setDrawerOpen } = useIgnis();
-
-  useEffect(() => {
-    if (!open) return;
-    function onKeyDown(event: KeyboardEvent) {
-      if (event.key === "Escape") onClose();
-    }
-    document.addEventListener("keydown", onKeyDown);
-    return () => document.removeEventListener("keydown", onKeyDown);
-  }, [open, onClose]);
+  const panelRef = useRef<HTMLDivElement | null>(null);
+  useDialogFocus(open, onClose, panelRef);
 
   if (!open) return null;
 
@@ -197,6 +191,7 @@ function MoreSheet({ open, onClose }: { open: boolean; onClose: () => void }) {
     <div className="fixed inset-0 z-50 flex flex-col justify-end lg:hidden">
       <div aria-hidden="true" className="absolute inset-0 bg-ig-vacuum/80" onClick={onClose} />
       <div
+        ref={panelRef}
         role="dialog"
         aria-modal="true"
         aria-label="All views"
@@ -252,6 +247,13 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "auto" });
+  }, [location.pathname]);
+
+  useEffect(() => {
+    const match =
+      ROUTES.find((route) => route.path === location.pathname) ??
+      ROUTES.find((route) => route.path !== "/" && location.pathname.startsWith(route.path));
+    document.title = match ? `${match.label} · Ignis` : "Page not found · Ignis";
   }, [location.pathname]);
 
   return (

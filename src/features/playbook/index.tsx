@@ -3,7 +3,7 @@ import type { LucideIcon } from "lucide-react";
 import { useMemo } from "react";
 import type { PlaybookStep } from "@/contracts/types";
 import { getPlaybook, useIgnis } from "@/app/data";
-import { Button, CitationChip, Panel } from "@/design-system";
+import { Button, CitationChip, Panel, Term } from "@/design-system";
 
 type Phase = PlaybookStep["phase"];
 
@@ -51,8 +51,9 @@ export function PlaybookPage() {
           <div>
             <h1 className="text-2xl font-semibold text-ig-frost">Crew response playbook</h1>
             <p className="mt-1 max-w-2xl text-sm leading-6 text-ig-muted">
-              Detect, isolate, suppress, ventilate and recover in <span className="text-ig-frost">{scenario.label}</span>.
-              Every step names the evidence behind it.
+              Detect, isolate, <Term id="suppression">suppress</Term>, ventilate and recover in{" "}
+              <span className="text-ig-frost">{scenario.label}</span>. Every step names the evidence
+              behind it.
             </p>
           </div>
           <div className="flex flex-wrap gap-2">

@@ -48,7 +48,7 @@ export function CitationChip({ id, label, onSelect, className }: CitationChipPro
         else select(experiment.id);
       }}
       className={clsx(
-        "inline-flex max-w-full items-center gap-1 rounded-control border px-1.5 py-0.5 text-xs",
+        "inline-flex min-w-0 max-w-full items-center gap-1 rounded-control border px-1.5 py-0.5 text-xs",
         experiment
           ? "border-ig-line bg-ig-raised text-ig-muted hover:text-ig-frost"
           : "border-ig-alarm text-ig-alarm",
@@ -56,7 +56,7 @@ export function CitationChip({ id, label, onSelect, className }: CitationChipPro
       )}
     >
       <FileText size={12} aria-hidden="true" className="shrink-0" />
-      <span className="truncate">{text}</span>
+      <span className="min-w-0 truncate">{text}</span>
     </button>
   );
 }

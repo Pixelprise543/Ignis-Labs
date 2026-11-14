@@ -24,3 +24,6 @@ export type { TermProps } from "./Term";
 
 export { CitationChip } from "./CitationChip";
 export type { CitationChipProps } from "./CitationChip";
+
+export { BookmarkButton } from "./BookmarkButton";
+export type { BookmarkButtonProps } from "./BookmarkButton";

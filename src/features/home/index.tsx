@@ -8,19 +8,27 @@ import {
   SlidersHorizontal,
   Sparkles,
 } from "lucide-react";
-import { useMemo } from "react";
-import type { Severity } from "@/contracts/types";
+import { useMemo, useState } from "react";
+import type { FormEvent } from "react";
+import type { Experiment, Severity } from "@/contracts/types";
 import { Link } from "react-router-dom";
 import { getExperiments, getInsights, useIgnis } from "@/app/data";
-import { Badge, Stat } from "@/design-system";
+import { Badge, BookmarkButton, Stat, Term } from "@/design-system";
 import { InsightCard } from "@/features/insights/InsightCard";
 import { FlameOrb } from "./Orb";
+import { OnboardingGuide } from "./StartHereGuide";
 
 const SEVERITY_ORDER: Record<Severity, number> = {
   critical: 0,
   high: 1,
   caution: 2,
   info: 3,
+};
+
+const REGIME_LABEL: Record<Experiment["regime"], string> = {
+  microgravity: "Microgravity",
+  "partial-g": "Partial gravity",
+  "normal-g": "Normal gravity",
 };
 
 const ENTRY_POINTS = [
@@ -63,9 +71,19 @@ const ENTRY_POINTS = [
 ];
 
 export function HomePage() {
-  const { scenario, setDrawerOpen } = useIgnis();
+  const { scenario, setDrawerOpen, bookmarks, toggleBookmark } = useIgnis();
   const experiments = getExperiments();
   const insights = useMemo(() => getInsights(scenario), [scenario]);
+  const [pendingId, setPendingId] = useState("");
+
+  const savedExperiments = experiments.filter((experiment) => bookmarks.includes(experiment.id));
+  const unsavedExperiments = experiments.filter((experiment) => !bookmarks.includes(experiment.id));
+  const pending = unsavedExperiments.find((experiment) => experiment.id === pendingId) ?? unsavedExperiments[0];
+
+  function savePending(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (pending) toggleBookmark(pending.id);
+  }
 
   const topInsights = useMemo(
     () =>
@@ -84,6 +102,8 @@ export function HomePage() {
 
   return (
     <div className="space-y-6">
+      <OnboardingGuide scenarioLabel={scenario.label} onAsk={() => setDrawerOpen(true)} />
+
       <section className="grid gap-4 lg:grid-cols-[1.35fr_1fr]">
         <div className="flex flex-col justify-between rounded-panel border border-ig-line bg-ig-hull p-5 lg:p-6">
           <div>
@@ -92,9 +112,9 @@ export function HomePage() {
               Fire behaves differently when nothing falls.
             </h1>
             <p className="mt-3 max-w-2xl text-sm leading-6 text-ig-muted">
-              Ignis turns decades of microgravity combustion research into fire-safety answers for the
-              Moon and Mars. Pick a scenario once and every ranking, risk, playbook and brief follows
-              it.
+              Ignis turns decades of <Term id="microgravity" /> combustion research into fire-safety
+              answers for the Moon and Mars. Pick a scenario once and every ranking, risk, playbook
+              and brief follows it.
             </p>
             <div className="mt-4 flex flex-wrap items-center gap-2">
               <Badge tone="gold">{scenario.label}</Badge>
@@ -190,6 +210,94 @@ export function HomePage() {
             ))}
           </div>
         )}
+      </section>
+
+      <section
+        aria-labelledby="saved-experiments"
+        className="rounded-panel border border-ig-line bg-ig-hull"
+      >
+        <header className="flex flex-wrap items-start justify-between gap-3 border-b border-ig-line px-4 py-3">
+          <div className="min-w-0">
+            <h2 id="saved-experiments" className="text-sm font-semibold text-ig-frost">
+              Saved experiments
+            </h2>
+            <p className="mt-1 text-xs leading-5 text-ig-muted">
+              Keep records you want to revisit or discuss with the crew. Saved items stay in this
+              browser.
+            </p>
+          </div>
+          <span className="ig-num text-xs text-ig-muted">{savedExperiments.length} saved</span>
+        </header>
+
+        <div className="space-y-3 p-4">
+          {savedExperiments.length === 0 ? (
+            <p className="text-sm leading-6 text-ig-muted">
+              Nothing saved yet. Add an experiment below, or use the star beside a record in
+              Explore to keep it here.
+            </p>
+          ) : (
+            <ul className="divide-y divide-ig-line">
+              {savedExperiments.map((experiment) => (
+                <li
+                  key={experiment.id}
+                  className="flex flex-wrap items-center justify-between gap-2 py-2 first:pt-0 last:pb-0"
+                >
+                  <div className="min-w-0">
+                    <p className="text-sm font-medium text-ig-frost">
+                      {experiment.acronym}{" "}
+                      <span className="font-normal text-ig-muted">· {experiment.name}</span>
+                    </p>
+                    <p className="mt-0.5 text-xs text-ig-muted">
+                      {experiment.fuel} · {experiment.years[0]}
+                      {experiment.years[1] ? `–${experiment.years[1]}` : ""} ·{" "}
+                      {REGIME_LABEL[experiment.regime]}
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Link
+                      to={`/explore?selected=${experiment.id}`}
+                      className="text-xs text-ig-flame-blue hover:underline"
+                    >
+                      Open
+                    </Link>
+                    <BookmarkButton
+                      experimentId={experiment.id}
+                      name={`${experiment.acronym} ${experiment.name}`}
+                    />
+                  </div>
+                </li>
+              ))}
+            </ul>
+          )}
+
+          <form
+            onSubmit={savePending}
+            className="flex flex-wrap items-end gap-2 border-t border-ig-line pt-3"
+          >
+            <label className="min-w-0 flex-1">
+              <span className="block text-xs text-ig-muted">Add an experiment</span>
+              <select
+                value={pending?.id ?? ""}
+                onChange={(event) => setPendingId(event.target.value)}
+                disabled={unsavedExperiments.length === 0}
+                className="mt-1 h-9 w-full rounded-control border border-ig-line bg-ig-hull px-2 text-sm text-ig-frost disabled:opacity-50"
+              >
+                {unsavedExperiments.map((experiment) => (
+                  <option key={experiment.id} value={experiment.id}>
+                    {experiment.acronym} · {experiment.name}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <button
+              type="submit"
+              disabled={!pending}
+              className="inline-flex h-9 items-center rounded-control bg-ig-flame-blue px-3 text-sm font-medium text-ig-on-accent hover:bg-ig-amber disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              Save experiment
+            </button>
+          </form>
+        </div>
       </section>
 
       <section aria-labelledby="entry-points">

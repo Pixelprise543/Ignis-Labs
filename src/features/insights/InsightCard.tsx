@@ -41,7 +41,7 @@ export function InsightCard({ insight, compact = false, showActions = true }: In
   return (
     <article
       className={clsx(
-        "rounded-panel border border-l-2 border-ig-line bg-ig-hull",
+        "min-w-0 rounded-panel border border-l-2 border-ig-line bg-ig-hull",
         severityBorder[insight.severity],
       )}
       aria-labelledby={`insight-${insight.id}`}
@@ -92,7 +92,7 @@ export function InsightCard({ insight, compact = false, showActions = true }: In
           </div>
         )}
 
-        <div className="mt-3 flex flex-wrap items-center gap-1.5">
+        <div className="mt-3 flex min-w-0 flex-wrap items-center gap-1.5">
           <span className="text-xs text-ig-muted">Evidence</span>
           {insight.evidenceIds.map((id) => (
             <CitationChip key={id} id={id} />

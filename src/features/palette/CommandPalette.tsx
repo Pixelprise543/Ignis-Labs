@@ -1,18 +1,27 @@
 import { Command } from "cmdk";
-import { Sparkles } from "lucide-react";
+import { HelpCircle, Sparkles, Star } from "lucide-react";
 import { useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { SCENARIOS, useIgnis } from "@/app/data";
+import { SCENARIOS, getExperiments, useIgnis } from "@/app/data";
 import { ROUTES } from "@/app/nav";
+import { useDialogFocus } from "@/app/useDialogFocus";
+import { showOnboarding } from "@/features/home/onboarding";
 
 /**
  * Ctrl/Cmd+K palette. Reads the same route table as the rail so the two can
- * never disagree about what pages exist.
+ * never disagree about what pages exist. Focus is trapped and restored by the
+ * shared dialog hook, and saved experiments are reachable without opening the
+ * Explore page.
  */
 export function CommandPalette() {
-  const { paletteOpen, setPaletteOpen, setScenario, setDrawerOpen } = useIgnis();
+  const { paletteOpen, setPaletteOpen, setScenario, setDrawerOpen, bookmarks, select } = useIgnis();
   const navigate = useNavigate();
-  const inputRef = useRef<HTMLInputElement | null>(null);
+  const dialogRef = useRef<HTMLDivElement | null>(null);
+  const savedExperiments = getExperiments().filter((experiment) =>
+    bookmarks.includes(experiment.id),
+  );
+
+  useDialogFocus(paletteOpen, close, dialogRef);
 
   useEffect(() => {
     function onKeyDown(event: KeyboardEvent) {
@@ -25,14 +34,6 @@ export function CommandPalette() {
     return () => document.removeEventListener("keydown", onKeyDown);
   }, [paletteOpen, setPaletteOpen]);
 
-  useEffect(() => {
-    if (paletteOpen) {
-      const timer = window.setTimeout(() => inputRef.current?.focus(), 0);
-      return () => window.clearTimeout(timer);
-    }
-    return undefined;
-  }, [paletteOpen]);
-
   if (!paletteOpen) return null;
 
   function close() {
@@ -41,13 +42,11 @@ export function CommandPalette() {
 
   return (
     <div
+      ref={dialogRef}
       role="dialog"
       aria-modal="true"
       aria-label="Command palette"
       className="fixed inset-0 z-50 flex items-start justify-center px-3 pt-[10vh]"
-      onKeyDown={(event) => {
-        if (event.key === "Escape") close();
-      }}
     >
       <div aria-hidden="true" className="absolute inset-0 bg-ig-vacuum/80" onClick={close} />
       <Command
@@ -55,7 +54,6 @@ export function CommandPalette() {
         className="ig-cmd relative w-full max-w-[560px] overflow-hidden rounded-panel border border-ig-line bg-ig-hull"
       >
         <Command.Input
-          ref={inputRef}
           placeholder="Jump to a view, switch scenario, or ask Ignis"
           className="h-11 w-full border-b border-ig-line bg-transparent px-3 text-sm text-ig-frost placeholder:text-ig-muted"
         />
@@ -103,6 +101,34 @@ export function CommandPalette() {
             ))}
           </Command.Group>
 
+          {savedExperiments.length > 0 ? (
+            <>
+              <Command.Separator />
+              <Command.Group heading="Saved experiments">
+                {savedExperiments.map((experiment) => (
+                  <Command.Item
+                    key={experiment.id}
+                    value={`saved ${experiment.acronym} ${experiment.name}`}
+                    onSelect={() => {
+                      select(experiment.id);
+                      navigate(`/explore?selected=${experiment.id}`);
+                      close();
+                    }}
+                  >
+                    <Star
+                      size={15}
+                      aria-hidden="true"
+                      className="text-ig-amber"
+                      fill="currentColor"
+                    />
+                    <span>{experiment.acronym}</span>
+                    <span className="truncate text-xs text-ig-muted">{experiment.name}</span>
+                  </Command.Item>
+                ))}
+              </Command.Group>
+            </>
+          ) : null}
+
           <Command.Separator />
 
           <Command.Group heading="Actions">
@@ -115,6 +141,17 @@ export function CommandPalette() {
             >
               <Sparkles size={15} aria-hidden="true" />
               <span>Ask Ignis</span>
+            </Command.Item>
+            <Command.Item
+              value="show start here guide onboarding help"
+              onSelect={() => {
+                close();
+                navigate("/");
+                showOnboarding();
+              }}
+            >
+              <HelpCircle size={15} aria-hidden="true" />
+              <span>Show the start-here guide</span>
             </Command.Item>
           </Command.Group>
         </Command.List>

@@ -115,6 +115,70 @@ test.describe("experience shell", () => {
     await expect(page).toHaveURL(/\/glossary(\?|$)/);
     await expect(page.getByRole("heading", { name: "Glossary", exact: true })).toBeVisible();
   });
+
+  test("palette locks the page and returns focus to its trigger", async ({ page }) => {
+    await page.goto("/");
+
+    const trigger = page.locator("aside").getByRole("button", { name: "Command palette" });
+    await trigger.focus();
+    await page.keyboard.press("Meta+k");
+
+    await expect(page.getByRole("dialog", { name: "Command palette" })).toBeVisible();
+    await expect(page.locator("body")).toHaveCSS("overflow", "hidden");
+
+    await page.keyboard.press("Escape");
+
+    await expect(page.getByRole("dialog", { name: "Command palette" })).toBeHidden();
+    await expect(page.locator("body")).toHaveCSS("overflow", "visible");
+    await expect(trigger).toBeFocused();
+  });
+
+  test("start-here guide dismisses and the palette brings it back", async ({ page }) => {
+    await page.goto("/");
+
+    const guide = page.getByRole("region", { name: "Start here" });
+    await expect(guide).toBeVisible();
+
+    await guide.getByRole("button", { name: "Dismiss guide" }).click();
+    await expect(guide).toBeHidden();
+
+    await page.reload();
+    await expect(page.getByRole("region", { name: "Start here" })).toBeHidden();
+
+    await page.locator("aside").getByRole("button", { name: "Command palette" }).click();
+    await page.getByPlaceholder(/Jump to a view/).fill("start here");
+    await page.keyboard.press("Enter");
+
+    await expect(page.getByRole("region", { name: "Start here" })).toBeVisible();
+  });
+
+  test("saved experiments can be added, found in the palette and removed", async ({ page }) => {
+    await page.goto("/");
+
+    const saved = page.getByRole("region", { name: "Saved experiments" });
+    await expect(saved.getByText("Nothing saved yet.")).toBeVisible();
+
+    const picker = saved.getByLabel("Add an experiment");
+    const first = await picker.locator("option").first().innerText();
+    const acronym = first.split("·")[0]?.trim() ?? first;
+
+    await picker.selectOption({ index: 0 });
+    await saved.getByRole("button", { name: "Save experiment" }).click();
+
+    await expect(saved.getByText("1 saved")).toBeVisible();
+    await expect(saved.getByRole("button", { name: new RegExp(`Remove ${acronym}`) })).toBeVisible();
+
+    await page.keyboard.press("Meta+k");
+    const palette = page.getByRole("dialog", { name: "Command palette" });
+    await palette.getByPlaceholder(/Jump to a view/).fill("saved");
+    await expect(palette.getByText("Saved experiments")).toBeVisible();
+    await page.keyboard.press("Escape");
+
+    await saved
+      .getByRole("button", { name: new RegExp(`Remove ${acronym}`) })
+      .click();
+    await expect(saved.getByText("Nothing saved yet.")).toBeVisible();
+  });
 });
 
 test.describe("mobile shell", () => {

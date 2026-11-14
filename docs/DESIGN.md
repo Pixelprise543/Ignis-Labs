@@ -58,8 +58,14 @@ gold/olive/amber with circle/diamond/square markers and direct labels.
 - The orb has a pause control and an `aria-label` describing the shape.
 - Charts and score bars expose a text summary or an accessible label; colour is
   never the only signal.
-- Drawer and command palette are dialogs: focus moves in, Escape closes, body
-  scroll locks, focus returns to the trigger.
+- Drawer, command palette and the mobile More sheet are dialogs: focus moves
+  in, Tab is trapped, Escape closes, body scroll locks, and focus returns to the
+  trigger.
+- The start-here guide is a dismissible panel, never a blocking modal, and the
+  palette can reopen it.
+- Saved experiments use an `aria-pressed` star toggle, so the state is
+  announced and the fill is not the only signal.
+- Each route sets a descriptive `document.title` (`Rankings · Ignis`).
 - Verified contrast and no horizontal overflow at 375px and 1440px with a
   Playwright sweep over Home, Insights, Simulator, Playbook and Brief.
 
