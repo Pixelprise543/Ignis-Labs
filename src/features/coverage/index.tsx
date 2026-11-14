@@ -3,15 +3,12 @@ import { Link } from 'react-router-dom'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import type { CoverageCell } from '@/contracts/types'
+import { askSI, getCoverage, getGaps, SCENARIOS, useIgnis } from '@/app/data'
 import {
-  askSI,
   COVERAGE_GRAVITY_BANDS,
   COVERAGE_O2_BANDS,
-  getCoverage,
-  getGaps,
-  SCENARIOS,
-  useIgnis,
-} from '../explore/_stubs'
+  O2_NOT_REPORTED_BAND,
+} from '@/lib/coverage'
 import { Note, PageHeading, SkeletonBlock, UiButton } from '../explore/_ui'
 
 type InterpretState =
@@ -59,7 +56,7 @@ export function CoveragePage() {
     [],
   )
   const o2Bands = useMemo(
-    () => [...COVERAGE_O2_BANDS.map((band) => band.label), 'Not reported'],
+    () => [...COVERAGE_O2_BANDS.map((band) => band.label), O2_NOT_REPORTED_BAND],
     [],
   )
 

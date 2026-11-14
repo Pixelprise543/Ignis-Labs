@@ -1,7 +1,7 @@
 import { useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import type { ScoreWeights } from '@/contracts/types'
-import { getExperiments, rankExperiments, useIgnis } from '../explore/_stubs'
+import { getExperiments, rankExperiments, useIgnis } from '@/app/data'
 import { EmptyPanel, Note, PageHeading, RegimeBadge, ScoreBar, UiButton } from '../explore/_ui'
 
 const FACTORS: Array<{ key: keyof ScoreWeights; label: string; help: string }> = [

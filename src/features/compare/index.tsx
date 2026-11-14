@@ -4,7 +4,7 @@ import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import type { Experiment, SIResponse } from '@/contracts/types'
 import { ConditionsRadar, FlameSpeedChart, OxygenLimitChart } from '@/components/charts'
-import { askSI, getExperiment, useIgnis } from '../explore/_stubs'
+import { askSI, getExperiment, useIgnis } from '@/app/data'
 import {
   ConfidenceBadge,
   EmptyPanel,

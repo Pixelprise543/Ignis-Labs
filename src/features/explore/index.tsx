@@ -1,12 +1,8 @@
 import { useEffect, useMemo, useRef } from 'react'
 import { Link } from 'react-router-dom'
 import type { Facility, FuelType, GravityRegime } from '@/contracts/types'
-import {
-  getExperiment,
-  getExperiments,
-  searchExperiments,
-  useIgnis,
-} from './_stubs'
+import { getExperiment, getExperiments, useIgnis } from '@/app/data'
+import { searchExperiments } from '@/lib/search'
 import {
   ConfidenceBadge,
   EmptyPanel,

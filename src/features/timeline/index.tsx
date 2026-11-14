@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import type { GravityRegime } from '@/contracts/types'
-import { getExperiments, getTimeline, useIgnis } from '../explore/_stubs'
+import { getExperiments, getTimeline, useIgnis } from '@/app/data'
 import { EmptyPanel, PageHeading, UiButton } from '../explore/_ui'
 
 function regimeForGravity(gravityG: number): GravityRegime {

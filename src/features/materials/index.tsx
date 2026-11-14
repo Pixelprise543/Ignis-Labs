@@ -1,7 +1,8 @@
 import { useId, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import type { MaterialRisk, Scenario, ScenarioId, Severity } from '@/contracts/types'
-import { getMaterialMatrix, getMaterials, SCENARIOS, useIgnis } from '../explore/_stubs'
+import { getMaterials, SCENARIOS, useIgnis } from '@/app/data'
+import { getMaterialRiskList } from '@/lib/materials'
 import { Note, PageHeading, UiButton } from '../explore/_ui'
 
 const RISK_STYLES: Record<Severity, { label: string; color: string; range: string }> = {
@@ -105,7 +106,7 @@ function NoDataCell({ label }: { label: string }) {
 
 export function MaterialsPage() {
   const materials = useMemo(() => getMaterials(), [])
-  const matrix = useMemo(() => getMaterialMatrix(), [])
+  const matrix = useMemo(() => getMaterialRiskList(), [])
   const scenario = useIgnis((state) => state.scenario)
   const setScenario = useIgnis((state) => state.setScenario)
   const select = useIgnis((state) => state.select)
