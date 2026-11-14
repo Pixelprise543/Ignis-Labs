@@ -185,7 +185,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           <main id="main" tabIndex={-1} className="mx-auto w-full max-w-[1200px] px-4 pb-24 pt-6 lg:px-6 lg:pt-8">
             {children}
 
-            <footer className="mt-16 border-t border-ig-line pt-6 text-[11px] leading-5 text-ig-muted uppercase tracking-wider">
+            <footer className="mt-16 border-t border-ig-line pt-6 text-[11px] leading-5 text-ig-muted">
               <p>
                 Ignis is decision support. Scores, material risks and simulator output are estimates
                 from cited experiments, not physics simulations. Check every badge and source before
