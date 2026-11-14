@@ -5,6 +5,16 @@ Read `AGENTS.md` at the repo root for the frozen contract and ownership rules.
 
 ## Decisions
 
+- **Saffire-II stays out of the dataset.** The only retrieved page that documents it
+  (the Saffire-III release) gives the flight month, the vehicle and "nine samples of
+  different materials"; it publishes no atmosphere, pressure, flow or sample list. A
+  record built on that would be mostly null and could only be `curated`, while the
+  twenty shipped records each have a number read from a cited page. Twenty meets the
+  P0 "20+" floor; the Saffire-II facts remain visible as `saffire-iii-f3`.
+- **SI gap lines name the missing cell, not a count.** An empty coverage cell was
+  rendered as "0 of 0 measured"; the cell is empty by construction, so the answer now
+  says no experiment covers it. Finding ids resolve through `getFinding`, so a finding
+  moved to another experiment cannot silently cite the wrong parent.
 - **`validate:data` runs the checker through Vite.** The data modules import
   `@/contracts/types` and one another without extensions, so plain Node fails before
   validating a record. `scripts/validate-data.ts` boots Vite in middleware mode and

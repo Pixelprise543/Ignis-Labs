@@ -3,6 +3,7 @@ import { askSI, normalizeRequest } from '@/lib/si'
 import { offlineAnswer } from '@/lib/siFallback'
 import { getScenario } from '@/lib/scenarios'
 import { getExperiment, getFinding } from '@/lib/data'
+import { getPlaybook } from '@/lib/playbook'
 import type { SIRequest } from '@/contracts/types'
 
 const request = (overrides: Partial<SIRequest> = {}): SIRequest => ({
@@ -158,6 +159,13 @@ describe('offlineAnswer', () => {
     expect(response.answerMarkdown).toMatch(/gap/i)
   })
 
+  it('describes an empty coverage cell without a nonsense count', () => {
+    const response = offlineAnswer(request({ mode: 'interpret', scenario: getScenario('mars') }))
+    expect(response.answerMarkdown).toContain('partial-gravity')
+    expect(response.answerMarkdown).not.toContain('of 0 measured')
+    expect(response.answerMarkdown).toMatch(/no experiment in the dataset covers this cell/)
+  })
+
   it('answers an oxygen question with a cited estimate', () => {
     const response = offlineAnswer(
       request({ mode: 'ask', question: 'Is a 34% oxygen cabin riskier on the Moon?' }),
@@ -205,6 +213,19 @@ describe('offlineAnswer', () => {
     for (const phase of ['Detect', 'Isolate', 'Suppress', 'Ventilate', 'Recover']) {
       expect(response.answerMarkdown).toContain(phase)
     }
+  })
+
+  it('cites the parent experiment of every playbook evidence id', () => {
+    const response = offlineAnswer(request({ mode: 'playbook', scenario: getScenario('iss') }))
+    const expected = [
+      ...new Set(
+        getPlaybook('iss')
+          .steps.flatMap((step) => step.evidenceIds)
+          .map((id) => getFinding(id)?.experiment.id)
+          .filter((id): id is string => id !== undefined),
+      ),
+    ]
+    expect([...response.citations].sort()).toEqual(expected.sort())
   })
 })
 

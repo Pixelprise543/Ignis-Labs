@@ -1,5 +1,5 @@
 import type { Experiment, SIRequest, SIResponse } from '@/contracts/types'
-import { getExperiment, getExperiments } from '@/lib/data'
+import { getExperiment, getExperiments, getFinding } from '@/lib/data'
 import { getGaps } from '@/lib/coverage'
 import { getInsights } from '@/lib/insights'
 import { getPlaybook } from '@/lib/playbook'
@@ -59,8 +59,8 @@ function resolveExperiments(ids: string[]): Experiment[] {
 function findingsToExperimentIds(findingIds: string[]): string[] {
   const ids: string[] = []
   for (const findingId of findingIds) {
-    const parent = getExperiment(findingId.split(/-f\d+$/)[0] ?? '')
-    if (parent) ids.push(parent.id)
+    const resolved = getFinding(findingId)
+    if (resolved) ids.push(resolved.experiment.id)
   }
   return unique(ids)
 }
@@ -221,7 +221,7 @@ function interpret(request: SIRequest): SIResponse {
       ? ['No empty gravity or oxygen cells remain for this scenario.']
       : gaps.map(
           (cell) =>
-            `- **${cell.gravityBand} / ${cell.o2Band}**: no experiments (${cell.experimentIds.length} of 0 measured)`,
+            `- **${cell.gravityBand} / ${cell.o2Band}**: no experiment in the dataset covers this cell`,
         )
 
   const markdown = [
@@ -248,9 +248,9 @@ function interpret(request: SIRequest): SIResponse {
 
   const cited = [
     ...ranked.map((entry) => entry.experiment),
-    ...unique(insights.flatMap((insight) => insight.evidenceIds))
-      .map((id) => getExperiment(id.split(/-f\d+$/)[0] ?? ''))
-      .filter((experiment): experiment is Experiment => experiment !== undefined),
+    ...resolveExperiments(
+      findingsToExperimentIds(unique(insights.flatMap((insight) => insight.evidenceIds))),
+    ),
   ]
 
   return respond(markdown, cited)
