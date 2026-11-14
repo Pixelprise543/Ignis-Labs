@@ -5,8 +5,8 @@
 - Ownership: `src/components/charts/**`, `src/features/{explore,compare,rankings,materials,coverage,timeline}/**`.
 - P0 pages done: Explore, Rankings, Compare.
 - P1 pages done: Materials, Coverage, Timeline.
-- `src/lib` and `src/store` do not exist yet, so pages import `src/features/explore/_stubs.ts`
-  (typed stand-ins for the FROZEN MODULE API).
+- `src/lib` and `src/store` now exist; as of the integration merge every page imports
+  `@/app/data`, `@/lib/search`, `@/lib/coverage` and `@/lib/materials`, and the stub is gone.
 
 ## Decisions
 - Charts are presentational and take `Experiment[]`; they import types only from `@/contracts/types`.
@@ -30,8 +30,8 @@
   Re-create with `--config` if needed; deleted afterwards so `tests/**` stays PC1's.
 
 ## Next
-1. Swap `_stubs.ts` -> `@/lib/*` + `@/store/useIgnis` once PC1 lands them (graph-verify each
-   symbol first; delete the stub in the same commit).
+1. ~~Swap `_stubs.ts` -> `@/lib/*` + `@/store/useIgnis`~~ done in the integration merge
+   (`integrate: point PC2 views at the real data layer`); the stub file is deleted.
 2. Replace `_ui.tsx` primitives with `@/design-system` (PC3) page by page.
 3. Confirm PC3's router exposes these exports: ExplorePage, ComparePage, RankingsPage,
    MaterialsPage, CoveragePage, TimelinePage (all named exports from their feature index).
