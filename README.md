@@ -75,7 +75,7 @@ react-markdown · vitest · Playwright.
 
 ```
 src/
-  app/            shell, router, scenario bar, offline SI fallback (PC3)
+  app/            shell, router, scenario bar (PC3)
   contracts/      frozen TypeScript contract (PC1)
   design-system/  flat primitives + Ember Professional theme (PC3)
   features/       one folder per route (PC2 / PC3)

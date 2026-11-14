@@ -35,7 +35,7 @@ export { getPlaybook } from "@/lib/playbook";
 export { buildBriefMarkdown } from "@/lib/brief";
 export { useIgnis } from "@/store/useIgnis";
 export { initUrlSync } from "@/store/urlSync";
-export { askSI } from "./siFallback";
+export { askSI } from "@/lib/si";
 
 export interface EvidenceRef {
   experiment: Experiment;

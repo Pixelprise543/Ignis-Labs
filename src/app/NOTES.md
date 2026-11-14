@@ -26,13 +26,19 @@ Owner: PC3 (Ignis Labs). Branch: `pc3-experience`. Repo:
   finding (`saffire-i-f1`). `resolveEvidence` in `data.ts` resolves both;
   `CitationChip` selects the owning experiment and marks unresolved ids in
   alarm red instead of hiding them.
-- PC1 has no `src/lib/si.ts` yet, so `src/app/siFallback.ts` provides the
-  deterministic offline `askSI`: keyword intent routing, insight + experiment
-  citations, a citation guard (`invalidCitationsRemoved`), and a try/catch that
-  never throws. Swap `data.ts` to `@/lib/si` in one line when it lands, then
-  delete `siFallback.ts`.
-- The offline answer is labeled in the UI ("Offline fallback"), so the demo
-  works with no network and no API key.
+- `data.ts` re-exports PC1's real `askSI` from `@/lib/si`. The app-level
+  `siFallback.ts` is deleted, so there is one SI implementation, not two.
+- The assistant is honest even when PC1's client validation drops the server's
+  `fallback` flag: the drawer also treats the `ignis-offline` model as a
+  fallback, and scales `groundingScore` (a 0..1 share) to a percentage.
+  Verified live: "Offline fallback · ignis-offline · Grounding 100%", no
+  unresolved chips, no page errors.
+- **Contract-vs-graph/PC1 mismatch to report:** `src/lib/si.ts`
+  `validateServerAnswer` always returns `fallback: false`, discarding the
+  server's `fallback: true`, so a deterministic `/api/si` answer would be
+  labelled a model answer. `askSI` therefore never reports `fallback: true` in
+  the browser when the dev API is up. PC1 should copy `raw.fallback`. PC3's
+  drawer works around it for display only.
 
 ## Decisions
 

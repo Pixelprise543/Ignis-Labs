@@ -32,6 +32,25 @@ const SUGGESTIONS = [
 ];
 
 /**
+ * A deterministic answer can reach us with `fallback: false` when the client
+ * normaliser drops the server's flag. Trusting the model name too keeps an
+ * offline answer from being shown as a "Model answer", which would overstate
+ * what produced it.
+ */
+function isOfflineAnswer(response: SIResponse): boolean {
+  return response.fallback || response.model.startsWith("ignis-offline");
+}
+
+/**
+ * `groundingScore` is a 0..1 share of citation attempts that survived the
+ * audit (see src/lib/citations.ts), so it needs scaling before it is shown as
+ * a percentage. Values already above 1 are treated as percentages.
+ */
+function groundingPercent(score: number): number {
+  return Math.round((score <= 1 ? score : score / 100) * 100);
+}
+
+/**
  * Grounded assistant. It never invents an answer outside the dataset: the
  * fallback model is deterministic, and every citation is checked by
  * `askSI` before it reaches this component.
@@ -182,12 +201,12 @@ export function AskIgnisDrawer() {
             ) : (
               <div key={message.id} className="rounded-panel border border-ig-line bg-ig-hull p-3">
                 <div className="mb-2 flex flex-wrap items-center gap-2">
-                  <Badge tone={message.response.fallback ? "amber" : "olive"}>
-                    {message.response.fallback ? "Offline fallback" : "Model answer"}
+                  <Badge tone={isOfflineAnswer(message.response) ? "amber" : "olive"}>
+                    {isOfflineAnswer(message.response) ? "Offline fallback" : "Model answer"}
                   </Badge>
                   <span className="ig-num text-[11px] text-ig-muted">{message.response.model}</span>
                   <span className="text-[11px] text-ig-muted">
-                    Grounding <span className="ig-num">{message.response.groundingScore}%</span>
+                    Grounding <span className="ig-num">{groundingPercent(message.response.groundingScore)}%</span>
                   </span>
                 </div>
                 <div className="ig-markdown">
