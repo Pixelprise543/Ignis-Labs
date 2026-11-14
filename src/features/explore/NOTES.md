@@ -3,8 +3,10 @@
 ## State
 - Branch: `pc2-explore`, cut from `origin/main` at tag `scaffold-v1` (`8f2b119`); chart kit `8a632a4`.
 - Ownership: `src/components/charts/**`, `src/features/{explore,compare,rankings,materials,coverage,timeline}/**`.
-- P0 pages done: Explore, Rankings, Compare. `src/lib` and `src/store` do not exist yet,
-  so pages import `src/features/explore/_stubs.ts` (typed stand-ins for the FROZEN MODULE API).
+- P0 pages done: Explore, Rankings, Compare.
+- P1 pages done: Materials, Coverage, Timeline.
+- `src/lib` and `src/store` do not exist yet, so pages import `src/features/explore/_stubs.ts`
+  (typed stand-ins for the FROZEN MODULE API).
 
 ## Decisions
 - Charts are presentational and take `Experiment[]`; they import types only from `@/contracts/types`.
@@ -20,17 +22,19 @@
 
 ## Local verification (2026-11-14)
 - `npm run build` (tsc -b + vite build): zero TS errors.
-- Throwaway jsdom render test (config kept out of the repo): 4/4 passed —
+- Throwaway jsdom render test (config kept out of the repo): 7/7 passed —
   Explore renders 6 records + detail aside, Rankings renders 4 sliders + 6 ranked rows,
-  Compare shows the "add one more" state at 1 record and tables/charts/SI fallback at 3.
+  Compare shows the "add one more" state at 1 record and tables/charts/SI fallback at 3,
+  Materials renders a 8x4 matrix and opens cell detail, Coverage renders the grid and the
+  gap interpretation, Timeline groups entries and the milestone filter drops 6 -> 2.
   Re-create with `--config` if needed; deleted afterwards so `tests/**` stays PC1's.
 
 ## Next
-1. `/materials`: discrete heatmap with SVG hatch for no-data cells.
-2. `/coverage`: gravity × O2 grid + gaps.
-3. `/timeline`.
-4. Swap `_stubs.ts` -> `@/lib/*` + `@/store/useIgnis` once PC1 lands them (graph-verify each
+1. Swap `_stubs.ts` -> `@/lib/*` + `@/store/useIgnis` once PC1 lands them (graph-verify each
    symbol first; delete the stub in the same commit).
+2. Replace `_ui.tsx` primitives with `@/design-system` (PC3) page by page.
+3. Confirm PC3's router exposes these exports: ExplorePage, ComparePage, RankingsPage,
+   MaterialsPage, CoveragePage, TimelinePage (all named exports from their feature index).
 
 ## Stub swap checklist
 - `getExperiments`, `getExperiment`, `getMaterials`, `getTimeline`, `getCoverage`, `getMaterialRisks`,

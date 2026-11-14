@@ -1,15 +1,20 @@
 import { create } from 'zustand'
 import type {
+  CoverageCell,
   Experiment,
   Facility,
   FuelType,
   GravityRegime,
+  Material,
+  MaterialRisk,
   RankedExperiment,
   Scenario,
   ScenarioId,
   ScoreWeights,
+  Severity,
   SIRequest,
   SIResponse,
+  TimelineEvent,
 } from '@/contracts/types'
 
 /**
@@ -402,11 +407,20 @@ export async function askSI(request: SIRequest): Promise<SIResponse> {
       ? `- **${experiment.acronym}** (${id}): ${experiment.safetyTakeaway}`
       : `- **${id}**: no matching record.`
   })
+  const headings: Record<SIRequest['mode'], string> = {
+    summarize: `Summary for ${request.scenario.label}`,
+    compare: `Comparison for ${request.scenario.label}`,
+    interpret: "What's missing",
+    ask: `Answer for ${request.scenario.label}`,
+    brief: `Brief for ${request.scenario.label}`,
+    playbook: `Playbook for ${request.scenario.label}`,
+  }
   const answerMarkdown = [
-    `### Comparison for ${request.scenario.label}`,
+    `### ${headings[request.mode]}`,
     '',
-    'This is the offline stub answer used until the grounded SI module lands. It cites only the experiments in this comparison.',
+    'This is the offline stub answer used until the grounded SI module lands. It cites only experiments in the current selection.',
     '',
+    ...(request.context ? [request.context, ''] : []),
     ...(lines.length > 0 ? lines : ['- No experiments were selected.']),
   ].join('\n')
 
@@ -418,4 +432,217 @@ export async function askSI(request: SIRequest): Promise<SIResponse> {
     groundingScore: citations.length > 0 ? 0.8 : 0,
     invalidCitationsRemoved: 0,
   }
+}
+
+/**
+ * Material stubs. Names are generic engineering materials, not NASA study
+ * titles; every risk number is a transparent placeholder formula so the UI can
+ * be built without dressing up invented science.
+ */
+const STUB_MATERIALS: Material[] = [
+  {
+    id: 'cotton-fabric',
+    name: 'Cotton fabric',
+    category: 'textile',
+    usedFor: 'Crew clothing, towels and stowage liners',
+    evidenceIds: ['stub-solid-a', 'stub-liquid-f'],
+    baseFlammability: 70,
+    notes: 'Placeholder base index; replace with sourced flammability data.',
+  },
+  {
+    id: 'polyurethane-foam',
+    name: 'Polyurethane foam',
+    category: 'foam',
+    usedFor: 'Seat cushions and acoustic padding',
+    evidenceIds: ['stub-solid-a', 'stub-polymer-e'],
+    baseFlammability: 85,
+    notes: 'Placeholder base index; foams are included to exercise the high-risk band.',
+  },
+  {
+    id: 'pmma',
+    name: 'Acrylic (PMMA)',
+    category: 'polymer',
+    usedFor: 'Viewport glazing and light covers',
+    evidenceIds: ['stub-polymer-e'],
+    baseFlammability: 55,
+    notes: 'Placeholder base index.',
+  },
+  {
+    id: 'aluminium-composite',
+    name: 'Aluminium composite',
+    category: 'composite',
+    usedFor: 'Structural panels and rack faces',
+    evidenceIds: ['stub-solid-a'],
+    baseFlammability: 25,
+    notes: 'Placeholder base index for a nominally low-risk structural material.',
+  },
+  {
+    id: 'paper',
+    name: 'Paper',
+    category: 'paper',
+    usedFor: 'Checklists, labels and packing',
+    evidenceIds: ['stub-dust-d'],
+    baseFlammability: 80,
+    notes: 'Placeholder base index.',
+  },
+  {
+    id: 'ethanol',
+    name: 'Ethanol',
+    category: 'liquid-fuel',
+    usedFor: 'Experiment fuel and cleaning solvent',
+    evidenceIds: ['stub-liquid-f', 'stub-droplet-c'],
+    baseFlammability: 60,
+    notes: 'Placeholder base index for a liquid fuel.',
+  },
+  {
+    id: 'methane',
+    name: 'Methane',
+    category: 'gas',
+    usedFor: 'Experiment fuel supply',
+    evidenceIds: ['stub-gas-b'],
+    baseFlammability: 65,
+    notes: 'Placeholder base index for a gaseous fuel.',
+  },
+  {
+    id: 'nomex-blend',
+    name: 'Aramid blend',
+    category: 'textile',
+    usedFor: 'Fire-resistant crew clothing',
+    evidenceIds: ['stub-solid-a'],
+    baseFlammability: 30,
+    notes: 'Placeholder base index for a flame-resistant textile.',
+  },
+]
+
+export function getMaterials(): Material[] {
+  return STUB_MATERIALS
+}
+
+function riskLevelFor(risk: number): Severity {
+  if (risk < 35) return 'info'
+  if (risk < 55) return 'caution'
+  if (risk < 75) return 'high'
+  return 'critical'
+}
+
+/**
+ * Transparent placeholder model: a base flammability index scaled by the
+ * scenario oxygen fraction, with small gravity and pressure terms. The real
+ * PC1 module replaces this; the page labels the result as decision support.
+ */
+function stubRisk(material: Material, scenario: Scenario): MaterialRisk {
+  const o2 = scenario.o2Percent
+  const pressurePenalty = ((101.3 - scenario.pressureKPa) / 101.3) * 6
+  const raw = material.baseFlammability * (0.6 + (o2 / 100) * 0.9) + scenario.gravityG * 8 - pressurePenalty
+  const risk = Math.round(clamp(raw))
+  const level = riskLevelFor(risk)
+  const levelWord = level === 'info' ? 'low' : level === 'caution' ? 'moderate' : level === 'high' ? 'high' : 'critical'
+  return {
+    materialId: material.id,
+    scenarioId: scenario.id,
+    risk,
+    level,
+    rationale: `${material.name} at ${o2}% oxygen and ${scenario.gravityG}g rates ${levelWord}. Base index ${material.baseFlammability} adjusted for the scenario atmosphere.`,
+    evidenceIds: material.evidenceIds,
+  }
+}
+
+export function getMaterialRisks(scenario: Scenario): MaterialRisk[] {
+  return STUB_MATERIALS.map((material) => stubRisk(material, scenario))
+}
+
+/** Flat list of every material × fixed scenario pair, for the matrix. */
+export function getMaterialMatrix(): MaterialRisk[] {
+  return SCENARIOS.filter((scenario) => scenario.id !== 'custom').flatMap((scenario) =>
+    STUB_MATERIALS.map((material) => stubRisk(material, scenario)),
+  )
+}
+
+/** Coverage bands are ordered; the page keeps first-seen order for its axes. */
+export const COVERAGE_GRAVITY_BANDS = [
+  { id: 'micro', label: '0g', matches: (g: number) => g <= 0.05 },
+  { id: 'low-partial', label: '0–0.5g', matches: (g: number) => g > 0.05 && g < 0.5 },
+  { id: 'high-partial', label: '0.5–1g', matches: (g: number) => g >= 0.5 && g < 1 },
+  { id: 'normal', label: '1g and above', matches: (g: number) => g >= 1 },
+] as const
+
+export const COVERAGE_O2_BANDS = [
+  { id: 'below-18', label: 'Below 18%', matches: (o: number) => o < 18 },
+  { id: '18-23', label: '18–23%', matches: (o: number) => o >= 18 && o < 23 },
+  { id: '23-30', label: '23–30%', matches: (o: number) => o >= 23 && o < 30 },
+  { id: '30-50', label: '30–50%', matches: (o: number) => o >= 30 && o < 50 },
+  { id: '50-plus', label: '50% and above', matches: (o: number) => o >= 50 },
+] as const
+
+const NOT_REPORTED_BAND = 'Not reported'
+
+/**
+ * Derived from the experiment records, so the grid cannot disagree with the
+ * library. A cell with no experiments is a coverage gap, which is the point of
+ * the page.
+ */
+export function getCoverage(): CoverageCell[] {
+  const cells: CoverageCell[] = []
+  COVERAGE_GRAVITY_BANDS.forEach((gravityBand) => {
+    const o2Bands = [
+      ...COVERAGE_O2_BANDS.map((band) => ({ id: band.id, label: band.label, matches: band.matches })),
+      { id: 'not-reported', label: NOT_REPORTED_BAND, matches: (o: number) => Number.isNaN(o) },
+    ]
+    o2Bands.forEach((o2Band) => {
+      const matching = STUB_EXPERIMENTS.filter((experiment) => {
+        const o2 = experiment.conditions.o2Percent
+        const inGravity = gravityBand.matches(experiment.conditions.gravityG)
+        const inOxygen = o2 === null ? o2Band.label === NOT_REPORTED_BAND : o2Band.matches(o2)
+        return inGravity && inOxygen
+      })
+      const relevantScenarios = SCENARIOS.filter((entry) => {
+        const o2 = entry.o2Percent
+        const inGravity = gravityBand.matches(entry.gravityG)
+        const inOxygen = o2 === null ? o2Band.label === NOT_REPORTED_BAND : o2Band.matches(o2)
+        return inGravity && inOxygen
+      }).map((entry) => entry.id)
+      cells.push({
+        gravityBand: gravityBand.label,
+        o2Band: o2Band.label,
+        count: matching.length,
+        experimentIds: matching.map((experiment) => experiment.id),
+        gap: matching.length === 0,
+        relevantScenarios,
+      })
+    })
+  })
+  return cells
+}
+
+/** Empty cells that sit in the same gravity band or oxygen band as the scenario. */
+export function getGaps(scenario: Scenario): CoverageCell[] {
+  const gravityBand = COVERAGE_GRAVITY_BANDS.find((band) => band.matches(scenario.gravityG))
+  const o2Band = COVERAGE_O2_BANDS.find((band) => band.matches(scenario.o2Percent))
+  return getCoverage().filter(
+    (cell) =>
+      cell.gap &&
+      cell.o2Band !== NOT_REPORTED_BAND &&
+      (cell.gravityBand === gravityBand?.label || cell.o2Band === o2Band?.label),
+  )
+}
+
+/** Timeline derived from experiment years; no invented history entries. */
+export function getTimeline(): TimelineEvent[] {
+  const sorted = [...STUB_EXPERIMENTS].sort(
+    (a, b) => (a.years[1] ?? a.years[0]) - (b.years[1] ?? b.years[0]),
+  )
+  const seenDecades = new Set<number>()
+  return sorted.map((experiment) => {
+    const year = experiment.years[1] ?? experiment.years[0]
+    const decade = Math.floor(year / 10) * 10
+    const milestone = !seenDecades.has(decade)
+    seenDecades.add(decade)
+    return {
+      year,
+      title: `${experiment.acronym}: ${experiment.name}`,
+      summary: experiment.summary,
+      experimentIds: [experiment.id],
+      milestone,
+    }
+  })
 }
