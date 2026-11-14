@@ -3,7 +3,13 @@ import { Link } from 'react-router-dom'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import type { CoverageCell } from '@/contracts/types'
-import { getCoverage, getGaps } from '@/lib/coverage'
+import {
+  COVERAGE_GRAVITY_BANDS,
+  COVERAGE_O2_BANDS,
+  O2_NOT_REPORTED_BAND,
+  getCoverage,
+  getGaps,
+} from '@/lib/coverage'
 import { SCENARIOS } from '@/lib/scenarios'
 import { askSI } from '@/lib/si'
 import { useIgnis } from '@/store/useIgnis'
@@ -17,9 +23,9 @@ type InterpretState =
   | { status: 'error'; message: string }
 
 /**
- * Band labels come straight from the coverage module, so this page cannot
- * invent a band the data layer does not produce. The map only changes casing
- * and symbols for display.
+ * Band labels come from the coverage module, so this page cannot invent a band
+ * the data layer does not produce. The maps only change casing and symbols for
+ * display.
  */
 const GRAVITY_LABELS: Record<string, string> = {
   microgravity: 'Microgravity',
@@ -65,13 +71,6 @@ function GravityHatch() {
   )
 }
 
-/** Same band rule the coverage module uses, so the highlight matches the row. */
-function gravityBandFor(gravityG: number): string {
-  if (gravityG < 0.01) return 'microgravity'
-  if (gravityG < 0.9) return 'partial-gravity'
-  return 'normal-gravity'
-}
-
 /**
  * Gravity × oxygen evidence grid. Cells are counts of recorded experiments, so
  * this page makes research gaps visible instead of implying "no data = safe".
@@ -83,22 +82,13 @@ export function CoveragePage() {
   const coverage = useMemo(() => getCoverage(), [])
   const gaps = useMemo(() => getGaps(scenario), [scenario])
 
-  // Order follows the cells themselves, so a change in the data layer shows up
-  // here without a second hard-coded list to keep in sync.
-  const gravityBands = useMemo(() => {
-    const seen: string[] = []
-    for (const cell of coverage) {
-      if (!seen.includes(cell.gravityBand)) seen.push(cell.gravityBand)
-    }
-    return seen
-  }, [coverage])
-  const o2Bands = useMemo(() => {
-    const seen: string[] = []
-    for (const cell of coverage) {
-      if (!seen.includes(cell.o2Band)) seen.push(cell.o2Band)
-    }
-    return seen
-  }, [coverage])
+  // Axes come from the module's band metadata, so the grid cannot drift from
+  // getCoverage() and the empty "not specified" oxygen band stays visible.
+  const gravityBands = useMemo(() => COVERAGE_GRAVITY_BANDS.map((band) => band.id), [])
+  const o2Bands = useMemo(
+    () => [...COVERAGE_O2_BANDS.map((band) => band.id), O2_NOT_REPORTED_BAND],
+    [],
+  )
 
   const [selected, setSelected] = useState<{ gravityBand: string; o2Band: string } | null>(null)
   const [interpret, setInterpret] = useState<InterpretState>({ status: 'idle' })
@@ -113,7 +103,8 @@ export function CoveragePage() {
   const gapCount = coverage.filter((cell) => cell.gap).length
   const experimentTotal = coverage.reduce((sum, cell) => sum + cell.count, 0)
 
-  const gravityBandForScenario = gravityBandFor(scenario.gravityG)
+  const gravityBandForScenario =
+    COVERAGE_GRAVITY_BANDS.find((band) => band.matches(scenario.gravityG))?.id ?? 'microgravity'
 
   // Nearby evidence grounds the interpretation without citing empty cells.
   const nearbyEvidence = useMemo(() => {

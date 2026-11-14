@@ -1,11 +1,13 @@
 # PC2 Explore — working notes
 
 ## State
-- Branch: `pc2-explore`, cut from `origin/main` at tag `scaffold-v1` (`8f2b119`); chart kit `8a632a4`.
-- P0 tag `p0-done-pc2` pushed at `46d7b8c`; branch merged `origin/pc3-experience` (carries PC1 `src/lib` + `src/store`).
+- Branch: `pc2-explore`. Cut from `origin/main` at tag `scaffold-v1` (`8f2b119`), chart kit `8a632a4`.
+- P0 tag `p0-done-pc2` pushed at `46d7b8c`. Branch has since merged `origin/pc3-experience`
+  (PC1 `src/lib` + `src/store`) and `origin/main` (integrated app + Pages deploy) — my files won
+  every conflict, teammates' files came in unchanged.
 - Ownership: `src/components/charts/**`, `src/features/{explore,compare,rankings,materials,coverage,timeline}/**`.
-- All six pages now import the real modules. `_stubs.ts` and `_ui.tsx` are deleted.
-  Page-level helpers that the design system does not provide live in `src/features/explore/_shared.tsx`
+- All six pages import the real modules. `_stubs.ts` and `_ui.tsx` are deleted.
+  Page-level helpers the design system does not provide live in `src/features/explore/_shared.tsx`
   (`PageHeading`, `Note`, `ScoreBar`, `RegimeBadge`).
 
 ## Real modules consumed (verified in source, not guessed)
@@ -32,8 +34,9 @@
   "Offline fallback" badge when `askSI` did not call a model.
 - Materials heatmap uses the module's `{scenarios, rows}` shape; cells carry colour + shape + number,
   and "no data" is an SVG diagonal `<pattern>`, never a CSS gradient.
-- Coverage derives axis order from `getCoverage()` cells and formats band ids for display
-  (`microgravity` -> "Microgravity", `<= 21%` -> "≤ 21%", `not specified` -> "Not specified").
+- Coverage axes and the scenario highlight use `COVERAGE_GRAVITY_BANDS` / `COVERAGE_O2_BANDS` /
+  `O2_NOT_REPORTED_BAND` from `@/lib/coverage`, so the grid cannot drift from `getCoverage()`.
+  Labels are formatted for display (`microgravity` -> "Microgravity", `<= 21%` -> "≤ 21%").
 - Timeline uses `regimeFor()` from `@/lib/scenarios`, so its scenario filter matches the rest of the app.
 - Filter/search controls read/write `useIgnis` only, so PC1's URL sync picks them up for free.
 
@@ -41,6 +44,7 @@
 - `npx tsc -b`: zero errors.
 - `npm run build`: passes; route chunks well under 250 kB gzip (largest: compare 124 kB gzip).
 - `npm run validate:data`: 20 experiments, 45 findings, 8 materials, 21 glossary terms, 12 coverage cells.
+- `npm test`: 248/248 across 15 files (PC1's suite, unchanged by my files).
 - Throwaway jsdom smoke test (config kept out of the repo, deleted afterwards): 8/8 passed —
   Explore lists records, Rankings lists ranked rows, Compare shows the "two to four" empty state and
   renders charts + SI comparison for `acme-bre` + `bass`, Materials renders both tables,
