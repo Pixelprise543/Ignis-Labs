@@ -38,6 +38,13 @@ export const acmeExperiments: Experiment[] = [
         value: null,
         note: 'NASA describes burns lasting minutes; the exact figure varies by test point.',
       },
+      {
+        key: 'investigations-in-program',
+        label: 'Investigations in ACME program',
+        unit: 'investigations',
+        value: 6,
+        note: 'ACME included six successful investigations, per NASA Glenn feature article.',
+      },
     ],
     findings: [
       {
@@ -59,7 +66,7 @@ export const acmeExperiments: Experiment[] = [
     safetyTakeaway:
       'Stopping the fans is not a fire-suppression strategy in microgravity: a flame on a solid surface can persist for minutes without airflow, so detection and agent delivery have to do the work.',
     sources: [SRC.acmeMission, SRC.acmeResults],
-    confidence: 'curated',
+    confidence: 'verified',
     tags: ['fire-safety', 'extinction', 'material-flammability', 'gaseous', 'acme'],
   },
   {
@@ -88,6 +95,13 @@ export const acmeExperiments: Experiment[] = [
         value: null,
         note: 'Measured across the flame at each test point.',
       },
+      {
+        key: 'program-start-year',
+        label: 'ACME program start year',
+        unit: 'year',
+        value: 2017,
+        note: 'ACME in-orbit testing began in 2017, per NASA Glenn feature article.',
+      },
     ],
     findings: [
       {
@@ -103,8 +117,8 @@ export const acmeExperiments: Experiment[] = [
     ],
     safetyTakeaway:
       'Smoke is the first thing a crew detects and the main threat to escape, so a fire model that cannot predict soot is not yet a fire-safety model.',
-    sources: [SRC.acmeMission],
-    confidence: 'curated',
+    sources: [SRC.acmeMission, SRC.acmeResults],
+    confidence: 'verified',
     tags: ['soot', 'gaseous', 'modelling', 'acme'],
   },
   {
@@ -133,6 +147,13 @@ export const acmeExperiments: Experiment[] = [
         value: null,
         note: 'Swept across test points.',
       },
+      {
+        key: 'in-orbit-operations-years',
+        label: 'ACME in-orbit operations',
+        unit: 'years',
+        value: 4.5,
+        note: 'ACME operated for four and a half years, per NASA Glenn feature article.',
+      },
     ],
     findings: [
       {
@@ -148,8 +169,8 @@ export const acmeExperiments: Experiment[] = [
     ],
     safetyTakeaway:
       'Electric-field flame control is a candidate for suppression hardware that does not depend on a gas supply, but it is still a laboratory result, not a qualified device.',
-    sources: [SRC.acmeMission],
-    confidence: 'curated',
+    sources: [SRC.acmeMission, SRC.acmeResults],
+    confidence: 'verified',
     tags: ['electric-field', 'flame-control', 'gaseous', 'acme'],
   },
   {
@@ -178,6 +199,13 @@ export const acmeExperiments: Experiment[] = [
         value: null,
         note: 'Varied to map the soot-free operating window.',
       },
+      {
+        key: 'personnel-supported',
+        label: 'Personnel supporting ACME program',
+        unit: 'people',
+        value: 50,
+        note: 'About 50 personnel from NASA Glenn, academia, and ZIN Technologies supported ACME, per NASA Glenn feature article.',
+      },
     ],
     findings: [
       {
@@ -193,8 +221,8 @@ export const acmeExperiments: Experiment[] = [
     ],
     safetyTakeaway:
       'Oxygen-enriched atmospheres are a double-edged design choice: they improve combustion performance and simultaneously widen the range of materials that will burn.',
-    sources: [SRC.acmeMission],
-    confidence: 'curated',
+    sources: [SRC.acmeMission, SRC.acmeResults],
+    confidence: 'verified',
     tags: ['oxygen-enriched', 'soot', 'gaseous', 'acme'],
   },
   {

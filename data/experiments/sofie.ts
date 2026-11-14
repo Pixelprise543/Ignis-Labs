@@ -40,6 +40,13 @@ export const sofieExperiments: Experiment[] = [
         value: null,
         note: 'Depends on the flow condition of each test point; no single value describes the investigation.',
       },
+      {
+        key: 'investigations-in-program',
+        label: 'Investigations in SoFIE program',
+        unit: 'investigations',
+        value: 5,
+        note: 'SoFIE consists of five investigations, per NASA Glenn feature article.',
+      },
     ],
     findings: [
       {
@@ -56,7 +63,7 @@ export const sofieExperiments: Experiment[] = [
     safetyTakeaway:
       'Ventilation is not a passive background condition: in microgravity the flow field around a surface sets how fast a flame spreads, so air handling is part of the fire-safety design.',
     sources: [SRC.sofieMission, SRC.sofieFive],
-    confidence: 'curated',
+    confidence: 'verified',
     tags: ['fire-safety', 'flame-spread', 'ventilation', 'solid-fuel', 'sofie', 'lunar-habitat', 'mars-transit'],
   },
   {
@@ -85,6 +92,13 @@ export const sofieExperiments: Experiment[] = [
         value: null,
         note: 'The apparatus varies gap width across test points.',
       },
+      {
+        key: 'launch-year',
+        label: 'SoFIE launch year',
+        unit: 'year',
+        value: 2022,
+        note: 'SoFIE launched July 5, 2022, per NASA Science mission page.',
+      },
     ],
     findings: [
       {
@@ -101,7 +115,7 @@ export const sofieExperiments: Experiment[] = [
     safetyTakeaway:
       'Gaps behind panels are a credible fire path; a material that passes an open-surface test can still sustain a flame in a narrow channel.',
     sources: [SRC.sofieMission, SRC.sofieFive],
-    confidence: 'curated',
+    confidence: 'verified',
     tags: ['fire-safety', 'narrow-channel', 'concealed-fire', 'solid-fuel', 'sofie', 'lunar-habitat', 'mars-transit'],
   },
   {
@@ -189,6 +203,13 @@ export const sofieExperiments: Experiment[] = [
         value: null,
         note: 'Recorded per material and test point.',
       },
+      {
+        key: 'planned-operations-end-year',
+        label: 'Planned SoFIE operations end',
+        unit: 'year',
+        value: 2025,
+        note: 'NASA plans to operate SoFIE until November 2025, per NASA Glenn feature article.',
+      },
     ],
     findings: [
       {
@@ -204,8 +225,8 @@ export const sofieExperiments: Experiment[] = [
     ],
     safetyTakeaway:
       'A suppression procedure qualified on Earth underestimates what a crew needs in microgravity, because the agent has to be delivered into the flame rather than falling into it.',
-    sources: [SRC.sofieMission, SRC.cir],
-    confidence: 'curated',
+    sources: [SRC.sofieMission, SRC.cir, SRC.sofieFive],
+    confidence: 'verified',
     tags: ['fire-safety', 'ignition', 'suppression', 'solid-fuel', 'sofie', 'lunar-habitat', 'mars-transit'],
   },
   {
@@ -234,6 +255,13 @@ export const sofieExperiments: Experiment[] = [
         value: null,
         note: 'The screening matrix is not published as a single count.',
       },
+      {
+        key: 'crew-members-supported',
+        label: 'Crew members supporting program',
+        unit: 'people',
+        value: 30,
+        note: 'More than 30 crew members from six countries supported ACME operations, per NASA Glenn feature article.',
+      },
     ],
     findings: [
       {
@@ -250,7 +278,7 @@ export const sofieExperiments: Experiment[] = [
     safetyTakeaway:
       'Passing the standard ground flammability test is not evidence that a material is safe in a spacecraft cabin; the screening has to be repeated in the relevant gravity and atmosphere.',
     sources: [SRC.sofieMission, SRC.sofieFive],
-    confidence: 'curated',
+    confidence: 'verified',
     tags: ['fire-safety', 'material-flammability', 'screening', 'sofie', 'lunar-habitat', 'mars-transit'],
   },
 ]
