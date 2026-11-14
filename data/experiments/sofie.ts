@@ -57,7 +57,7 @@ export const sofieExperiments: Experiment[] = [
       'Ventilation is not a passive background condition: in microgravity the flow field around a surface sets how fast a flame spreads, so air handling is part of the fire-safety design.',
     sources: [SRC.sofieMission, SRC.sofieFive],
     confidence: 'curated',
-    tags: ['fire-safety', 'flame-spread', 'ventilation', 'solid-fuel', 'sofie'],
+    tags: ['fire-safety', 'flame-spread', 'ventilation', 'solid-fuel', 'sofie', 'lunar-habitat', 'mars-transit'],
   },
   {
     id: 'sofie-nca',
@@ -102,7 +102,7 @@ export const sofieExperiments: Experiment[] = [
       'Gaps behind panels are a credible fire path; a material that passes an open-surface test can still sustain a flame in a narrow channel.',
     sources: [SRC.sofieMission, SRC.sofieFive],
     confidence: 'curated',
-    tags: ['fire-safety', 'narrow-channel', 'concealed-fire', 'solid-fuel', 'sofie'],
+    tags: ['fire-safety', 'narrow-channel', 'concealed-fire', 'solid-fuel', 'sofie', 'lunar-habitat', 'mars-transit'],
   },
   {
     id: 'sofie-gel',
@@ -154,7 +154,7 @@ export const sofieExperiments: Experiment[] = [
       'Reducing cabin pressure is not a simple fire-safety win: the flame changes colour and size before it dies, so the pressure limit has to be measured for the material and oxygen level actually planned.',
     sources: [SRC.sofieMission, SRC.cir],
     confidence: 'verified',
-    tags: ['fire-safety', 'extinction', 'pressure', 'oxygen-enriched', 'sofie'],
+    tags: ['fire-safety', 'extinction', 'pressure', 'oxygen-enriched', 'sofie', 'lunar-habitat', 'mars-transit'],
   },
   {
     id: 'sofie-mist',
@@ -206,7 +206,7 @@ export const sofieExperiments: Experiment[] = [
       'A suppression procedure qualified on Earth underestimates what a crew needs in microgravity, because the agent has to be delivered into the flame rather than falling into it.',
     sources: [SRC.sofieMission, SRC.cir],
     confidence: 'curated',
-    tags: ['fire-safety', 'ignition', 'suppression', 'solid-fuel', 'sofie'],
+    tags: ['fire-safety', 'ignition', 'suppression', 'solid-fuel', 'sofie', 'lunar-habitat', 'mars-transit'],
   },
   {
     id: 'sofie-smurf',
@@ -251,6 +251,6 @@ export const sofieExperiments: Experiment[] = [
       'Passing the standard ground flammability test is not evidence that a material is safe in a spacecraft cabin; the screening has to be repeated in the relevant gravity and atmosphere.',
     sources: [SRC.sofieMission, SRC.sofieFive],
     confidence: 'curated',
-    tags: ['fire-safety', 'material-flammability', 'screening', 'sofie'],
+    tags: ['fire-safety', 'material-flammability', 'screening', 'sofie', 'lunar-habitat', 'mars-transit'],
   },
 ]

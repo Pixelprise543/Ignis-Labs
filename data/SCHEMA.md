@@ -77,7 +77,7 @@ Free-form in the contract, controlled in practice. Reuse these before inventing:
 `low-flow`, `narrow-channel`, `concealed-fire`, `re-ignition`, `detection`,
 `habitat-atmosphere`, `modelling`, `screening`, `method`, `scale`, `data-set`,
 `heritage`, `ground-test`, `safety-case`, `trade-off`, `cygnus`, `cir`, `msg`,
-`sofie`, `acme`, `combustion-science`.
+`sofie`, `acme`, `combustion-science`, `lunar-habitat`, `mars-transit`.
 
 ## Coverage fact the UI must not paper over
 
