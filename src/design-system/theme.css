@@ -1,8 +1,8 @@
 /* ==========================================================================
-   Ignis - "Light & Simple" theme
+   Ignis - Professional light theme
+   Design tokens for a clean, trustworthy interface.
    Flat rules: no gradients, glows, blurs, or drop shadows.
-   Depth comes from 1px borders and surface steps.
-   Accessibility: WCAG AA contrast on all surfaces.
+   Depth from 1px borders and surface steps only.
    ========================================================================== */
 
 @import 'tailwindcss';
@@ -13,28 +13,28 @@
 :root {
   color-scheme: light;
 
-  /* Surfaces - clean light theme */
+  /* Surfaces - crisp white with subtle steps */
   --ig-vacuum: #ffffff;
-  --ig-hull: #f4f1ee;
-  --ig-raised: #eae4dc;
-  --ig-line: #d6cfc3;
+  --ig-hull: #f7f5f1;
+  --ig-raised: #efe9e0;
+  --ig-line: #d9cfc1;
 
-  /* Text - dark for readability on light */
-  --ig-frost: #1a1512;
-  --ig-muted: #6b5f54;
+  /* Text - high contrast for readability */
+  --ig-frost: #14100d;
+  --ig-muted: #5a5045;
 
-  /* Accents */
-  --ig-flame-blue: #d97706;
-  --ig-quench: #15803d;
-  --ig-amber: #b45309;
-  --ig-ember: #c2410c;
-  --ig-alarm: #dc2626;
+  /* Accents - professional, restrained */
+  --ig-flame-blue: #b45309;   /* primary accent */
+  --ig-quench: #15803d;       /* success / safe */
+  --ig-amber: #d97706;        /* warning */
+  --ig-ember: #c2410c;        /* danger / critical */
+  --ig-alarm: #dc2626;        /* alarm */
 
   /* Derived */
   --ig-on-accent: #ffffff;
 
   /* Shape */
-  --ig-radius-panel: 8px;
+  --ig-radius-panel: 10px;
   --ig-radius-control: 6px;
 }
 
@@ -52,7 +52,7 @@
   --color-ig-alarm: var(--ig-alarm);
   --color-ig-on-accent: var(--ig-on-accent);
 
-  --radius-panel: 8px;
+  --radius-panel: 10px;
   --radius-control: 6px;
 
   --font-sans: 'Inter Variable', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
@@ -84,17 +84,40 @@
     -webkit-font-smoothing: antialiased;
   }
 
-  h1,
-  h2,
-  h3,
-  h4 {
+  h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    line-height: 1.25;
+    letter-spacing: -0.01em;
+  }
+
+  h2 {
+    font-size: 1.5rem;
     font-weight: 600;
-    line-height: 1.2;
-    text-wrap: balance;
+    line-height: 1.33;
+    letter-spacing: -0.01em;
+  }
+
+  h3 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    line-height: 1.4;
   }
 
   p {
+    font-size: 0.9375rem;
+    line-height: 1.6;
     text-wrap: pretty;
+  }
+
+  .text-sm {
+    font-size: 0.875rem;
+    line-height: 1.5;
+  }
+
+  .text-xs {
+    font-size: 0.8125rem;
+    line-height: 1.5;
   }
 
   code,
