@@ -111,6 +111,15 @@ export function getMaterialRisks(scenario: Scenario): MaterialRisk[] {
 }
 
 /**
+ * Flat material x preset-scenario risk list for grid views that index rows by
+ * material and scenario. Same calculation as getMaterialMatrix, reshaped; the
+ * custom scenario is excluded for the same reason.
+ */
+export function getMaterialRiskList(): MaterialRisk[] {
+  return MATRIX_SCENARIOS.flatMap((scenarioId) => getMaterialRisks(getScenario(scenarioId)))
+}
+
+/**
  * The full material x preset-scenario matrix. The custom scenario is deliberately
  * excluded: it is a live what-if, and its column would change on every keystroke.
  */

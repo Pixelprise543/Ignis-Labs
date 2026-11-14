@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { getMaterialMatrix, getMaterialRisks } from '@/lib/materials'
+import { getMaterialMatrix, getMaterialRiskList, getMaterialRisks } from '@/lib/materials'
 import { getFinding, getMaterials } from '@/lib/data'
 import { getScenario } from '@/lib/scenarios'
 
@@ -125,5 +125,38 @@ describe('getMaterialMatrix', () => {
     const second = getMaterialMatrix()
     expect(second.rows[0].risks[0]).toBeGreaterThanOrEqual(0)
     expect(second).toEqual(getMaterialMatrix())
+  })
+})
+
+describe('getMaterialRiskList', () => {
+  it('has one entry per material and preset scenario', () => {
+    const list = getMaterialRiskList()
+    expect(list).toHaveLength(getMaterials().length * 4)
+    expect(new Set(list.map((risk) => `${risk.scenarioId}:${risk.materialId}`)).size).toBe(list.length)
+  })
+
+  it('covers the four preset scenarios and never the custom one', () => {
+    const scenarioIds = new Set(getMaterialRiskList().map((risk) => risk.scenarioId))
+    expect([...scenarioIds].sort()).toEqual(['eva', 'iss', 'lunar', 'mars'])
+  })
+
+  it('agrees cell by cell with getMaterialRisks', () => {
+    const list = getMaterialRiskList()
+    for (const id of ['iss', 'lunar', 'mars', 'eva'] as const) {
+      const risks = getMaterialRisks(getScenario(id))
+      const fromList = list.filter((risk) => risk.scenarioId === id)
+      expect(fromList).toHaveLength(risks.length)
+      for (const risk of risks) {
+        const match = fromList.find((entry) => entry.materialId === risk.materialId)
+        expect(match?.risk, `${id}:${risk.materialId}`).toBe(risk.risk)
+        expect(match?.level).toBe(risk.level)
+      }
+    }
+  })
+
+  it('returns a fresh array the caller can mutate', () => {
+    const first = getMaterialRiskList()
+    first[0].risk = -1
+    expect(getMaterialRiskList()[0].risk).toBeGreaterThanOrEqual(0)
   })
 })
