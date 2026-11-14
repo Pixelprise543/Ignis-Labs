@@ -58,5 +58,5 @@ Owner: PC3 (Ignis Labs). Branch: `pc3-experience`. Repo:
    to `Pixelprise543/Ignis-Labs`; operator must add the account or supply a
    token).
 2. After push: tag `p0-done-pc3` (needs operator approval, O4).
-3. P2: e2e smoke spec, print stylesheet, README/docs, bookmarks UI.
-4. INTEGRATE: merge PC2's branch, refresh graph, build, report.
+3. INTEGRATE: merge PC2's branch, refresh graph, build, report.
+4. Optional polish left: bookmarks UI (store field exists), onboarding hints.

@@ -41,6 +41,9 @@ export function CommandPalette() {
 
   return (
     <div
+      role="dialog"
+      aria-modal="true"
+      aria-label="Command palette"
       className="fixed inset-0 z-50 flex items-start justify-center px-3 pt-[10vh]"
       onKeyDown={(event) => {
         if (event.key === "Escape") close();

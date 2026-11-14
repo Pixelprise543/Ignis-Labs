@@ -142,3 +142,67 @@
   margin: 0.25rem 0;
   background: var(--ig-line);
 }
+
+/* --- Print ---------------------------------------------------------------- */
+
+/**
+ * Brief and Playbook are print/PDF targets. The screen theme is dark, so print
+ * flips to a light sheet: paper is white, ink is near-black, chrome is gone.
+ * Flat rules still apply, so there are no shadows or gradients here either.
+ */
+@media print {
+  @page {
+    margin: 14mm;
+  }
+
+  html,
+  body {
+    background: #ffffff !important;
+  }
+
+  /* Shell chrome, overlays and action toolbars do not belong on paper. */
+  aside,
+  nav[aria-label="Main"],
+  section[aria-label="Active scenario"],
+  [role="dialog"],
+  header button,
+  .ig-print-hide,
+  footer,
+  .fixed {
+    display: none !important;
+  }
+
+  main {
+    max-width: none !important;
+    padding: 0 !important;
+  }
+
+  * {
+    color: #111111 !important;
+    border-color: #b9b2a7 !important;
+    background-image: none !important;
+    box-shadow: none !important;
+    text-shadow: none !important;
+  }
+
+  .ig-markdown a {
+    text-decoration: underline;
+  }
+
+  .ig-markdown h1,
+  .ig-markdown h2,
+  .ig-markdown h3 {
+    break-after: avoid;
+  }
+
+  .ig-markdown table,
+  .ig-markdown pre,
+  .ig-markdown blockquote {
+    break-inside: avoid;
+  }
+
+  .ig-markdown {
+    max-height: none !important;
+    overflow: visible !important;
+  }
+}
