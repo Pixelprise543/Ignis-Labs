@@ -90,12 +90,14 @@ export function SimulatorPage() {
   const level = LEVEL_DISPLAY[result.level];
   const filled = Math.round(result.risk / 10);
   const material = materials.find((entry) => entry.id === materialId) ?? materials[0];
+  const totalDriverWeight =
+    result.drivers.reduce((total, driver) => total + driver.weight, 0) || 1;
 
   const presets = [
     {
       label: "34% O2 lunar cabin",
       apply: () => {
-        setMaterialId("polyurethane-foam");
+        setMaterialId("cotton");
         setGravity(0.16);
         setO2(34);
         setPressure(101.3);
@@ -105,7 +107,7 @@ export function SimulatorPage() {
     {
       label: "Nominal ISS cabin",
       apply: () => {
-        setMaterialId("cotton-towel");
+        setMaterialId("sibal-fabric");
         setGravity(0);
         setO2(21);
         setPressure(101.3);
@@ -115,7 +117,7 @@ export function SimulatorPage() {
     {
       label: "EVA pure oxygen",
       apply: () => {
-        setMaterialId("nomex-fabric");
+        setMaterialId("nomex");
         setGravity(0);
         setO2(100);
         setPressure(29.6);
@@ -309,20 +311,26 @@ export function SimulatorPage() {
                     </div>
                     <p className="mt-1 text-sm leading-6 text-ig-muted">{driver.explanation}</p>
                     <div className="mt-2 flex items-center gap-2">
-                      <span className="w-14 text-[10px] text-ig-muted">Weight</span>
+                      <span className="w-14 text-[10px] text-ig-muted">Score share</span>
                       <span className="flex h-1.5 flex-1 gap-0.5">
                         {Array.from({ length: 10 }, (_, index) => (
                           <span
                             key={index}
                             className={clsx(
                               "flex-1 rounded-[1px]",
-                              index < Math.round(driver.weight * 10) ? "bg-ig-flame-blue" : "bg-ig-line",
+                              index <
+                                Math.round(
+                                  (driver.weight / totalDriverWeight) * 100,
+                                ) /
+                                  10
+                                ? "bg-ig-flame-blue"
+                                : "bg-ig-line",
                             )}
                           />
                         ))}
                       </span>
                       <span className="ig-num w-8 text-right text-[10px] text-ig-muted">
-                        {Math.round(driver.weight * 100)}%
+                        {Math.round((driver.weight / totalDriverWeight) * 100)}%
                       </span>
                     </div>
                     <div className="mt-2 flex flex-wrap gap-1.5">

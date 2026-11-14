@@ -1,99 +1,59 @@
 /**
- * Single swap point for PC1's data and store modules.
+ * Single import point for PC1's data and store modules.
  *
- * Today these re-export illustrative stubs. When `@/lib/*` and
- * `@/store/useIgnis` land on main, replace the import block below with the
- * frozen module API and delete `_stubs.ts`. No feature file imports stubs
- * directly, so the swap is one file and one commit.
+ * Every PC3 feature imports data, scoring and scenario helpers from here and
+ * nowhere else, so swapping from the early stubs to the real modules was one
+ * file. The re-exports mirror the frozen module API in AGENTS.md.
  *
- * Frozen API being mirrored (see AGENTS.md):
- *   @/lib/data       getExperiments, getExperiment, getMaterials, getTimeline,
- *                    getGlossary, getGlossaryTerm
- *   @/lib/scenarios  SCENARIOS, getScenario, customScenario
- *   @/lib/insights   getInsights
- *   @/lib/si         askSI
- *   @/lib/scenarios  SCENARIOS
- *   @/store/urlSync  initUrlSync
- *   @/store/useIgnis zustand hook
+ * Rules:
+ * - Types always come from `@/contracts/types`, never from this module.
+ * - `askSI` is PC3's deterministic offline fallback until PC1 lands
+ *   `@/lib/si`. It is grounded in the same dataset and never throws.
  */
 
-import type { Experiment, GlossaryTerm, Insight, Material, Playbook, Scenario, ScenarioId, ScoreWeights, SIRequest, SIResponse, SimInput, SimResult } from "@/contracts/types";
-import {
-  stubAskSI,
-  stubBuildBriefMarkdown,
-  stubCustomScenario,
-  stubDefaultWeights,
-  stubExperiments,
-  stubGetGlossaryTerm,
-  stubGetExperiment,
-  stubGetPlaybook,
-  stubGlossary,
-  stubInitUrlSync,
-  stubInsights,
-  stubMaterials,
-  stubScenarios,
-  stubSimulateRisk,
-  useIgnisStub,
-} from "./_stubs";
+import type { Experiment, Finding } from "@/contracts/types";
+import { getExperiment, getFinding } from "@/lib/data";
 
-export const SCENARIOS: Scenario[] = stubScenarios;
-export const defaultWeights: ScoreWeights = stubDefaultWeights;
+export { SCENARIOS, customScenario, getScenario, regimeFor } from "@/lib/scenarios";
+export { defaultWeights, rankExperiments } from "@/lib/scoring";
+export {
+  getExperiments,
+  getExperiment,
+  getFindings,
+  getFinding,
+  getMaterials,
+  getMaterial,
+  getTimeline,
+  getGlossary,
+  getGlossaryTerm,
+} from "@/lib/data";
+export { getInsights } from "@/lib/insights";
+export { getMaterialRisks } from "@/lib/materials";
+export { simulateRisk } from "@/lib/simulator";
+export { getCoverage, getGaps } from "@/lib/coverage";
+export { getPlaybook } from "@/lib/playbook";
+export { buildBriefMarkdown } from "@/lib/brief";
+export { useIgnis } from "@/store/useIgnis";
+export { initUrlSync } from "@/store/urlSync";
+export { askSI } from "./siFallback";
 
-export function getExperiments(): Experiment[] {
-  return stubExperiments;
-}
-
-export function getMaterials(): Material[] {
-  return stubMaterials;
-}
-
-export function simulateRisk(input: SimInput): SimResult {
-  return stubSimulateRisk(input);
-}
-
-export function getPlaybook(id: ScenarioId): Playbook {
-  return stubGetPlaybook(id);
-}
-
-export function buildBriefMarkdown(
-  scenario: Scenario,
-  weights: ScoreWeights,
-  compareIds: string[],
-): string {
-  return stubBuildBriefMarkdown(scenario, weights, compareIds);
-}
-
-export function getExperiment(id: string): Experiment | undefined {
-  return stubGetExperiment(id);
-}
-
-export function getGlossary(): GlossaryTerm[] {
-  return stubGlossary;
-}
-
-export function getGlossaryTerm(id: string): GlossaryTerm | undefined {
-  return stubGetGlossaryTerm(id);
+export interface EvidenceRef {
+  experiment: Experiment;
+  /** Set when the id names a finding rather than an experiment. */
+  finding?: Finding;
 }
 
 /**
- * Insights for the active scenario. Custom scenarios inherit every insight
- * because the crew may land outside the three named regimes.
+ * Evidence ids in the dataset name either an experiment (`saffire-i`) or one
+ * of its findings (`saffire-i-f1`). Insights, materials and playbooks cite
+ * findings, so a chip must resolve both without guessing.
  */
-export function getInsights(scenario: Scenario): Insight[] {
-  const scoped = stubInsights.filter((insight) => insight.scenarios.includes(scenario.id));
-  return scoped.length > 0 ? scoped : stubInsights;
-}
+export function resolveEvidence(id: string): EvidenceRef | undefined {
+  const experiment = getExperiment(id);
+  if (experiment) return { experiment };
 
-export function customScenario(gravityG: number, o2Percent: number, pressureKPa: number): Scenario {
-  return stubCustomScenario(gravityG, o2Percent, pressureKPa);
-}
+  const match = getFinding(id);
+  if (match) return { experiment: match.experiment, finding: match.finding };
 
-export function askSI(req: SIRequest): Promise<SIResponse> {
-  return stubAskSI(req);
+  return undefined;
 }
-
-export function initUrlSync(): () => void {
-  return stubInitUrlSync();
-}
-
-export const useIgnis = useIgnisStub;

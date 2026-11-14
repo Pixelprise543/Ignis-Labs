@@ -129,8 +129,8 @@ export function MethodPage() {
 
       <Panel title="Terms used here">
         <p className="text-sm leading-6 text-ig-muted">
-          <Term id="microgravity" /> removes <Term id="buoyancy" />, so a flame can settle into a{" "}
-          <Term id="flame-sphere" /> instead of an Earth-like teardrop. Underlined terms show a plain
+          <Term id="microgravity" /> removes <Term id="buoyancy" />, so a flame can settle into a
+          round flame sphere instead of an Earth-like teardrop. Underlined terms show a plain
           definition on hover or keyboard focus. The full list is in the{" "}
           <Link to="/glossary" className="text-ig-flame-blue hover:underline">
             Glossary
