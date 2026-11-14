@@ -1,0 +1,27 @@
+# Dependencies
+node_modules
+
+# Build output
+dist
+dist-ssr
+*.local
+
+# Environment - never commit secrets
+.env
+.env.*
+!.env.example
+
+# Tooling
+graphify-out/
+coverage
+playwright-report
+test-results
+.vite
+*.tsbuildinfo
+
+# Editor / OS
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+Thumbs.db
