@@ -17,14 +17,15 @@ import { offlineAnswer } from '../src/lib/siFallback'
  * ungrounded model cannot masquerade as evidence.
  */
 
-type Provider = 'openai' | 'anthropic' | 'openrouter' | 'none'
+type Provider = 'openai' | 'anthropic' | 'openrouter' | 'nvidia' | 'none'
 
-const PROVIDERS: Provider[] = ['openai', 'anthropic', 'openrouter', 'none']
+const PROVIDERS: Provider[] = ['openai', 'anthropic', 'openrouter', 'nvidia', 'none']
 
 const DEFAULT_MODELS: Record<Exclude<Provider, 'none'>, string> = {
   openai: 'gpt-4o-mini',
   anthropic: 'claude-3-5-haiku-latest',
   openrouter: 'openai/gpt-4o-mini',
+  nvidia: 'meta/llama-3.1-8b-instruct',
 }
 
 interface ProviderConfig {
@@ -116,7 +117,9 @@ async function callOpenAiCompatible(
   const base =
     config.provider === 'openrouter'
       ? 'https://openrouter.ai/api/v1'
-      : 'https://api.openai.com/v1'
+      : config.provider === 'nvidia'
+        ? 'https://integrate.api.nvidia.com/v1'
+        : 'https://api.openai.com/v1'
   const model = config.model || DEFAULT_MODELS[config.provider as Exclude<Provider, 'none'>]
 
   const response = await fetch(`${base}/chat/completions`, {
