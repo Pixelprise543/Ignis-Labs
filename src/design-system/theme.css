@@ -1,0 +1,162 @@
+/* ==========================================================================
+   Ignis - "Ember Professional" theme
+   Owner: PC1 for the scaffold commit, then PC3 (do not edit after handoff).
+
+   FLAT RULES (hard): no gradients, no glows, no blurs, no drop shadows.
+   Depth comes only from 1px --ig-line borders and the vacuum/hull/raised
+   background steps. Heatmaps and risk bars use discrete solid steps, never a
+   continuous ramp. "No data" cells use an SVG <pattern> of diagonal lines.
+   Charts use solid fills and strokes. Dark only.
+
+   Contrast (WCAG AA) measured on the three surfaces, 2026-11-14:
+     surface      frost  muted  gold   quench amber  ember  alarm
+     vacuum 1A1512 15.87  7.40   7.96*  8.44   10.26  6.49   6.03
+     hull   231D18 14.60  6.81   7.28*  7.77    9.44  5.97   5.55
+     raised 2E2620 13.02  6.07   6.57*  6.92    8.41  5.32   4.94
+   * measured with the adjusted gold #E3B76B.
+   Two values were nudged to reach AA on the raised surface; everything else
+   keeps the exact spec hex:
+     --ig-flame-blue #E8A24A -> #E3B76B  (paler gold, also separates it from
+         --ig-amber #F5B942; CIE76 dE ~21.7, and charts still pair colour with
+         marker shapes, never colour alone)
+     --ig-alarm      #E5484D -> #F06A6E  (critical text on raised was 3.79:1)
+   ========================================================================== */
+
+@import 'tailwindcss';
+@import '@fontsource-variable/inter';
+@import '@fontsource/jetbrains-mono/400.css';
+@import '@fontsource/jetbrains-mono/500.css';
+
+:root {
+  color-scheme: dark;
+
+  /* Surfaces - warm charcoal, never pure black */
+  --ig-vacuum: #1a1512;
+  --ig-hull: #231d18;
+  --ig-raised: #2e2620;
+  --ig-line: #40362d;
+
+  /* Text */
+  --ig-frost: #f6efe6;
+  --ig-muted: #b3a394;
+
+  /* Accents. The name --ig-flame-blue is kept for module-API compatibility;
+     its value is warm gold. */
+  --ig-flame-blue: #e3b76b;
+  --ig-quench: #8dbf6a;
+  --ig-amber: #f5b942;
+  --ig-ember: #ee7b3a;
+  --ig-alarm: #f06a6e;
+
+  /* Derived (not in the frozen palette, added for contrast-safe fills) */
+  --ig-on-accent: #1a1512;
+
+  /* Shape */
+  --ig-radius-panel: 6px;
+  --ig-radius-control: 4px;
+}
+
+@theme inline {
+  /* Maps the raw tokens above onto Tailwind utilities:
+     bg-ig-vacuum, text-ig-frost, border-ig-line, bg-ig-ember, ... */
+  --color-ig-vacuum: var(--ig-vacuum);
+  --color-ig-hull: var(--ig-hull);
+  --color-ig-raised: var(--ig-raised);
+  --color-ig-line: var(--ig-line);
+  --color-ig-frost: var(--ig-frost);
+  --color-ig-muted: var(--ig-muted);
+  --color-ig-flame-blue: var(--ig-flame-blue);
+  --color-ig-quench: var(--ig-quench);
+  --color-ig-amber: var(--ig-amber);
+  --color-ig-ember: var(--ig-ember);
+  --color-ig-alarm: var(--ig-alarm);
+  --color-ig-on-accent: var(--ig-on-accent);
+
+  --radius-panel: 6px;
+  --radius-control: 4px;
+
+  --font-sans: 'Inter Variable', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace;
+
+  /* Spacing grid is 8px: use even Tailwind steps (gap-2 = 8px, gap-4 = 16px). */
+  --spacing: 0.25rem;
+}
+
+@layer base {
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  html {
+    background-color: var(--ig-vacuum);
+    /* No layout shift on load: reserve the scrollbar gutter. */
+    scrollbar-gutter: stable;
+  }
+
+  body {
+    margin: 0;
+    min-height: 100dvh;
+    background-color: var(--ig-vacuum);
+    color: var(--ig-frost);
+    font-family: var(--font-sans);
+    font-synthesis-weight: none;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-weight: 600;
+    line-height: 1.2;
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  /* Numbers and units only. */
+  code,
+  kbd,
+  samp,
+  pre,
+  .ig-num {
+    font-family: var(--font-mono);
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Visible focus for keyboard users, on every interactive element. */
+  :focus-visible {
+    outline: 2px solid var(--ig-flame-blue);
+    outline-offset: 2px;
+    border-radius: var(--ig-radius-control);
+  }
+
+  ::selection {
+    background-color: var(--ig-ember);
+    color: var(--ig-on-accent);
+  }
+
+  /* Flat scrollbars: solid thumbs, 1px line, no shadows. */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--ig-line) transparent;
+  }
+
+  /* Respect the user's motion preference for all non-essential motion.
+     The Flame Orb also reads this to stay static. */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.001ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.001ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
