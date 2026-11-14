@@ -4,16 +4,11 @@ import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import type { Experiment, SIResponse } from '@/contracts/types'
 import { ConditionsRadar, FlameSpeedChart, OxygenLimitChart } from '@/components/charts'
-import { askSI, getExperiment, useIgnis } from '../explore/_stubs'
-import {
-  ConfidenceBadge,
-  EmptyPanel,
-  Note,
-  PageHeading,
-  RegimeBadge,
-  SkeletonBlock,
-  UiButton,
-} from '../explore/_ui'
+import { getExperiment } from '@/lib/data'
+import { askSI } from '@/lib/si'
+import { useIgnis } from '@/store/useIgnis'
+import { Button, ConfidenceBadge, EmptyState, Skeleton } from '@/design-system'
+import { Note, PageHeading, RegimeBadge } from '../explore/_shared'
 
 type SIState =
   | { status: 'idle' }
@@ -98,7 +93,7 @@ export function ComparePage() {
           title="Compare experiments"
           description={`Place two to four experiments side by side for ${scenario.label} and read an evidence-linked comparison.`}
         />
-        <EmptyPanel
+        <EmptyState
           title={
             selected.length === 0
               ? 'No experiments selected'
@@ -144,9 +139,9 @@ export function ComparePage() {
                 Add experiment
               </Link>
             ) : null}
-            <UiButton variant="ghost" onClick={clearCompare}>
+            <Button variant="tertiary" onClick={clearCompare}>
               Clear all
-            </UiButton>
+            </Button>
           </>
         }
       />
@@ -423,18 +418,18 @@ export function ComparePage() {
               <span className="font-mono tabular-nums">
                 Grounding {Math.round(siState.response.groundingScore * 100)}%
               </span>
-              <UiButton variant="ghost" onClick={() => setRegenerateCount((count) => count + 1)}>
+              <Button variant="tertiary" onClick={() => setRegenerateCount((count) => count + 1)}>
                 Regenerate
-              </UiButton>
+              </Button>
             </div>
           ) : (
-            <UiButton
-              variant="ghost"
+            <Button
+              variant="tertiary"
               onClick={() => setRegenerateCount((count) => count + 1)}
               disabled={siState.status === 'loading'}
             >
               Regenerate
-            </UiButton>
+            </Button>
           )}
         </div>
 
@@ -442,9 +437,9 @@ export function ComparePage() {
           {siState.status === 'loading' ? (
             <div className="space-y-2" role="status">
               <span className="sr-only">Generating the comparison</span>
-              <SkeletonBlock className="h-3 w-3/4" />
-              <SkeletonBlock className="h-3 w-5/6" />
-              <SkeletonBlock className="h-3 w-2/3" />
+              <Skeleton className="h-3 w-3/4" />
+              <Skeleton className="h-3 w-5/6" />
+              <Skeleton className="h-3 w-2/3" />
             </div>
           ) : siState.status === 'error' ? (
             <div className="rounded-[4px] border border-[var(--ig-line)] px-3 py-2">

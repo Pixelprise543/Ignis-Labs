@@ -1,14 +1,11 @@
 import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import type { GravityRegime } from '@/contracts/types'
-import { getExperiments, getTimeline, useIgnis } from '../explore/_stubs'
-import { EmptyPanel, PageHeading, UiButton } from '../explore/_ui'
-
-function regimeForGravity(gravityG: number): GravityRegime {
-  if (gravityG <= 0.05) return 'microgravity'
-  if (gravityG < 0.8) return 'partial-g'
-  return 'normal-g'
-}
+import { getExperiments, getTimeline } from '@/lib/data'
+import { regimeFor } from '@/lib/scenarios'
+import { useIgnis } from '@/store/useIgnis'
+import { Button, EmptyState } from '@/design-system'
+import { PageHeading } from '../explore/_shared'
 
 const REGIME_LABEL: Record<GravityRegime, string> = {
   microgravity: 'microgravity',
@@ -35,7 +32,7 @@ export function TimelinePage() {
   const [milestonesOnly, setMilestonesOnly] = useState(false)
   const [scenarioOnly, setScenarioOnly] = useState(false)
 
-  const targetRegime = regimeForGravity(scenario.gravityG)
+  const targetRegime = regimeFor(scenario.gravityG)
 
   const visible = useMemo(() => {
     const needle = query.trim().toLowerCase()
@@ -80,9 +77,9 @@ export function TimelinePage() {
         description={`Experiment years in the evidence set, oldest first. Turn on the scenario filter to see only work in the ${REGIME_LABEL[targetRegime]} regime relevant to ${scenario.label}.`}
         actions={
           filtered ? (
-            <UiButton variant="ghost" onClick={reset}>
+            <Button variant="tertiary" onClick={reset}>
               Clear filters
-            </UiButton>
+            </Button>
           ) : null
         }
       />
@@ -125,13 +122,13 @@ export function TimelinePage() {
       </div>
 
       {visible.length === 0 ? (
-        <EmptyPanel
+        <EmptyState
           title="No timeline entries match"
           message="Clear the search or filters to see the full timeline."
           action={
-            <UiButton variant="secondary" onClick={reset}>
+            <Button variant="secondary" onClick={reset}>
               Clear filters
-            </UiButton>
+            </Button>
           }
         />
       ) : (

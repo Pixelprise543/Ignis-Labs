@@ -1,14 +1,19 @@
 import { useId, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
-import type { MaterialRisk, Scenario, ScenarioId, Severity } from '@/contracts/types'
-import { getMaterialMatrix, getMaterials, SCENARIOS, useIgnis } from '../explore/_stubs'
-import { Note, PageHeading, UiButton } from '../explore/_ui'
+import type { Scenario, ScenarioId, Severity } from '@/contracts/types'
+import { getMaterials } from '@/lib/data'
+import { getMaterialMatrix, getMaterialRisks } from '@/lib/materials'
+import { levelForRisk } from '@/lib/severity'
+import { useIgnis } from '@/store/useIgnis'
+import { Button } from '@/design-system'
+import { Note, PageHeading } from '../explore/_shared'
 
+/** Ranges match levelForRisk in @/lib/severity: 25 / 45 / 70. */
 const RISK_STYLES: Record<Severity, { label: string; color: string; range: string }> = {
-  info: { label: 'Low', color: 'var(--ig-quench, #8DBF6A)', range: '0–34' },
-  caution: { label: 'Moderate', color: 'var(--ig-amber, #F5B942)', range: '35–54' },
-  high: { label: 'High', color: 'var(--ig-ember, #EE7B3A)', range: '55–74' },
-  critical: { label: 'Critical', color: 'var(--ig-alarm, #F06A6E)', range: '75–100' },
+  info: { label: 'Low', color: 'var(--ig-quench, #8DBF6A)', range: '0–24' },
+  caution: { label: 'Moderate', color: 'var(--ig-amber, #F5B942)', range: '25–44' },
+  high: { label: 'High', color: 'var(--ig-ember, #EE7B3A)', range: '45–69' },
+  critical: { label: 'Critical', color: 'var(--ig-alarm, #F06A6E)', range: '70–100' },
 }
 
 const RISK_ORDER: Severity[] = ['info', 'caution', 'high', 'critical']
@@ -41,6 +46,39 @@ function RiskShape({ level, size = 10 }: { level: Severity; size?: number }) {
   )
 }
 
+function HatchSwatch() {
+  const id = useId()
+  return (
+    <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
+      <defs>
+        <pattern id={id} width="4" height="4" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+          <rect width="4" height="4" fill="var(--ig-hull, #231D18)" />
+          <line x1="0" y1="0" x2="0" y2="4" stroke="var(--ig-line, #40362D)" strokeWidth="1.5" />
+        </pattern>
+      </defs>
+      <rect x="0.5" y="0.5" width="15" height="15" fill={`url(#${id})`} stroke="var(--ig-line, #40362D)" />
+    </svg>
+  )
+}
+
+function NoDataCell({ label }: { label: string }) {
+  const id = useId()
+  return (
+    <span className="flex h-10 w-full items-center justify-center" title={`${label}: no evidence in the set`}>
+      <svg width="100%" height="40" viewBox="0 0 64 40" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+        <defs>
+          <pattern id={id} width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+            <rect width="6" height="6" fill="var(--ig-vacuum, #1A1512)" />
+            <line x1="0" y1="0" x2="0" y2="6" stroke="var(--ig-line, #40362D)" strokeWidth="1.5" />
+          </pattern>
+        </defs>
+        <rect width="64" height="40" fill={`url(#${id})`} />
+      </svg>
+      <span className="sr-only">{label}: no data</span>
+    </span>
+  )
+}
+
 function RiskLegend() {
   return (
     <ul className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-[var(--ig-muted)]">
@@ -67,86 +105,60 @@ function RiskLegend() {
   )
 }
 
-function HatchSwatch() {
-  const id = useId()
-  return (
-    <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
-      <defs>
-        <pattern id={id} width="4" height="4" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
-          <rect width="4" height="4" fill="var(--ig-hull, #231D18)" />
-          <line x1="0" y1="0" x2="0" y2="4" stroke="var(--ig-line, #40362D)" strokeWidth="1.5" />
-        </pattern>
-      </defs>
-      <rect x="0.5" y="0.5" width="15" height="15" fill={`url(#${id})`} stroke="var(--ig-line, #40362D)" />
-    </svg>
-  )
-}
-
-function NoDataCell({ label }: { label: string }) {
-  const id = useId()
-  return (
-    <span
-      className="flex h-10 w-full items-center justify-center"
-      title={`${label}: no evidence in the set`}
-    >
-      <svg width="100%" height="40" viewBox="0 0 64 40" preserveAspectRatio="none" aria-hidden="true" focusable="false">
-        <defs>
-          <pattern id={id} width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
-            <rect width="6" height="6" fill="var(--ig-vacuum, #1A1512)" />
-            <line x1="0" y1="0" x2="0" y2="6" stroke="var(--ig-line, #40362D)" strokeWidth="1.5" />
-          </pattern>
-        </defs>
-        <rect x="0" y="0" width="64" height="40" fill={`url(#${id})`} />
-      </svg>
-      <span className="sr-only">{label}: no data</span>
-    </span>
-  )
-}
-
 export function MaterialsPage() {
-  const materials = useMemo(() => getMaterials(), [])
   const matrix = useMemo(() => getMaterialMatrix(), [])
+  const materials = useMemo(() => getMaterials(), [])
   const scenario = useIgnis((state) => state.scenario)
   const setScenario = useIgnis((state) => state.setScenario)
   const select = useIgnis((state) => state.select)
 
   const [selected, setSelected] = useState<{ materialId: string; scenarioId: ScenarioId } | null>(null)
 
-  const columns = useMemo(() => SCENARIOS.filter((entry) => entry.id !== 'custom'), [])
-  const riskFor = (materialId: string, scenarioId: ScenarioId): MaterialRisk | undefined =>
-    matrix.find((row) => row.materialId === materialId && row.scenarioId === scenarioId)
+  const columns = matrix.scenarios
+  const currentIndex = columns.findIndex((column) => column.id === scenario.id)
 
-  const orderedMaterials = useMemo(() => {
-    const currentRisks = new Map(
-      matrix
-        .filter((row) => row.scenarioId === scenario.id)
-        .map((row) => [row.materialId, row.risk] as const),
-    )
-    return [...materials].sort(
-      (a, b) => (currentRisks.get(b.id) ?? 0) - (currentRisks.get(a.id) ?? 0),
-    )
-  }, [materials, matrix, scenario.id])
+  const riskValue = (materialId: string, scenarioId: ScenarioId): number | undefined => {
+    const row = matrix.rows.find((entry) => entry.material.id === materialId)
+    const index = columns.findIndex((column) => column.id === scenarioId)
+    return row && index >= 0 ? row.risks[index] : undefined
+  }
 
-  const currentRisks = matrix.filter((row) => row.scenarioId === scenario.id)
-  const criticalCount = currentRisks.filter((row) => row.level === 'critical').length
-  const highCount = currentRisks.filter((row) => row.level === 'high').length
-  const worst = currentRisks.reduce<MaterialRisk | undefined>(
-    (best, row) => (best === undefined || row.risk > best.risk ? row : best),
+  // Sort by the current scenario so the biggest concerns sit at the top.
+  const orderedRows = useMemo(
+    () => [...matrix.rows].sort((a, b) => (b.risks[currentIndex] ?? 0) - (a.risks[currentIndex] ?? 0)),
+    [matrix.rows, currentIndex],
+  )
+
+  const currentRisks = orderedRows
+    .map((row) => ({ row, risk: row.risks[currentIndex] }))
+    .filter((entry): entry is { row: (typeof orderedRows)[number]; risk: number } => typeof entry.risk === 'number')
+  const criticalCount = currentRisks.filter((entry) => levelForRisk(entry.risk) === 'critical').length
+  const highCount = currentRisks.filter((entry) => levelForRisk(entry.risk) === 'high').length
+  const worst = currentRisks.reduce<{ row: (typeof orderedRows)[number]; risk: number } | undefined>(
+    (best, entry) => (best === undefined || entry.risk > best.risk ? entry : best),
     undefined,
   )
-  const worstMaterial = worst ? materials.find((material) => material.id === worst.materialId) : undefined
 
-  const selectedMaterial = selected ? materials.find((material) => material.id === selected.materialId) : undefined
-  const selectedScenario: Scenario | undefined = selected
-    ? SCENARIOS.find((entry) => entry.id === selected.scenarioId)
+  const selectedMaterial = selected
+    ? materials.find((material) => material.id === selected.materialId)
     : undefined
-  const selectedRisk: MaterialRisk | undefined =
-    selected && selectedMaterial ? riskFor(selectedMaterial.id, selected.scenarioId) : undefined
+  const selectedScenario: Scenario | undefined = selected
+    ? columns.find((column) => column.id === selected.scenarioId)
+    : undefined
+  const selectedScenarioRisks = useMemo(
+    () => (selectedScenario ? getMaterialRisks(selectedScenario) : []),
+    [selectedScenario],
+  )
+  const selectedRisk = selected
+    ? selectedScenarioRisks.find((risk) => risk.materialId === selected.materialId)
+    : undefined
+  const selectedValue = selected ? riskValue(selected.materialId, selected.scenarioId) : undefined
+  const selectedLevel = typeof selectedValue === 'number' ? levelForRisk(selectedValue) : undefined
 
   const summaryParts = [
     `${materials.length} materials across ${columns.length} scenarios.`,
     strongSummary(criticalCount, highCount),
-    worstMaterial && worst ? `Highest for ${scenario.label}: ${worstMaterial.name} at ${worst.risk}.` : '',
+    worst ? `Highest for ${scenario.label}: ${worst.row.material.name} at ${worst.risk}.` : '',
   ].filter(Boolean)
 
   return (
@@ -165,9 +177,9 @@ export function MaterialsPage() {
       />
 
       <Note>
-        Every cell is a decision-support estimate, not a physics simulation. The risk index combines
-        a material flammability base with scenario oxygen, gravity and pressure — the same
-        placeholder formula shown in Method. Use it to prioritise questions, not to certify hardware.
+        Every cell is a decision-support estimate, not a physics simulation. The risk index starts
+        from each material's curated flammability base and adjusts for scenario gravity, oxygen and
+        pressure. Use it to prioritise questions, not to certify hardware.
       </Note>
 
       <section
@@ -227,54 +239,52 @@ export function MaterialsPage() {
               </tr>
             </thead>
             <tbody>
-              {orderedMaterials.map((material) => {
-                const currentRisk = riskFor(material.id, scenario.id)
+              {orderedRows.map((row) => {
+                const material = row.material
+                const currentRisk = row.risks[currentIndex]
                 return (
                   <tr key={material.id} className="border-b border-[var(--ig-line)] last:border-0">
                     <th scope="row" className="py-1.5 pr-3 text-left align-middle">
-                      <span className="block text-xs font-medium text-[var(--ig-frost)]">
-                        {material.name}
-                      </span>
+                      <span className="block text-xs font-medium text-[var(--ig-frost)]">{material.name}</span>
                       <span className="text-[10px] text-[var(--ig-muted)]">
                         {material.category}
-                        {currentRisk ? ` · base ${material.baseFlammability}` : ''}
+                        {typeof currentRisk === 'number' ? ` · base ${material.baseFlammability}` : ''}
                       </span>
                     </th>
                     <td className="hidden px-3 py-1.5 align-middle text-xs text-[var(--ig-muted)] lg:table-cell">
                       {material.usedFor}
                     </td>
                     {columns.map((column) => {
-                      const risk = riskFor(material.id, column.id)
+                      const value = riskValue(material.id, column.id)
                       const isSelected =
                         selected?.materialId === material.id && selected.scenarioId === column.id
                       const label = `${material.name}, ${column.label}`
-                      if (!risk) {
+                      if (typeof value !== 'number') {
                         return (
                           <td key={column.id} className="px-1 py-1.5">
                             <NoDataCell label={label} />
                           </td>
                         )
                       }
-                      const style = RISK_STYLES[risk.level]
+                      const level = levelForRisk(value)
+                      const style = RISK_STYLES[level]
                       return (
                         <td key={column.id} className="px-1 py-1.5">
                           <button
                             type="button"
                             aria-pressed={isSelected}
-                            aria-label={`${label}: risk ${risk.risk} of 100, ${style.label.toLowerCase()}. Show details.`}
-                            title={`${label} — ${style.label} (${risk.risk}/100). ${risk.rationale}`}
+                            aria-label={`${label}: risk ${value} of 100, ${style.label.toLowerCase()}. Show details.`}
+                            title={`${label} — ${style.label} (${value}/100).`}
                             onClick={() =>
-                              setSelected(
-                                isSelected ? null : { materialId: material.id, scenarioId: column.id },
-                              )
+                              setSelected(isSelected ? null : { materialId: material.id, scenarioId: column.id })
                             }
                             className={`flex h-10 w-full min-w-[56px] items-center justify-center gap-1.5 rounded-[2px] font-mono text-xs tabular-nums text-[var(--ig-vacuum)] transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ig-frost)] ${
                               isSelected ? 'outline outline-2 outline-offset-1 outline-[var(--ig-frost)]' : ''
                             }`}
                             style={{ backgroundColor: style.color }}
                           >
-                            <RiskShape level={risk.level} />
-                            {risk.risk}
+                            <RiskShape level={level} />
+                            {value}
                           </button>
                         </td>
                       )
@@ -302,33 +312,31 @@ export function MaterialsPage() {
                 </tr>
               </thead>
               <tbody>
-                {matrix.map((row) => {
-                  const material = materials.find((entry) => entry.id === row.materialId)
-                  const column = columns.find((entry) => entry.id === row.scenarioId)
-                  return (
-                    <tr key={`${row.materialId}-${row.scenarioId}`}>
+                {orderedRows.flatMap((row) =>
+                  columns.map((column, index) => (
+                    <tr key={`${row.material.id}-${column.id}`}>
                       <td className="border-b border-[var(--ig-line)] py-1 pr-3 text-[var(--ig-frost)]">
-                        {material?.name ?? row.materialId}
+                        {row.material.name}
                       </td>
                       <td className="border-b border-[var(--ig-line)] py-1 pr-3 text-[var(--ig-muted)]">
-                        {column?.label ?? row.scenarioId}
+                        {column.label}
                       </td>
                       <td className="border-b border-[var(--ig-line)] py-1 pr-3 text-right font-mono tabular-nums text-[var(--ig-frost)]">
-                        {row.risk}
+                        {row.risks[index]}
                       </td>
                       <td className="border-b border-[var(--ig-line)] py-1 text-[var(--ig-muted)]">
-                        {RISK_STYLES[row.level].label}
+                        {RISK_STYLES[levelForRisk(row.risks[index])].label}
                       </td>
                     </tr>
-                  )
-                })}
+                  )),
+                )}
               </tbody>
             </table>
           </div>
         </details>
       </section>
 
-      {selectedMaterial && selectedRisk && selectedScenario ? (
+      {selectedMaterial && selectedScenario && selectedRisk && typeof selectedValue === 'number' && selectedLevel ? (
         <section
           aria-labelledby="material-detail-heading"
           className="rounded-[6px] border border-[var(--ig-line)] bg-[var(--ig-hull)] p-4"
@@ -343,25 +351,22 @@ export function MaterialsPage() {
                 {selectedMaterial.usedFor} · {selectedMaterial.category}
               </p>
             </div>
-            <UiButton variant="ghost" onClick={() => setSelected(null)}>
+            <Button variant="tertiary" onClick={() => setSelected(null)}>
               Close
-            </UiButton>
+            </Button>
           </div>
 
           <div className="mt-3 flex flex-wrap items-center gap-2">
             <span
               className="inline-flex items-center gap-1.5 rounded-[4px] px-2 py-1 font-mono text-sm tabular-nums text-[var(--ig-vacuum)]"
-              style={{ backgroundColor: RISK_STYLES[selectedRisk.level].color }}
+              style={{ backgroundColor: RISK_STYLES[selectedLevel].color }}
             >
-              <RiskShape level={selectedRisk.level} size={12} />
-              {selectedRisk.risk}
+              <RiskShape level={selectedLevel} size={12} />
+              {selectedValue}
             </span>
-            <span className="text-sm text-[var(--ig-frost)]">
-              {RISK_STYLES[selectedRisk.level].label} risk
-            </span>
+            <span className="text-sm text-[var(--ig-frost)]">{RISK_STYLES[selectedLevel].label} risk</span>
             <span className="font-mono text-xs text-[var(--ig-muted)]">
-              {selectedScenario.gravityG}g · {selectedScenario.o2Percent}% O₂ ·{' '}
-              {selectedScenario.pressureKPa} kPa
+              {selectedScenario.gravityG}g · {selectedScenario.o2Percent}% O₂ · {selectedScenario.pressureKPa} kPa
             </span>
           </div>
 
@@ -383,25 +388,31 @@ export function MaterialsPage() {
               </Link>
             ))}
             {selectedScenario.id !== scenario.id ? (
-              <UiButton variant="secondary" onClick={() => setScenario(selectedScenario)}>
+              <Button variant="secondary" onClick={() => setScenario(selectedScenario)}>
                 Switch scenario to {selectedScenario.label}
-              </UiButton>
+              </Button>
             ) : null}
           </div>
         </section>
       ) : null}
 
-      <section aria-labelledby="material-list-heading" className="rounded-[6px] border border-[var(--ig-line)] bg-[var(--ig-hull)] p-4">
+      <section
+        aria-labelledby="material-list-heading"
+        className="rounded-[6px] border border-[var(--ig-line)] bg-[var(--ig-hull)] p-4"
+      >
         <h2 id="material-list-heading" className="text-sm font-semibold text-[var(--ig-frost)]">
           Materials in the set
         </h2>
         <ul className="mt-2 grid gap-2 sm:grid-cols-2 xl:grid-cols-4">
-          {orderedMaterials.map((material) => (
-            <li key={material.id} className="rounded-[4px] border border-[var(--ig-line)] bg-[var(--ig-vacuum)] p-2">
-              <p className="text-xs font-medium text-[var(--ig-frost)]">{material.name}</p>
-              <p className="mt-0.5 text-[11px] text-[var(--ig-muted)]">{material.category}</p>
+          {orderedRows.map((row) => (
+            <li
+              key={row.material.id}
+              className="rounded-[4px] border border-[var(--ig-line)] bg-[var(--ig-vacuum)] p-2"
+            >
+              <p className="text-xs font-medium text-[var(--ig-frost)]">{row.material.name}</p>
+              <p className="mt-0.5 text-[11px] text-[var(--ig-muted)]">{row.material.category}</p>
               <p className="mt-1 font-mono text-[11px] tabular-nums text-[var(--ig-muted)]">
-                base {material.baseFlammability} · {material.evidenceIds.length} evidence
+                base {row.material.baseFlammability} · {row.material.evidenceIds.length} evidence
               </p>
             </li>
           ))}

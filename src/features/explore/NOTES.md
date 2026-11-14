@@ -2,11 +2,23 @@
 
 ## State
 - Branch: `pc2-explore`, cut from `origin/main` at tag `scaffold-v1` (`8f2b119`); chart kit `8a632a4`.
+- P0 tag `p0-done-pc2` pushed at `46d7b8c`; branch merged `origin/pc3-experience` (carries PC1 `src/lib` + `src/store`).
 - Ownership: `src/components/charts/**`, `src/features/{explore,compare,rankings,materials,coverage,timeline}/**`.
-- P0 pages done: Explore, Rankings, Compare.
-- P1 pages done: Materials, Coverage, Timeline.
-- `src/lib` and `src/store` do not exist yet, so pages import `src/features/explore/_stubs.ts`
-  (typed stand-ins for the FROZEN MODULE API).
+- All six pages now import the real modules. `_stubs.ts` and `_ui.tsx` are deleted.
+  Page-level helpers that the design system does not provide live in `src/features/explore/_shared.tsx`
+  (`PageHeading`, `Note`, `ScoreBar`, `RegimeBadge`).
+
+## Real modules consumed (verified in source, not guessed)
+- `@/lib/data` — `getExperiments`, `getExperiment`, `getMaterials`, `getTimeline`.
+- `@/lib/search` — `searchExperiments`.
+- `@/lib/scoring` — `rankExperiments`, `defaultWeights`.
+- `@/lib/materials` — `getMaterialRisks`, `getMaterialMatrix` (returns `{ scenarios, rows }`).
+- `@/lib/coverage` — `getCoverage`, `getGaps`; band labels come from the returned cells.
+- `@/lib/severity` — `levelForRisk` (25 / 45 / 70 thresholds) shared with the simulator.
+- `@/lib/scenarios` — `SCENARIOS`, `regimeFor`.
+- `@/lib/si` — `askSI` (`mode: 'compare'` on Compare, `mode: 'interpret'` on Coverage).
+- `@/store/useIgnis` — scenario, weights, filters, compareIds, select, toggleCompare.
+- `@/design-system` — `Button`, `ConfidenceBadge`, `EmptyState`, `Skeleton`.
 
 ## Decisions
 - Charts are presentational and take `Experiment[]`; they import types only from `@/contracts/types`.
@@ -18,26 +30,27 @@
 - Compare auto-generates the SI comparison whenever the selection or scenario changes (demo flow:
   add a second record -> answer is already there), with a Regenerate button and a visible
   "Offline fallback" badge when `askSI` did not call a model.
-- pagination/search/filter controls read/write `useIgnis` only, so URL sync (PC1) will pick them up for free.
+- Materials heatmap uses the module's `{scenarios, rows}` shape; cells carry colour + shape + number,
+  and "no data" is an SVG diagonal `<pattern>`, never a CSS gradient.
+- Coverage derives axis order from `getCoverage()` cells and formats band ids for display
+  (`microgravity` -> "Microgravity", `<= 21%` -> "≤ 21%", `not specified` -> "Not specified").
+- Timeline uses `regimeFor()` from `@/lib/scenarios`, so its scenario filter matches the rest of the app.
+- Filter/search controls read/write `useIgnis` only, so PC1's URL sync picks them up for free.
 
-## Local verification (2026-11-14)
-- `npm run build` (tsc -b + vite build): zero TS errors.
-- Throwaway jsdom render test (config kept out of the repo): 7/7 passed —
-  Explore renders 6 records + detail aside, Rankings renders 4 sliders + 6 ranked rows,
-  Compare shows the "add one more" state at 1 record and tables/charts/SI fallback at 3,
-  Materials renders a 8x4 matrix and opens cell detail, Coverage renders the grid and the
-  gap interpretation, Timeline groups entries and the milestone filter drops 6 -> 2.
-  Re-create with `--config` if needed; deleted afterwards so `tests/**` stays PC1's.
+## Local verification (2026-11-14, after the stub swap)
+- `npx tsc -b`: zero errors.
+- `npm run build`: passes; route chunks well under 250 kB gzip (largest: compare 124 kB gzip).
+- `npm run validate:data`: 20 experiments, 45 findings, 8 materials, 21 glossary terms, 12 coverage cells.
+- Throwaway jsdom smoke test (config kept out of the repo, deleted afterwards): 8/8 passed —
+  Explore lists records, Rankings lists ranked rows, Compare shows the "two to four" empty state and
+  renders charts + SI comparison for `acme-bre` + `bass`, Materials renders both tables,
+  Coverage renders the grid + gap copy, Timeline renders >5 entries.
+- ESLint clean on all PC2 paths.
+
+## Known issues outside my ownership
+- `.gitignore` line 16 is `coverage`, which also ignores `src/features/coverage/`. Needs `/coverage`
+  (root-only) from PC1; until then commit that folder with `git add -f`.
 
 ## Next
-1. Swap `_stubs.ts` -> `@/lib/*` + `@/store/useIgnis` once PC1 lands them (graph-verify each
-   symbol first; delete the stub in the same commit).
-2. Replace `_ui.tsx` primitives with `@/design-system` (PC3) page by page.
-3. Confirm PC3's router exposes these exports: ExplorePage, ComparePage, RankingsPage,
-   MaterialsPage, CoveragePage, TimelinePage (all named exports from their feature index).
-
-## Stub swap checklist
-- `getExperiments`, `getExperiment`, `getMaterials`, `getTimeline`, `getCoverage`, `getMaterialRisks`,
-  `getMaterialMatrix`, `getGaps`, `getInsights`, `defaultWeights`, `rankExperiments`,
-  `searchExperiments`, `askSI`, `SCENARIOS`/`getScenario`, `useIgnis`.
-- `_ui.tsx` primitives are replaced by `@/design-system` exports (PC3) page by page.
+1. Watch for `p0-done-pc3`, then run the O5 INTEGRATE actions.
+2. Merge teammates' branches again before integrating if they move.

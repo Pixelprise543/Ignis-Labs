@@ -1,19 +1,11 @@
 import { useEffect, useMemo, useRef } from 'react'
 import { Link } from 'react-router-dom'
 import type { Facility, FuelType, GravityRegime } from '@/contracts/types'
-import {
-  getExperiment,
-  getExperiments,
-  searchExperiments,
-  useIgnis,
-} from './_stubs'
-import {
-  ConfidenceBadge,
-  EmptyPanel,
-  PageHeading,
-  RegimeBadge,
-  UiButton,
-} from './_ui'
+import { getExperiment, getExperiments } from '@/lib/data'
+import { searchExperiments } from '@/lib/search'
+import { useIgnis } from '@/store/useIgnis'
+import { Button, ConfidenceBadge, EmptyState } from '@/design-system'
+import { PageHeading, RegimeBadge } from './_shared'
 
 const FUEL_TYPES: FuelType[] = ['solid', 'gas', 'liquid', 'droplet', 'dust', 'cool-flame']
 const FACILITIES: Facility[] = [
@@ -180,9 +172,9 @@ export function ExplorePage() {
         </label>
 
         {hasFilters ? (
-          <UiButton variant="ghost" onClick={resetFilters}>
+          <Button variant="tertiary" onClick={resetFilters}>
             Clear filters
-          </UiButton>
+          </Button>
         ) : null}
       </div>
 
@@ -194,13 +186,13 @@ export function ExplorePage() {
       <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_340px]">
         <div className="min-w-0">
           {visible.length === 0 ? (
-            <EmptyPanel
+            <EmptyState
               title="No experiments match those filters"
               message="Clear the search or filters to see the full library again."
               action={
-                <UiButton variant="secondary" onClick={resetFilters}>
+                <Button variant="secondary" onClick={resetFilters}>
                   Clear filters
-                </UiButton>
+                </Button>
               }
             />
           ) : (
@@ -382,13 +374,13 @@ export function ExplorePage() {
             </ul>
 
             <div className="mt-4 flex flex-wrap gap-2">
-              <UiButton
+              <Button
                 variant={compareIds.includes(selected.id) ? 'primary' : 'secondary'}
                 onClick={() => toggleCompare(selected.id)}
                 disabled={!compareIds.includes(selected.id) && compareFull}
               >
                 {compareIds.includes(selected.id) ? 'Remove from compare' : 'Add to compare'}
-              </UiButton>
+              </Button>
               {compareIds.length >= 2 ? (
                 <Link
                   to="/compare"

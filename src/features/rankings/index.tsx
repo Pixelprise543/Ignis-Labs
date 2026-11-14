@@ -1,8 +1,11 @@
 import { useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import type { ScoreWeights } from '@/contracts/types'
-import { getExperiments, rankExperiments, useIgnis } from '../explore/_stubs'
-import { EmptyPanel, Note, PageHeading, RegimeBadge, ScoreBar, UiButton } from '../explore/_ui'
+import { getExperiments } from '@/lib/data'
+import { rankExperiments } from '@/lib/scoring'
+import { useIgnis } from '@/store/useIgnis'
+import { Button, EmptyState } from '@/design-system'
+import { Note, PageHeading, RegimeBadge, ScoreBar } from '../explore/_shared'
 
 const FACTORS: Array<{ key: keyof ScoreWeights; label: string; help: string }> = [
   { key: 'hazardSeverity', label: 'Hazard severity', help: 'How much fire risk the reported behaviour implies.' },
@@ -34,9 +37,9 @@ export function RankingsPage() {
         title="Rankings"
         description={`Experiments ranked for ${scenario.label}. Adjust the weights to see how the order responds.`}
         actions={
-          <UiButton variant="ghost" onClick={resetWeights}>
+          <Button variant="tertiary" onClick={resetWeights}>
             Reset weights
-          </UiButton>
+          </Button>
         }
       />
 
@@ -88,7 +91,7 @@ export function RankingsPage() {
       </section>
 
       {ranked.length === 0 ? (
-        <EmptyPanel
+        <EmptyState
           title="No experiments to rank"
           message="The evidence set is empty. Add experiments before ranking."
         />

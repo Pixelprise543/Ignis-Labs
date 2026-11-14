@@ -3,16 +3,12 @@ import { Link } from 'react-router-dom'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import type { CoverageCell } from '@/contracts/types'
-import {
-  askSI,
-  COVERAGE_GRAVITY_BANDS,
-  COVERAGE_O2_BANDS,
-  getCoverage,
-  getGaps,
-  SCENARIOS,
-  useIgnis,
-} from '../explore/_stubs'
-import { Note, PageHeading, SkeletonBlock, UiButton } from '../explore/_ui'
+import { getCoverage, getGaps } from '@/lib/coverage'
+import { SCENARIOS } from '@/lib/scenarios'
+import { askSI } from '@/lib/si'
+import { useIgnis } from '@/store/useIgnis'
+import { Button, Skeleton } from '@/design-system'
+import { Note, PageHeading } from '../explore/_shared'
 
 type InterpretState =
   | { status: 'idle' }
@@ -20,7 +16,33 @@ type InterpretState =
   | { status: 'ready'; markdown: string; fallback: boolean; model: string }
   | { status: 'error'; message: string }
 
-function GapHatch() {
+/**
+ * Band labels come straight from the coverage module, so this page cannot
+ * invent a band the data layer does not produce. The map only changes casing
+ * and symbols for display.
+ */
+const GRAVITY_LABELS: Record<string, string> = {
+  microgravity: 'Microgravity',
+  'partial-gravity': 'Partial gravity',
+  'normal-gravity': 'Normal gravity',
+}
+
+const O2_LABELS: Record<string, string> = {
+  '<= 21%': '≤ 21%',
+  '21-30%': '21–30%',
+  '> 30%': '> 30%',
+  'not specified': 'Not specified',
+}
+
+function formatGravity(band: string): string {
+  return GRAVITY_LABELS[band] ?? band
+}
+
+function formatO2(band: string): string {
+  return O2_LABELS[band] ?? band
+}
+
+function GravityHatch() {
   const id = `gap-hatch-${useId()}`
   return (
     <svg
@@ -43,6 +65,13 @@ function GapHatch() {
   )
 }
 
+/** Same band rule the coverage module uses, so the highlight matches the row. */
+function gravityBandFor(gravityG: number): string {
+  if (gravityG < 0.01) return 'microgravity'
+  if (gravityG < 0.9) return 'partial-gravity'
+  return 'normal-gravity'
+}
+
 /**
  * Gravity × oxygen evidence grid. Cells are counts of recorded experiments, so
  * this page makes research gaps visible instead of implying "no data = safe".
@@ -54,14 +83,22 @@ export function CoveragePage() {
   const coverage = useMemo(() => getCoverage(), [])
   const gaps = useMemo(() => getGaps(scenario), [scenario])
 
-  const gravityBands = useMemo(
-    () => COVERAGE_GRAVITY_BANDS.map((band) => band.label),
-    [],
-  )
-  const o2Bands = useMemo(
-    () => [...COVERAGE_O2_BANDS.map((band) => band.label), 'Not reported'],
-    [],
-  )
+  // Order follows the cells themselves, so a change in the data layer shows up
+  // here without a second hard-coded list to keep in sync.
+  const gravityBands = useMemo(() => {
+    const seen: string[] = []
+    for (const cell of coverage) {
+      if (!seen.includes(cell.gravityBand)) seen.push(cell.gravityBand)
+    }
+    return seen
+  }, [coverage])
+  const o2Bands = useMemo(() => {
+    const seen: string[] = []
+    for (const cell of coverage) {
+      if (!seen.includes(cell.o2Band)) seen.push(cell.o2Band)
+    }
+    return seen
+  }, [coverage])
 
   const [selected, setSelected] = useState<{ gravityBand: string; o2Band: string } | null>(null)
   const [interpret, setInterpret] = useState<InterpretState>({ status: 'idle' })
@@ -76,10 +113,7 @@ export function CoveragePage() {
   const gapCount = coverage.filter((cell) => cell.gap).length
   const experimentTotal = coverage.reduce((sum, cell) => sum + cell.count, 0)
 
-  const gravityBandForScenario = useMemo(
-    () => COVERAGE_GRAVITY_BANDS.find((band) => band.matches(scenario.gravityG))?.label,
-    [scenario.gravityG],
-  )
+  const gravityBandForScenario = gravityBandFor(scenario.gravityG)
 
   // Nearby evidence grounds the interpretation without citing empty cells.
   const nearbyEvidence = useMemo(() => {
@@ -91,11 +125,11 @@ export function CoveragePage() {
 
   const gapContext = useMemo(() => {
     if (gaps.length === 0) {
-      return `The grid has no empty cells in the ${scenario.label} gravity band or oxygen band.`
+      return `The grid has no empty cells in the ${scenario.label} gravity band.`
     }
     const list = gaps
       .slice(0, 4)
-      .map((cell) => `${cell.gravityBand} with ${cell.o2Band} oxygen`)
+      .map((cell) => `${formatGravity(cell.gravityBand)} with ${formatO2(cell.o2Band)} oxygen`)
       .join('; ')
     return `The grid has ${gapCount} empty cells in total. Near ${scenario.label}, nothing covers: ${list}. Treat these as untested combinations, not safe ones.`
   }, [gaps, gapCount, scenario.label])
@@ -140,9 +174,9 @@ export function CoveragePage() {
         title="Evidence coverage"
         description={`Where the dataset has evidence and where it is silent, mapped by gravity and oxygen. ${experimentTotal} experiments fill ${filledCells.length} of ${coverage.length} combinations.`}
         actions={
-          <UiButton variant="ghost" onClick={() => setRequestCount((count) => count + 1)}>
+          <Button variant="tertiary" onClick={() => setRequestCount((count) => count + 1)}>
             Re-interpret gaps
-          </UiButton>
+          </Button>
         }
       />
 
@@ -166,7 +200,7 @@ export function CoveragePage() {
             </li>
             <li className="inline-flex items-center gap-1.5">
               <span className="inline-block h-4 w-5 overflow-hidden rounded-[2px] border border-[var(--ig-line)]">
-                <GapHatch />
+                <GravityHatch />
               </span>
               No evidence
             </li>
@@ -193,7 +227,7 @@ export function CoveragePage() {
                     scope="col"
                     className="border-b border-[var(--ig-line)] px-1.5 py-2 text-center text-xs font-medium text-[var(--ig-muted)]"
                   >
-                    {band}
+                    {formatO2(band)}
                   </th>
                 ))}
               </tr>
@@ -202,14 +236,14 @@ export function CoveragePage() {
               {gravityBands.map((gravityBand) => (
                 <tr key={gravityBand} className="border-b border-[var(--ig-line)] last:border-0">
                   <th scope="row" className="py-1.5 pr-3 text-left text-xs font-medium text-[var(--ig-frost)]">
-                    {gravityBand}
+                    {formatGravity(gravityBand)}
                   </th>
                   {o2Bands.map((o2Band) => {
                     const cell = cellFor(gravityBand, o2Band)
                     const isSelected =
                       selected?.gravityBand === gravityBand && selected.o2Band === o2Band
                     const relevant = cell?.relevantScenarios.includes(scenario.id) ?? false
-                    const label = `${gravityBand} gravity, ${o2Band} oxygen`
+                    const label = `${formatGravity(gravityBand)} gravity, ${formatO2(o2Band)} oxygen`
                     if (!cell || cell.gap) {
                       return (
                         <td key={o2Band} className="px-0.5 py-1.5">
@@ -227,7 +261,7 @@ export function CoveragePage() {
                             }`}
                           >
                             <span className="relative block">
-                              <GapHatch />
+                              <GravityHatch />
                               <span className="absolute inset-0 flex items-center justify-center text-[10px] text-[var(--ig-muted)]">
                                 Gap
                               </span>
@@ -278,7 +312,7 @@ export function CoveragePage() {
 
         <p className="mt-2 text-xs text-[var(--ig-muted)]">
           {filledCells.length} covered combinations · {gapCount} gaps · {scenario.label} sits in the{' '}
-          {gravityBandForScenario ?? 'unknown'} gravity band.
+          {formatGravity(gravityBandForScenario)} band.
         </p>
       </section>
 
@@ -291,7 +325,7 @@ export function CoveragePage() {
           <div className="flex flex-wrap items-start justify-between gap-2">
             <div>
               <h2 id="coverage-detail-heading" className="text-sm font-semibold text-[var(--ig-frost)]">
-                {selectedCell.gravityBand} gravity · {selectedCell.o2Band} oxygen
+                {formatGravity(selectedCell.gravityBand)} gravity · {formatO2(selectedCell.o2Band)} oxygen
               </h2>
               <p className="mt-1 text-xs text-[var(--ig-muted)]">
                 {selectedCell.count === 0
@@ -302,9 +336,9 @@ export function CoveragePage() {
                   : ''}
               </p>
             </div>
-            <UiButton variant="ghost" onClick={() => setSelected(null)}>
+            <Button variant="tertiary" onClick={() => setSelected(null)}>
               Close
-            </UiButton>
+            </Button>
           </div>
 
           {selectedCell.count === 0 ? (
@@ -360,8 +394,8 @@ export function CoveragePage() {
           {interpret.status === 'loading' ? (
             <div className="space-y-2" role="status">
               <span className="sr-only">Interpreting the coverage gaps</span>
-              <SkeletonBlock className="h-3 w-2/3" />
-              <SkeletonBlock className="h-3 w-5/6" />
+              <Skeleton className="h-3 w-2/3" />
+              <Skeleton className="h-3 w-5/6" />
             </div>
           ) : interpret.status === 'error' ? (
             <p className="text-xs text-[var(--ig-frost)]">
