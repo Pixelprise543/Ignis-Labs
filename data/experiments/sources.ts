@@ -70,4 +70,66 @@ export const SRC = {
     org: 'NASA Glenn Research Center',
     year: 2026,
   },
+  // --- Added 2026-11-15. Each was opened through the NTRS citation API and its
+  // abstract read before the record was written; url points at the citation page.
+  ntrsSaffireIV: {
+    title: 'Model Development of Large-Scale Spacecraft Fires During the Saffire-IV Experiments',
+    url: 'https://ntrs.nasa.gov/citations/20220002714',
+    org: 'NASA Glenn Research Center',
+    year: 2022,
+  },
+  ntrsSaffireV: {
+    title: 'Vehicle Modeling During the Burning of Thermally Thick Samples in the Saffire V Experiments',
+    url: 'https://ntrs.nasa.gov/citations/20240008602',
+    org: 'NASA Glenn Research Center',
+    year: 2024,
+  },
+  ntrsBassII: {
+    title: 'Burning and Suppression of Solids-II (BASS-II) Summary Report',
+    url: 'https://ntrs.nasa.gov/citations/20210011385',
+    org: 'NASA Glenn Research Center',
+    year: 2021,
+  },
+  ntrsSofball: {
+    title: 'Structure of Flame Balls at Low Lewis-Number (SOFBALL): Preliminary Results From the STS-83 and STS-94 Space Flight Experiments',
+    url: 'https://ntrs.nasa.gov/citations/19990019803',
+    org: 'NASA Johnson Space Center',
+    year: 1998,
+  },
+  ntrsLsp: {
+    title: 'Laminar Soot Processes',
+    url: 'https://ntrs.nasa.gov/citations/19990053996',
+    org: 'NASA Glenn Research Center',
+    year: 1999,
+  },
+  ntrsCandle: {
+    title: 'Candle Flames in Microgravity',
+    url: 'https://ntrs.nasa.gov/citations/19990053984',
+    org: 'NASA Glenn Research Center',
+    year: 1999,
+  },
+  ntrsMsc: {
+    title: 'Smoldering Combustion Experiments in Microgravity',
+    url: 'https://ntrs.nasa.gov/citations/19970020606',
+    org: 'NASA Glenn Research Center',
+    year: 1997,
+  },
+  ntrsTgdf: {
+    title: 'Microgravity Turbulent Gas-Jet Diffusion Flames',
+    url: 'https://ntrs.nasa.gov/citations/20050172094',
+    org: 'NASA Glenn Research Center',
+    year: 1996,
+  },
+  ntrsLuci: {
+    title: 'Lunar Combustion Investigation: Flammability Results from a Rotating Sounding Rocket',
+    url: 'https://ntrs.nasa.gov/citations/20250010653',
+    org: 'NASA Glenn Research Center',
+    year: 2025,
+  },
+  ntrsFm2: {
+    title: 'Flammability of Materials on the Moon',
+    url: 'https://ntrs.nasa.gov/citations/20240015307',
+    org: 'NASA Glenn Research Center',
+    year: 2024,
+  },
 } satisfies Record<string, Source>

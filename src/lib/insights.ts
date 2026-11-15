@@ -2,6 +2,7 @@ import type { Insight, Scenario, ScenarioId, Severity } from '@/contracts/types'
 import { getFinding } from './data'
 import { formatGravity } from './scenarios'
 import { severityRank } from './severity'
+import { hasPartialGravityData } from './coverage'
 
 export { severityRank }
 
@@ -38,12 +39,27 @@ const isPartialGravity = (scenario: Scenario) =>
 
 const RULES: InsightRule[] = [
   {
+    id: 'partial-gravity-evidence-thin',
+    title: 'Partial-gravity evidence is a single lunar dataset',
+    scenarioIds: PARTIAL_G_SCENARIOS,
+    confidence: 45,
+    evidenceIds: ['luci-f1', 'luci-f2', 'fm2-f1'],
+    applies: (scenario) => isPartialGravity(scenario) && hasPartialGravityData(),
+    severity: (scenario) => (scenario.gravityG >= 0.3 ? 'high' : 'caution'),
+    summary: (scenario) =>
+      scenario.gravityG <= 0.2
+        ? `At ${formatGravity(scenario.gravityG)} this habitat sits close to the only partial-gravity gravity in the dataset: a spinning sounding rocket burned fabric and acrylic at lunar gravity for over two minutes, and a lunar-lander payload is in preparation. One gravity level is evidence, not a map, so cells outside the conditions that were flown are still extrapolations.`
+        : `This habitat sits at ${formatGravity(scenario.gravityG)}, and every partial-gravity record in this dataset was measured at lunar gravity (0.16 g). Nothing here was measured at ${formatGravity(scenario.gravityG)}, so this result is an interpolation between lunar and microgravity data, not a measurement.`,
+    recommendation:
+      'Use the lunar-gravity result as a nearer anchor than microgravity, then test at the target gravity before a result informs a design decision.',
+  },
+  {
     id: 'no-partial-gravity-data',
     title: 'No partial-gravity flame-spread data exists',
     scenarioIds: PARTIAL_G_SCENARIOS,
     confidence: 35,
     evidenceIds: ['acme-bre-f2', 'sofie-mist-f2', 'saffire-vi-f1'],
-    applies: isPartialGravity,
+    applies: (scenario) => isPartialGravity(scenario) && !hasPartialGravityData(),
     severity: () => 'high',
     summary: (scenario) =>
       `At ${formatGravity(scenario.gravityG)}, a flame sits between the microgravity case and the normal-gravity case, but no experiment in this dataset measured flame spread at that gravity. Every result shown for this habitat is an extrapolation from microgravity plus theory.`,

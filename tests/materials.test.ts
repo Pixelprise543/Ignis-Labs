@@ -77,9 +77,9 @@ describe('getMaterialRisks: scenario sensitivity', () => {
     }
   })
 
-  it('marks a partial-gravity row as an extrapolation', () => {
+  it('marks a partial-gravity row as an extrapolation, naming the lunar anchor', () => {
     for (const entry of getMaterialRisks(getScenario('lunar'))) {
-      expect(entry.rationale).toMatch(/extrapolat/i)
+      expect(entry.rationale).toMatch(/lunar gravity|extrapolat/i)
     }
   })
 

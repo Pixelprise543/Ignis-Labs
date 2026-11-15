@@ -1,4 +1,5 @@
 import type { Playbook, PlaybookStep, ScenarioId } from '@/contracts/types'
+import { hasPartialGravityData } from './coverage'
 import { getScenario } from './scenarios'
 
 /**
@@ -108,7 +109,9 @@ function caveatsFor(id: ScenarioId): string[] {
 
   if (scenario.gravityG >= 0.01 && scenario.gravityG < 0.9) {
     caveats.push(
-      `No partial-gravity flame-spread data exists in this dataset; the playbook extrapolates microgravity findings to ${scenario.label.toLowerCase()}.`,
+      hasPartialGravityData()
+        ? `The only partial-gravity evidence in this dataset was measured at lunar gravity (about 0.16 g); the playbook interpolates to ${scenario.label.toLowerCase()} rather than reporting a measurement there.`
+        : `No partial-gravity flame-spread data exists in this dataset; the playbook extrapolates microgravity findings to ${scenario.label.toLowerCase()}.`,
     )
   }
 

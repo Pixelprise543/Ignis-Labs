@@ -188,4 +188,111 @@ export const saffireExperiments: Experiment[] = [
     confidence: 'verified',
     tags: ['fire-safety', 'material-flammability', 'oxygen-enriched', 'pressure', 'cygnus'],
   },
+  {
+    id: 'saffire-iv',
+    name: 'Spacecraft Fire Safety Experiment IV',
+    acronym: 'Saffire-IV',
+    summary:
+      'A Cygnus vehicle that had already left the station was modelled in fire-simulation software, with the cargo layout of the descent phase reproduced as geometry. The team used the measured temperatures near the payload to derive heat release rate at the outlet and compared predicted combustion-product flow with the gas measurements from the flight. The retrieved report is a modelling paper and does not state the flight date, so the year shown is the report year.',
+    facility: 'Free-flyer',
+    regime: 'microgravity',
+    years: [2022, 2022],
+    fuelType: 'solid',
+    fuel: 'Solid samples inside the Cygnus cargo vehicle',
+    conditions: {
+      gravityG: 0,
+      o2Percent: null,
+      diluent: 'air',
+      pressureKPa: null,
+      flowCmPerS: null,
+    },
+    metrics: [
+      {
+        key: 'burn-duration',
+        label: 'Burn duration',
+        unit: 'min',
+        value: null,
+        note: 'Not stated in the retrieved modelling report.',
+      },
+    ],
+    findings: [
+      {
+        id: 'saffire-iv-f1',
+        text: 'Temperature sensors near the payload can be inverted into a heat release rate at the outlet, which gives a vehicle-scale fire a measurable source term rather than a visual impression.',
+        tags: ['modelling', 'diagnostics', 'scale'],
+      },
+      {
+        id: 'saffire-iv-f2',
+        text: 'Combustion species measured downstream of the burn can be compared directly with a simulation of the cargo volume, so a fire model can be checked against a real spacecraft fire instead of a laboratory flame.',
+        tags: ['modelling', 'smoke', 'safety-case'],
+      },
+      {
+        id: 'saffire-iv-f3',
+        text: 'The cargo arrangement present during descent changes the internal flow path, which means the same fire in a differently packed vehicle would transport heat and products differently.',
+        tags: ['ventilation', 'modelling', 'cygnus'],
+      },
+    ],
+    safetyTakeaway:
+      'A spacecraft fire model can be validated against a real large-scale burn, which makes predicted smoke transport a usable input to detection and cleanup planning.',
+    sources: [SRC.ntrsSaffireIV],
+    confidence: 'curated',
+    tags: ['fire-safety', 'modelling', 'solid-fuel', 'scale', 'cygnus'],
+  },
+  {
+    id: 'saffire-v',
+    name: 'Spacecraft Fire Safety Experiment V',
+    acronym: 'Saffire-V',
+    summary:
+      'This flight burned thick thermoplastic samples as well as cotton, and the analysis used cabin sensors to predict how heat and carbon dioxide moved through the whole Cygnus vehicle. A heat-transfer coefficient calibrated on the cotton event then predicted the temperature response during the two thick-fuel events. The retrieved report is a modelling paper and does not state the flight date, so the year shown is the report year.',
+    facility: 'Free-flyer',
+    regime: 'microgravity',
+    years: [2024, 2024],
+    fuelType: 'solid',
+    fuel: 'Thick thermoplastic samples and a cotton sample',
+    conditions: {
+      gravityG: 0,
+      o2Percent: null,
+      diluent: 'air',
+      pressureKPa: null,
+      flowCmPerS: null,
+    },
+    metrics: [
+      {
+        key: 'test-runs',
+        label: 'Burn events modelled',
+        unit: 'runs',
+        value: 3,
+        note: 'One cotton event plus two thick thermoplastic events, as described in the report.',
+      },
+      {
+        key: 'burn-duration',
+        label: 'Burn duration',
+        unit: 'min',
+        value: null,
+        note: 'Not stated in the retrieved modelling report.',
+      },
+    ],
+    findings: [
+      {
+        id: 'saffire-v-f1',
+        text: 'Thick thermoplastic samples burn differently from thin fabric, and a heat-transfer coefficient fitted to the thin-fuel event still predicted the temperature response of the thick-fuel events.',
+        tags: ['material-flammability', 'modelling', 'scale'],
+      },
+      {
+        id: 'saffire-v-f2',
+        text: 'The carbon dioxide difference between the inlet sensor and the sensor nearest the burn outlet was enough to reconstruct the carbon dioxide response in other parts of the vehicle.',
+        tags: ['smoke', 'detection', 'modelling'],
+      },
+      {
+        id: 'saffire-v-f3',
+        text: 'Thick fuels keep releasing heat after the visible flame has moved on, so a detection and cleanup plan based only on flame duration would understate the event.',
+        tags: ['detection', 'smouldering', 'safety-case'],
+      },
+    ],
+    safetyTakeaway:
+      'Thick interior materials extend a fire event beyond its visible flame, so detection and cleanup timelines must be sized on the whole event.',
+    sources: [SRC.ntrsSaffireV],
+    confidence: 'curated',
+    tags: ['fire-safety', 'material-flammability', 'modelling', 'cygnus'],
+  },
 ]
