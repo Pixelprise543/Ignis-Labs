@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import { Link, NavLink, useLocation } from "react-router-dom";
 import { ROUTES } from "./nav";
 import type { RouteDefinition } from "./nav";
-import { ScenarioBar } from "./ScenarioBar";
 import { useIgnis } from "./data";
 import { AskIgnisDrawer } from "@/features/assistant";
 import { Button, ThemeToggle } from "@/design-system";
@@ -172,8 +171,6 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
       <div className="lg:flex">
         <div className="min-w-0 flex-1">
-          <ScenarioBar />
-
           <main id="main" tabIndex={-1} className="mx-auto w-full max-w-[1200px] px-4 pb-24 pt-6 lg:px-6 lg:pt-8">
             {children}
 

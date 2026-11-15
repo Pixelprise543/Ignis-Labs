@@ -1,5 +1,5 @@
 import type { LucideIcon } from "lucide-react";
-import { Compass, FileText, Home, Lightbulb, SlidersHorizontal } from "lucide-react";
+import { Compass, FileText, Home, Lightbulb, Settings, SlidersHorizontal } from "lucide-react";
 
 export type NavGroup = "Overview" | "Explore data" | "Decide";
 
@@ -26,6 +26,14 @@ export const ROUTES: RouteDefinition[] = [
     exportName: "HomePage",
     group: "Overview",
     icon: Home,
+  },
+  {
+    path: "/scenario",
+    label: "Scenario",
+    folder: "scenario",
+    exportName: "ScenarioPage",
+    group: "Overview",
+    icon: Settings,
   },
   {
     path: "/explore",
