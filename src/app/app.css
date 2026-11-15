@@ -1,8 +1,58 @@
 /**
- * PC3 shell styles. Flat-only: no gradients, glows, blurs or shadows.
- * Tailwind handles layout; this file holds scroll and markdown details that
- * cannot be expressed cleanly with utilities.
+ * PC3 shell styles: the fixed NASA backdrop, plus the scroll and markdown
+ * details that cannot be expressed cleanly with Tailwind utilities.
+ *
+ * Glass surfaces themselves are defined once in src/design-system/theme.css.
+ * Nothing here paints a panel - it only paints the world behind the panels.
  */
+
+/* --- Backdrop -------------------------------------------------------------- */
+
+/**
+ * The one image in the app: "Pillars of Creation", NASA/ESA Hubble, public
+ * domain (NASA image library id GSFC_20171208_Archive_e000842, use restrictions
+ * "none"). Committed byte-for-byte to public/hero-pillars-of-creation.jpg.
+ *
+ * It is fixed behind everything and never moves with the UI. The scrim on
+ * ::after is what buys contrast: it leaves the nebula readable at the top of the
+ * page and fades to near-solid charcoal at the bottom, where the dense tables
+ * live. Glass sheets add their own dark base on top of that.
+ */
+.ig-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+  background-color: var(--ig-vacuum);
+}
+
+.ig-backdrop-photo {
+  position: absolute;
+  inset: 0;
+  opacity: 0.5;
+  background-position: center 30%;
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
+.ig-backdrop::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(26, 21, 18, 0.04) 0%,
+    rgba(26, 21, 18, 0.34) 55%,
+    rgba(26, 21, 18, 0.72) 100%
+  );
+}
+
+/* Everything the reader actually uses sits above the backdrop. */
+.ig-app {
+  position: relative;
+  z-index: 1;
+}
 
 /* Horizontal scenario strip: keep the native scroll, hide the bar. */
 .ig-scroll-x {
@@ -146,9 +196,10 @@
 /* --- Print ---------------------------------------------------------------- */
 
 /**
- * Brief and Playbook are print/PDF targets. The screen theme is dark, so print
- * flips to a light sheet: paper is white, ink is near-black, chrome is gone.
- * Flat rules still apply, so there are no shadows or gradients here either.
+ * Brief and Playbook are print/PDF targets. The screen theme is dark glass, so
+ * print flips to a light sheet: paper is white, ink is near-black, chrome is
+ * gone and every glass sheet collapses to its content. Badges and the
+ * "decision-support estimates" label stay visible and legible in grayscale.
  */
 @media print {
   @page {
@@ -160,16 +211,41 @@
     background: #ffffff !important;
   }
 
-  /* Shell chrome, overlays and action toolbars do not belong on paper. */
+  /* Shell chrome, overlays, the photo and action toolbars do not belong on paper. */
   aside,
   nav[aria-label="Main"],
   section[aria-label="Active scenario"],
   [role="dialog"],
   header button,
   .ig-print-hide,
+  .ig-backdrop,
   footer,
   .fixed {
     display: none !important;
+  }
+
+  /* Glass has no meaning on paper: drop the sheets, keep the content. */
+  .ig-glass::before,
+  .ig-glass-nav::before {
+    display: none !important;
+  }
+
+  .ig-glass,
+  .ig-glass-nav {
+    box-shadow: none !important;
+  }
+
+  .ig-glass-overlay {
+    background: #ffffff !important;
+    border: 1px solid #b9b2a7 !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+
+  /* Tinted chips keep their tone as a flat fill, and gain a border so they
+     survive grayscale printing without relying on colour alone. */
+  .ig-glass-tint {
+    border: 1px solid #b9b2a7 !important;
   }
 
   main {

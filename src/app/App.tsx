@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { BrowserRouter } from "react-router-dom";
 import { AppShell } from "./AppShell";
+import { Backdrop } from "./Backdrop";
 import { ErrorBoundary } from "./ErrorBoundary";
 import { initUrlSync } from "./data";
 import { AppRoutes } from "./routes";
@@ -17,9 +18,13 @@ export default function App() {
   return (
     <ErrorBoundary>
       <BrowserRouter basename={import.meta.env.BASE_URL}>
-        <AppShell>
-          <AppRoutes />
-        </AppShell>
+        {/* The photo sits behind everything; .ig-app is the layer above it. */}
+        <Backdrop />
+        <div className="ig-app">
+          <AppShell>
+            <AppRoutes />
+          </AppShell>
+        </div>
       </BrowserRouter>
     </ErrorBoundary>
   );
