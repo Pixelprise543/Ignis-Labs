@@ -5,7 +5,7 @@ import type {
   Scenario,
   ScenarioId,
 } from '@/contracts/types'
-import { getExperiments } from '@/lib/data'
+import { getExperiments } from './data'
 
 /**
  * Evidence coverage: how many experiments sit in each gravity x oxygen cell.

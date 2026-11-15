@@ -97,6 +97,11 @@ Rule kept: abstracts are NASA's words and are never turned into metrics or score
 
 ## Traps (additions)
 
+- The Vercel Edge bundler resolves relative `./` imports but NOT the `@/` tsconfig
+  alias. Any runtime (non-type) `@/lib/...` import reachable from `api/*.ts` fails the
+  build with "referencing unsupported modules". Every runtime import inside `src/lib`
+  is therefore relative on purpose - keep it that way, and use relative paths in any
+  new module the API routes import. Type-only imports are fine either way (erased).
 - `server.middlewares.use(path, fn)` gives the handler `req.originalUrl`; the edge
   handlers need the full URL including the query string, not `req.url`.
 - Vitest's jsdom environment shares Node's `Request`/`Response`, so the edge handlers

@@ -1,8 +1,8 @@
 import type { Scenario, ScenarioId, SIRequest, SIResponse } from '@/contracts/types'
-import { getExperiment } from '@/lib/data'
-import { auditCitations } from '@/lib/citations'
-import { customScenario, getScenario } from '@/lib/scenarios'
-import { offlineAnswer } from '@/lib/siFallback'
+import { getExperiment } from './data'
+import { auditCitations } from './citations'
+import { customScenario, getScenario } from './scenarios'
+import { offlineAnswer } from './siFallback'
 
 /**
  * The browser side of "Ask Ignis".

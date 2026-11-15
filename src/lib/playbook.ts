@@ -1,5 +1,5 @@
 import type { Playbook, PlaybookStep, ScenarioId } from '@/contracts/types'
-import { getScenario } from '@/lib/scenarios'
+import { getScenario } from './scenarios'
 
 /**
  * Crew response playbooks, one per scenario.

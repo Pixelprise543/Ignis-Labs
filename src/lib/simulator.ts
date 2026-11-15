@@ -6,8 +6,8 @@ import type {
   SimInput,
   SimResult,
 } from '@/contracts/types'
-import { getExperiment, getExperiments, getMaterial } from '@/lib/data'
-import { levelForRisk } from '@/lib/severity'
+import { getExperiment, getExperiments, getMaterial } from './data'
+import { levelForRisk } from './severity'
 
 /**
  * A transparent what-if estimator, not a physics simulation.

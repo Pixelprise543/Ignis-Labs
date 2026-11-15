@@ -1,4 +1,4 @@
-import { getExperiment, getFinding } from '@/lib/data'
+import { getExperiment, getFinding } from './data'
 
 /**
  * Citation auditing for model output.
