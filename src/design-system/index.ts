@@ -31,4 +31,6 @@ export type { CitationChipProps } from "./CitationChip";
 export { Collapsible } from "./Collapsible";
 export type { CollapsibleProps } from "./Collapsible";
 
+export { Logo, LogoMark } from "./Logo";
+
 export { ThemeToggle } from "./ThemeToggle";

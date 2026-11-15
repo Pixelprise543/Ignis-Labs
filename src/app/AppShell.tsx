@@ -13,7 +13,7 @@ import {
 import type { NavGroup, RouteDefinition } from "./nav";
 import { ScenarioBar } from "./ScenarioBar";
 import { useIgnis } from "./data";
-import { Collapsible } from "@/design-system";
+import { Collapsible, LogoMark } from "@/design-system";
 import { AskIgnisDrawer } from "@/features/assistant";
 import { CommandPalette } from "@/features/palette";
 import { CorporateShell } from "./corporate/CorporateShell";
@@ -24,16 +24,15 @@ function Brand({ compact = false }: { compact?: boolean }) {
       to={PLATFORM_HOME}
       className="flex items-center gap-2.5 rounded-control p-1 hover:bg-ig-glass-hover"
     >
-      <span
-        aria-hidden="true"
-        className="relative grid h-7 w-7 shrink-0 place-items-center rounded-full border border-ig-line bg-ig-flame-blue"
-      >
-        <span className="h-2.5 w-2.5 rounded-full bg-ig-vacuum" />
-      </span>
+      <LogoMark size={28} />
       <span className="min-w-0">
-        <span className="block text-sm font-semibold leading-tight text-ig-frost">Ignis</span>
+        <span className="block text-sm font-semibold leading-tight text-ig-frost">
+          Ignis
+        </span>
         {compact ? null : (
-          <span className="block text-xs leading-tight text-ig-muted">Fire safety intelligence</span>
+          <span className="block text-xs leading-tight text-ig-muted">
+            Fire safety intelligence
+          </span>
         )}
       </span>
     </Link>
