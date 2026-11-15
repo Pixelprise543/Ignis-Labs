@@ -4,9 +4,9 @@ import type {
   Scenario,
   ScenarioId,
 } from '@/contracts/types'
-import { getMaterials } from '@/lib/data'
-import { getScenario } from '@/lib/scenarios'
-import { levelForRisk } from '@/lib/severity'
+import { getMaterials } from './data'
+import { getScenario } from './scenarios'
+import { levelForRisk } from './severity'
 
 /**
  * The Materials view is a qualitative risk matrix, not a fire model.

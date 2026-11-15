@@ -1,10 +1,10 @@
 import type { Experiment, Scenario, ScoreWeights } from '@/contracts/types'
-import { getExperiment, getExperiments } from '@/lib/data'
-import { getGaps } from '@/lib/coverage'
-import { getInsights } from '@/lib/insights'
-import { getPlaybook } from '@/lib/playbook'
-import { defaultWeights, rankExperiments } from '@/lib/scoring'
-import { formatGravity } from '@/lib/scenarios'
+import { getExperiment, getExperiments } from './data'
+import { getGaps } from './coverage'
+import { getInsights } from './insights'
+import { getPlaybook } from './playbook'
+import { defaultWeights, rankExperiments } from './scoring'
+import { formatGravity } from './scenarios'
 
 /**
  * The one-click Mission Safety Brief.

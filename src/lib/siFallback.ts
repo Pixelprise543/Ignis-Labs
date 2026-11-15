@@ -1,12 +1,12 @@
 import type { Experiment, SIRequest, SIResponse } from '@/contracts/types'
-import { getExperiment, getExperiments, getFinding } from '@/lib/data'
-import { getGaps } from '@/lib/coverage'
-import { getInsights } from '@/lib/insights'
-import { getPlaybook } from '@/lib/playbook'
-import { defaultWeights, rankExperiments } from '@/lib/scoring'
-import { searchExperiments } from '@/lib/search'
-import { formatGravity, getScenario, scenarioContextLabel } from '@/lib/scenarios'
-import { simulateRisk } from '@/lib/simulator'
+import { getExperiment, getExperiments, getFinding } from './data'
+import { getGaps } from './coverage'
+import { getInsights } from './insights'
+import { getPlaybook } from './playbook'
+import { defaultWeights, rankExperiments } from './scoring'
+import { searchExperiments } from './search'
+import { formatGravity, getScenario, scenarioContextLabel } from './scenarios'
+import { simulateRisk } from './simulator'
 
 /**
  * The offline SI answer.

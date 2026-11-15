@@ -1,7 +1,7 @@
 import type { Insight, Scenario, ScenarioId, Severity } from '@/contracts/types'
-import { getFinding } from '@/lib/data'
-import { formatGravity } from '@/lib/scenarios'
-import { severityRank } from '@/lib/severity'
+import { getFinding } from './data'
+import { formatGravity } from './scenarios'
+import { severityRank } from './severity'
 
 export { severityRank }
 

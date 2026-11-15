@@ -1,10 +1,10 @@
 import { z } from 'zod'
 import type { Experiment } from '@/contracts/types'
-import { getCoverage } from '@/lib/coverage'
-import { getExperiments, getFinding, getFindings, getGlossary, getMaterials } from '@/lib/data'
-import { getInsights } from '@/lib/insights'
-import { getPlaybook } from '@/lib/playbook'
-import { getScenario, SCENARIOS } from '@/lib/scenarios'
+import { getCoverage } from './coverage'
+import { getExperiments, getFinding, getFindings, getGlossary, getMaterials } from './data'
+import { getInsights } from './insights'
+import { getPlaybook } from './playbook'
+import { getScenario, SCENARIOS } from './scenarios'
 
 /**
  * Runtime validation for the dataset.
