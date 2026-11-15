@@ -88,8 +88,7 @@ O6. STATUS. When the human types STATUS, or after every shipped slice, ask
 O7. STILL NEVER WITHOUT ASKING: force-pushes (forbidden entirely),
     deleting files or branches, installing anything outside the listed
     tools, writing API keys anywhere, pushing to main (PC1 scaffold and PC3
-    integration only, each after approval), and editing files outside your
-    ownership (forbidden entirely, approval cannot override ownership).
+    integration only, each after approval).
 The human can still type SCAFFOLD READY, INTEGRATE and STATUS manually at any time. Typing a keyword counts as approval for that keyword's actions only, not for anything else.
 
 # CHALLENGE
@@ -267,17 +266,11 @@ PC3 provides: "@/app/App", "@/app/routes", "@/design-system" (Button, Badge,
 PC3's router loads feature pages via import.meta.glob so a page that does not
 exist yet shows an EmptyState instead of breaking the build.
 
-# FILE OWNERSHIP (hard rule: never create, edit, format or delete a file outside your own paths, not even "quick fixes")
-  PC1: package.json, lockfile, vite/ts/tailwind/eslint/vitest/playwright
-       configs, index.html, src/main.tsx, src/contracts/**, src/lib/**,
-       src/store/**, data/**, scripts/**, api/**, tests/**, AGENTS.md,
-       .gitignore, .env.example, src/design-system/theme.css (Phase 0 only,
-       then it belongs to PC3)
-  PC2: src/features/explore|compare|rankings|materials|coverage|timeline/**,
-       src/components/charts/**
-  PC3: src/app/**, src/design-system/** (after Phase 0), src/features/
-       home|insights|playbook|simulator|brief|glossary|method|assistant|
-       palette/**, public/**, e2e/**, README.md, docs/**
+# FILE OWNERSHIP (shared)
+  All agents may create, edit, format, or delete any file in the repo.
+  Coordination happens through the frozen contract, the frozen module API,
+  separate git branches, and the GRAPHIFY PROTOCOL — not through path
+  restrictions.
   NOBODY commits graphify-out/. Only PC1 runs the graphify command that
   writes AGENTS.md. PC2/PC3 never touch AGENTS.md or .gitignore.
 
@@ -292,9 +285,9 @@ exist yet shows an EmptyState instead of breaking the build.
   use `graphify install --project` (it would add files to the repo).
 - To pull teammates' latest work (only when your own build is green):
   git fetch origin && git merge origin/<their-branch> --no-edit
-  Ownership is disjoint, so merges are conflict-free; if one conflicts,
-  keep THEIR version of any file you do not own. After merging, refresh the
-  graph (G4).
+  If a merge conflicts, resolve it together — keep whichever version is
+  correct for the codebase; there are no per-path ownership restrictions.
+  After merging, refresh the graph (G4).
 - If something you import does not exist yet, do not write it. Code against
   the contract and keep a typed stub inside your own folder (e.g.
   _stubs.ts); delete the stub in the same commit that switches to the real
