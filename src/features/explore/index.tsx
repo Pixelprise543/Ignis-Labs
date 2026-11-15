@@ -4,7 +4,7 @@ import type { Facility, FuelType, GravityRegime } from '@/contracts/types'
 import { getExperiment, getExperiments } from '@/lib/data'
 import { searchExperiments } from '@/lib/search'
 import { useIgnis } from '@/store/useIgnis'
-import { Button, ConfidenceBadge, EmptyState } from '@/design-system'
+import { Button, ConfidenceBadge, EmptyState, Tooltip } from '@/design-system'
 import { PageHeading, RegimeBadge } from './_shared'
 
 const FUEL_TYPES: FuelType[] = ['solid', 'gas', 'liquid', 'droplet', 'dust', 'cool-flame']
@@ -172,9 +172,11 @@ export function ExplorePage() {
         </label>
 
         {hasFilters ? (
-          <Button variant="tertiary" onClick={resetFilters}>
-            Clear filters
-          </Button>
+          <Tooltip label="Removes all search and filters so you see the full experiment library again.">
+            <Button variant="tertiary" onClick={resetFilters}>
+              Clear filters
+            </Button>
+          </Tooltip>
         ) : null}
       </div>
 
@@ -225,19 +227,21 @@ export function ExplorePage() {
                         }`}
                       >
                         <td className="px-3 py-2">
-                          <button
-                            type="button"
-                            onClick={() => select(isSelected ? null : experiment.id)}
-                            aria-expanded={isSelected}
-                            className="text-left focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ig-flame-blue"
-                          >
-                            <span className="block font-medium text-ig-frost">
-                              {experiment.name}
-                            </span>
-                            <span className="font-mono text-xs text-ig-muted">
-                              {experiment.acronym}
-                            </span>
-                          </button>
+                          <Tooltip label={`Opens the detail drawer for ${experiment.name} (${experiment.acronym}).`}>
+                            <button
+                              type="button"
+                              onClick={() => select(isSelected ? null : experiment.id)}
+                              aria-expanded={isSelected}
+                              className="text-left focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ig-flame-blue"
+                            >
+                              <span className="block font-medium text-ig-frost">
+                                {experiment.name}
+                              </span>
+                              <span className="font-mono text-xs text-ig-muted">
+                                {experiment.acronym}
+                              </span>
+                            </button>
+                          </Tooltip>
                         </td>
                         <td className="hidden px-3 py-2 sm:table-cell">
                           <RegimeBadge regime={experiment.regime} />
@@ -258,20 +262,29 @@ export function ExplorePage() {
                           <ConfidenceBadge confidence={experiment.confidence} />
                         </td>
                         <td className="px-3 py-2 text-right">
-                          <button
-                            type="button"
-                            aria-pressed={inCompare}
-                            disabled={!inCompare && compareFull}
-                            title={!inCompare && compareFull ? 'Compare holds four experiments. Remove one first.' : undefined}
-                            onClick={() => toggleCompare(experiment.id)}
-                            className={`rounded-control border border-ig-glass-control-rim bg-ig-glass-control px-2 py-1 text-xs focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ig-flame-blue disabled:cursor-not-allowed disabled:opacity-50 ${
+                          <Tooltip
+                            label={
                               inCompare
-                                ? 'border-ig-flame-blue bg-ig-glass-pressed text-ig-frost'
-                                : 'border-ig-glass-control-rim text-ig-muted hover:bg-ig-glass-hover'
-                            }`}
+                                ? 'Removes this experiment from your compare selection.'
+                                : compareFull
+                                  ? 'Compare already holds four experiments. Remove one first.'
+                                  : 'Adds this experiment to compare so you can view it side by side with others.'
+                            }
                           >
-                            {inCompare ? 'In compare' : 'Add to compare'}
-                          </button>
+                            <button
+                              type="button"
+                              aria-pressed={inCompare}
+                              disabled={!inCompare && compareFull}
+                              onClick={() => toggleCompare(experiment.id)}
+                              className={`rounded-control border border-ig-glass-control-rim bg-ig-glass-control px-2 py-1 text-xs focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ig-flame-blue disabled:cursor-not-allowed disabled:opacity-50 ${
+                                inCompare
+                                  ? 'border-ig-flame-blue bg-ig-glass-pressed text-ig-frost'
+                                  : 'border-ig-glass-control-rim text-ig-muted hover:bg-ig-glass-hover'
+                              }`}
+                            >
+                              {inCompare ? 'In compare' : 'Add to compare'}
+                            </button>
+                          </Tooltip>
                         </td>
                       </tr>
                     )

@@ -4,7 +4,7 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import type { SIResponse } from "@/contracts/types";
 import { askSI, useIgnis } from "@/app/data";
-import { Badge, CitationChip, Drawer } from "@/design-system";
+import { Badge, CitationChip, Drawer, Tooltip } from "@/design-system";
 import { findNasaPublications } from "@/lib/nasa";
 import type { NasaLiterature } from "@/lib/nasaTypes";
 import { NasaLiteraturePanel } from "./NasaLiteraturePanel";
@@ -168,13 +168,15 @@ export function AskIgnisDrawer() {
               placeholder={`Ask about ${scenario.label} fire safety…`}
               className="min-h-[44px] flex-1 resize-none rounded-control border border-ig-glass-field-rim bg-ig-glass-field px-2.5 py-2 text-sm text-ig-frost placeholder:text-ig-muted"
             />
-            <button
-              type="submit"
-              disabled={loading || input.trim().length === 0}
-              className="h-10 shrink-0 rounded-control bg-ig-flame-blue px-3 text-sm font-medium text-ig-on-accent hover:bg-ig-amber disabled:cursor-not-allowed disabled:opacity-50"
-            >
-              Send
-            </button>
+            <Tooltip label="Sends your question to Ask Ignis. Press Enter to send, Shift+Enter to add a new line.">
+              <button
+                type="submit"
+                disabled={loading || input.trim().length === 0}
+                className="h-10 shrink-0 rounded-control bg-ig-flame-blue px-3 text-sm font-medium text-ig-on-accent hover:bg-ig-amber disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                Send
+              </button>
+            </Tooltip>
           </div>
           <p className="text-[11px] leading-4 text-ig-muted">
             Answers cite experiment IDs from this dataset and can link NASA technical reports
@@ -211,14 +213,16 @@ export function AskIgnisDrawer() {
             <p className="mt-2 text-xs text-ig-muted">Try one of these:</p>
             <div className="mt-2 space-y-1.5">
               {SUGGESTIONS.map((suggestion) => (
-                <button
-                  key={suggestion}
-                  type="button"
-                  onClick={() => void send(suggestion)}
-                  className="w-full rounded-control border border-ig-glass-control-rim bg-ig-glass-control px-2.5 py-2 text-left text-sm text-ig-frost hover:bg-ig-glass-hover"
-                >
-                  {suggestion}
-                </button>
+                <Tooltip key={suggestion} label={suggestion}>
+                  <button
+                    key={suggestion}
+                    type="button"
+                    onClick={() => void send(suggestion)}
+                    className="w-full rounded-control border border-ig-glass-control-rim bg-ig-glass-control px-2.5 py-2 text-left text-sm text-ig-frost hover:bg-ig-glass-hover"
+                  >
+                    {suggestion}
+                  </button>
+                </Tooltip>
               ))}
             </div>
           </div>

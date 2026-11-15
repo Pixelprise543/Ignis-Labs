@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import type { ReactNode } from "react";
 import type { Severity } from "@/contracts/types";
 import { getMaterials, getExperiment, simulateRisk, useIgnis } from "@/app/data";
-import { Badge, Button, ConfidenceBadge, Panel } from "@/design-system";
+import { Badge, Button, ConfidenceBadge, Panel, Tooltip } from "@/design-system";
 
 interface LevelDisplay {
   label: string;
@@ -147,7 +147,7 @@ export function SimulatorPage() {
                 id="sim-material"
                 value={materialId}
                 onChange={(event) => setMaterialId(event.target.value)}
-                className="mt-1 h-9 w-full rounded-field border border-ig-glass-field-rim bg-ig-glass-field px-2 text-sm text-ig-frost"
+                className="mt-1 h-9 w-full rounded-field border border-ig-glass-field-rim bg-ig-glass-field px-2 text-sm text-[#000000]"
               >
                 {materials.map((entry) => (
                   <option key={entry.id} value={entry.id}>
@@ -212,28 +212,34 @@ export function SimulatorPage() {
 
             <div className="flex flex-wrap gap-1.5 border-t border-ig-line pt-3">
               {presets.map((preset) => (
-                <button
+                <Tooltip
                   key={preset.label}
-                  type="button"
-                  onClick={preset.apply}
-                  className="rounded-control border border-ig-glass-control-rim bg-ig-glass-control px-2 py-1 text-xs text-ig-muted hover:bg-ig-glass-hover hover:text-ig-frost"
+                  label={`Applies a preset for ${preset.label.toLowerCase()}. Overrides all sliders above.`}
                 >
-                  {preset.label}
-                </button>
+                  <button
+                    type="button"
+                    onClick={preset.apply}
+                    className="rounded-control border border-ig-glass-control-rim bg-ig-glass-control px-2 py-1 text-xs text-ig-muted hover:bg-ig-glass-hover hover:text-ig-frost"
+                  >
+                    {preset.label}
+                  </button>
+                </Tooltip>
               ))}
-              <button
-                type="button"
-                onClick={() => {
-                  setGravity(scenario.gravityG);
-                  setO2(scenario.o2Percent ?? 21);
-                  setPressure(scenario.pressureKPa);
-                  setFlow(0);
-                }}
-                className="inline-flex items-center gap-1 rounded-control px-2 py-1 text-xs text-ig-flame-blue hover:bg-ig-glass-hover"
-              >
-                <RotateCcw size={12} aria-hidden="true" />
-                Reset to scenario
-              </button>
+              <Tooltip label="Resets every slider back to the current scenario's baseline values.">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setGravity(scenario.gravityG);
+                    setO2(scenario.o2Percent ?? 21);
+                    setPressure(scenario.pressureKPa);
+                    setFlow(0);
+                  }}
+                  className="inline-flex items-center gap-1 rounded-control px-2 py-1 text-xs text-ig-flame-blue hover:bg-ig-glass-hover"
+                >
+                  <RotateCcw size={12} aria-hidden="true" />
+                  Reset to scenario
+                </button>
+              </Tooltip>
             </div>
           </div>
         </Panel>
@@ -276,14 +282,16 @@ export function SimulatorPage() {
             </p>
 
             <div className="mt-3 flex flex-wrap gap-2 border-t border-ig-line pt-3">
-              <Button
-                variant="secondary"
-                size="sm"
-                icon={<Sparkles size={14} aria-hidden="true" />}
-                onClick={() => setDrawerOpen(true)}
-              >
-                Ask Ignis about this run
-              </Button>
+              <Tooltip label="Opens Ask Ignis to chat about this simulator run, with citations from the dataset.">
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  icon={<Sparkles size={14} aria-hidden="true" />}
+                  onClick={() => setDrawerOpen(true)}
+                >
+                  Ask Ignis about this run
+                </Button>
+              </Tooltip>
             </div>
           </Panel>
 

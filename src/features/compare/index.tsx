@@ -16,6 +16,7 @@ import {
   EmptyState,
   Panel,
   Skeleton,
+  Tooltip,
 } from '@/design-system'
 import { PageHeading, Note, RegimeBadge } from '../explore/_shared'
 
@@ -189,41 +190,47 @@ export function ComparePage() {
         actions={
           <>
             {selected.length < 4 ? (
-              <Link
-                to="/explore"
-                className="inline-flex min-h-10 items-center gap-2 rounded-control border border-ig-glass-control-rim bg-ig-glass-control px-4 text-sm font-medium text-ig-frost hover:bg-ig-glass-hover"
-              >
-                Add experiment
-              </Link>
+              <Tooltip label="Adds another experiment from the library to this side-by-side comparison.">
+                <Link
+                  to="/explore"
+                  className="inline-flex min-h-10 items-center gap-2 rounded-control border border-ig-glass-control-rim bg-ig-glass-control px-4 text-sm font-medium text-ig-frost hover:bg-ig-glass-hover"
+                >
+                  Add experiment
+                </Link>
+              </Tooltip>
             ) : null}
-            <Button variant="outline" onClick={clearCompare} size="sm">
-              Clear all
-            </Button>
+            <Tooltip label="Removes all experiments from compare.">
+              <Button variant="outline" onClick={clearCompare} size="sm">
+                Clear all
+              </Button>
+            </Tooltip>
           </>
         }
       />
 
       <section aria-label="Selected experiments" className="flex flex-wrap gap-2">
         {selected.map((experiment) => (
-          <Card
-            key={experiment.id}
-            bordered
-            padding="none"
-            className="flex items-center gap-2 rounded-control px-3 py-2 text-sm cursor-default"
-          >
-            <CardContent>
-              <span className="font-mono text-xs text-ig-muted">{experiment.acronym}</span>
-              <span className="max-w-[180px] truncate text-xs text-ig-frost">{experiment.name}</span>
-              <button
-                type="button"
-                onClick={() => toggleCompare(experiment.id)}
-                aria-label={`Remove ${experiment.name} from compare`}
-                className="ml-auto rounded-control p-1 text-ig-muted hover:bg-ig-glass-hover hover:text-ig-frost focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ig-flame-blue"
-              >
-                ├ù
-              </button>
-            </CardContent>
-          </Card>
+          <Tooltip key={experiment.id} label={`Removes ${experiment.name} from compare.`}>
+            <Card
+              key={experiment.id}
+              bordered
+              padding="none"
+              className="flex items-center gap-2 rounded-control px-3 py-2 text-sm cursor-default"
+            >
+              <CardContent>
+                <span className="font-mono text-xs text-ig-muted">{experiment.acronym}</span>
+                <span className="max-w-[180px] truncate text-xs text-ig-frost">{experiment.name}</span>
+                <button
+                  type="button"
+                  onClick={() => toggleCompare(experiment.id)}
+                  aria-label={`Remove ${experiment.name} from compare`}
+                  className="ml-auto rounded-control p-1 text-ig-muted hover:bg-ig-glass-hover hover:text-ig-frost focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ig-flame-blue"
+                >
+                  ├ù
+                </button>
+              </CardContent>
+            </Card>
+          </Tooltip>
         ))}
       </section>
 
