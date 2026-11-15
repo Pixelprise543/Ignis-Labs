@@ -23,6 +23,16 @@ const MAX_ABSTRACT = 1200
 const MAX_LIMIT = 8
 const DEFAULT_LIMIT = 6
 
+/**
+ * Upstream budget, chosen against the browser's clock rather than the platform's.
+ * The client (src/lib/nasa.ts) gives up after 4.5 s and renders the baked
+ * snapshot, so two 2.5 s attempts plus a short pause stay inside a budget the
+ * user can feel; a 10 s edge retry would finish after nobody is listening.
+ */
+const UPSTREAM_TIMEOUT_MS = 2500
+const UPSTREAM_ATTEMPTS = 2
+const RETRY_DELAY_MS = 200
+
 interface NtrsDownload {
   links?: { pdf?: string }
 }
@@ -39,6 +49,96 @@ interface NtrsResult {
   authorAffiliations?: Array<{ meta?: { author?: { name?: string } } }>
   downloads?: NtrsDownload[]
 }
+
+interface NtrsPayload {
+  stats?: { total?: number }
+  results?: NtrsResult[]
+}
+
+type UpstreamOutcome =
+  | { ok: true; payload: NtrsPayload }
+  | { ok: false; status: number; detail: string; retry: boolean; retryAfter?: string }
+
+/** A body is only usable if it looks like the NTRS search envelope. */
+function parsePayload(body: unknown): NtrsPayload | null {
+  if (typeof body !== 'object' || body === null || Array.isArray(body)) return null
+  const candidate = body as NtrsPayload
+  if (!Array.isArray(candidate.results)) return null
+  const payload: NtrsPayload = { results: candidate.results }
+  const total = candidate.stats?.total
+  if (typeof total === 'number' && Number.isFinite(total) && total >= 0) {
+    payload.stats = { total: Math.trunc(total) }
+  }
+  return payload
+}
+
+const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
+
+async function fetchOnce(url: string): Promise<UpstreamOutcome> {
+  let response: Response
+  try {
+    response = await fetch(url, {
+      headers: { Accept: 'application/json' },
+      signal: AbortSignal.timeout(UPSTREAM_TIMEOUT_MS),
+    })
+  } catch (error) {
+    const name = error instanceof Error ? error.name : ''
+    const timedOut = name === 'AbortError' || name === 'TimeoutError'
+    return {
+      ok: false,
+      status: 502,
+      // A timeout is not retried: two slow attempts would outlive the client.
+      detail: timedOut
+        ? `NASA NTRS did not answer within ${UPSTREAM_TIMEOUT_MS} ms`
+        : `NASA NTRS could not be reached: ${error instanceof Error ? error.message : String(error)}`,
+      retry: !timedOut,
+    }
+  }
+
+  if (response.status === 429) {
+    return {
+      ok: false,
+      status: 503,
+      detail: 'NASA NTRS is rate-limiting this proxy',
+      retry: false,
+      retryAfter: response.headers.get('retry-after') ?? '3600',
+    }
+  }
+
+  if (!response.ok) {
+    return {
+      ok: false,
+      status: 502,
+      detail: `NASA NTRS answered HTTP ${response.status}`,
+      retry: response.status >= 500,
+    }
+  }
+
+  let body: unknown
+  try {
+    body = await response.json()
+  } catch {
+    return {
+      ok: false,
+      status: 502,
+      detail: 'NASA NTRS returned a body that is not JSON',
+      retry: false,
+    }
+  }
+
+  const payload = parsePayload(body)
+  if (!payload) {
+    return {
+      ok: false,
+      status: 502,
+      detail: 'NASA NTRS returned a payload that is not a search response',
+      retry: false,
+    }
+  }
+
+  return { ok: true, payload }
+}
+
 
 function json(body: unknown, status: number, cache = 'no-store'): Response {
   return new Response(JSON.stringify(body), {
@@ -100,11 +200,35 @@ export default async function handler(req: Request): Promise<Response> {
   }
 
   const url = new URL(req.url)
-  const query = (url.searchParams.get('q') ?? '').replace(/\s+/g, ' ').trim().slice(0, MAX_QUERY)
-  if (query === '') {
-    return json({ error: 'q is required' }, 400)
+  const rawQuery = (url.searchParams.get('q') ?? '')
+    .replace(/[\u0000-\u001f\u007f]+/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+
+  if (rawQuery === '') {
+    return json(
+      {
+        error: 'q is required',
+        hint: 'Send a short topic, for example /api/nasa?q=saffire',
+      },
+      400,
+    )
   }
 
+  // Rejected rather than silently cut: NTRS matches every term, so a paragraph
+  // that lost its tail would return nothing and look like "no NASA literature
+  // exists" instead of "the query was wrong".
+  if (rawQuery.length > MAX_QUERY) {
+    return json(
+      {
+        error: `q is ${rawQuery.length} characters; the limit is ${MAX_QUERY}`,
+        hint: 'Send a short topic rather than a whole question; NTRS matches all terms.',
+      },
+      400,
+    )
+  }
+
+  const query = rawQuery
   const requested = Number(url.searchParams.get('limit') ?? DEFAULT_LIMIT)
   const limit = Number.isFinite(requested)
     ? Math.min(MAX_LIMIT, Math.max(1, Math.trunc(requested)))
@@ -115,23 +239,32 @@ export default async function handler(req: Request): Promise<Response> {
   upstream.searchParams.set('page.size', String(limit))
   upstream.searchParams.set('page.from', '0')
 
-  let payload: { stats?: { total?: number }; results?: NtrsResult[] }
-  try {
-    const response = await fetch(upstream.toString(), {
-      headers: { Accept: 'application/json' },
-      signal: AbortSignal.timeout(8000),
-    })
-    if (!response.ok) {
-      return json({ error: 'NASA NTRS did not answer', detail: `HTTP ${response.status}` }, 502)
+  let payload: NtrsPayload | null = null
+  let failure: Extract<UpstreamOutcome, { ok: false }> | null = null
+
+  for (let attempt = 1; attempt <= UPSTREAM_ATTEMPTS; attempt += 1) {
+    const outcome = await fetchOnce(upstream.toString())
+    if (outcome.ok) {
+      payload = outcome.payload
+      break
     }
-    payload = (await response.json()) as typeof payload
-  } catch (error) {
-    return json(
-      {
-        error: 'NASA NTRS could not be reached',
-        detail: error instanceof Error ? error.message : String(error),
-      },
-      502,
+    failure = outcome
+    if (!outcome.retry || attempt === UPSTREAM_ATTEMPTS) break
+    await sleep(RETRY_DELAY_MS)
+  }
+
+  if (!payload) {
+    const headers: Record<string, string> = {
+      'Content-Type': 'application/json',
+      'Cache-Control': 'no-store',
+    }
+    if (failure?.retryAfter) headers['Retry-After'] = failure.retryAfter
+    return new Response(
+      JSON.stringify({
+        error: 'NASA NTRS did not answer',
+        detail: failure?.detail ?? 'unknown upstream failure',
+      }),
+      { status: failure?.status ?? 502, headers },
     )
   }
 

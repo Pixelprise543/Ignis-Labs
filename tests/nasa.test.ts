@@ -170,4 +170,36 @@ describe('GET /api/nasa', () => {
     const response = await handler(new Request('https://ignis.local/api/nasa?q=saffire'))
     expect(response.status).toBe(502)
   })
+
+  it('reports a network failure as 502 rather than crashing', async () => {
+    vi.stubGlobal('fetch', vi.fn(async () => Promise.reject(new TypeError('fetch failed'))))
+    const response = await handler(new Request('https://ignis.local/api/nasa?q=saffire'))
+    expect(response.status).toBe(502)
+  })
+
+  it('rejects a malformed (non-JSON) upstream body as 502', async () => {
+    vi.stubGlobal('fetch', vi.fn(async () => ({ ok: true, status: 200, json: async () => { throw new Error('not json') } })))
+    const response = await handler(new Request('https://ignis.local/api/nasa?q=saffire'))
+    expect(response.status).toBe(502)
+  })
+
+  it('rejects a payload that is not a NTRS search envelope as 502', async () => {
+    vi.stubGlobal('fetch', vi.fn(async () => ({ ok: true, status: 200, json: async () => ({ nope: true }) })))
+    const response = await handler(new Request('https://ignis.local/api/nasa?q=saffire'))
+    expect(response.status).toBe(502)
+  })
+
+  it('rejects an over-long query with a hint instead of cutting it', async () => {
+    const response = await handler(new Request('https://ignis.local/api/nasa?q=' + 'a'.repeat(121)))
+    expect(response.status).toBe(400)
+    const body = await response.json()
+    expect(body.hint).toContain('short topic')
+  })
+
+  it('accepts a query exactly at the limit', async () => {
+    const fetchSpy = vi.fn(async () => jsonResponse({ stats: { total: 1 }, results: [] }))
+    vi.stubGlobal('fetch', fetchSpy)
+    const response = await handler(new Request('https://ignis.local/api/nasa?q=' + 's'.repeat(120)))
+    expect(response.status).toBe(200)
+  })
 })
