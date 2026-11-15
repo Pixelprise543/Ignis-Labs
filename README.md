@@ -81,14 +81,14 @@ react-markdown · vitest · Playwright.
 src/
   app/            shell, router, scenario bar (PC3)
   contracts/      frozen TypeScript contract (PC1)
-  design-system/  flat primitives + Ember Professional theme (PC3)
+  design-system/  Liquid Glass primitives + Ember Professional theme (PC3)
   features/       one folder per route (PC2 / PC3)
   lib/            data, scoring, insights, materials, coverage, simulator,
                   playbook, brief (PC1)
   store/          zustand store + URL sync (PC1)
 data/             experiment records, glossary, materials (PC1)
 e2e/              Playwright smoke tests (PC3)
-docs/             design and demo notes (PC3)
+docs/             API reference, architecture, design and demo notes (PC3)
 ```
 
 Each route is lazy-loaded. A feature folder that does not exist yet renders the
@@ -107,10 +107,17 @@ See `/method` in the app and [`data/SCHEMA.md`](data/SCHEMA.md) for details.
 
 ## Design and demo notes
 
-- [`docs/DESIGN.md`](docs/DESIGN.md) — Ember Professional tokens, flat rules,
+- [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) — PC ownership, module contract,
+  data flow, routes, git rules, commands, build tiers.
+- [`docs/API.md`](docs/API.md) — Reference for every module under `src/lib/`:
+  data, scoring, simulator, coverage, insights, materials, playbook, brief, SI,
+  search, scenarios, citations, validation.
+- [`docs/DESIGN.md`](docs/DESIGN.md) — Liquid Glass tokens, surface rules,
   accessibility, motion.
 - [`docs/DEMO.md`](docs/DEMO.md) — the demo script, expected result at each
   step, and fallbacks if a teammate's page is missing.
+- [`data/SCHEMA.md`](data/SCHEMA.md) — experiment record schema, confidence
+  rules, metric key registry, tag vocabulary, validation rules.
 
 ## Team
 
