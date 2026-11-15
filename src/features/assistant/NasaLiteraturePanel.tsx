@@ -51,7 +51,7 @@ export function NasaLiteraturePanel({ literature }: { literature: NasaLiterature
         {literature.results.map((publication) => (
           <li
             key={publication.id}
-            className="rounded-control border border-ig-line bg-ig-raised px-2.5 py-2"
+            className="rounded-control border border-ig-glass-control-rim bg-ig-glass-control px-2.5 py-2"
           >
             <a
               href={publication.url}

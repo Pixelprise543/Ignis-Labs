@@ -155,7 +155,7 @@ export function AskIgnisDrawer() {
                 }
               }}
               placeholder={`Ask about ${scenario.label} fire safety…`}
-              className="min-h-[44px] flex-1 resize-none rounded-control border border-ig-line bg-ig-hull px-2.5 py-2 text-sm text-ig-frost placeholder:text-ig-muted"
+              className="min-h-[44px] flex-1 resize-none rounded-control border border-ig-glass-field-rim bg-ig-glass-field px-2.5 py-2 text-sm text-ig-frost placeholder:text-ig-muted"
             />
             <button
               type="submit"
@@ -174,7 +174,7 @@ export function AskIgnisDrawer() {
       }
     >
       <div className="flex h-full flex-col gap-4">
-        <div className="rounded-panel border border-ig-line bg-ig-hull px-3 py-2">
+        <div className="rounded-panel border border-ig-glass-field-rim bg-ig-glass-sunken px-3 py-2">
           <p className="text-xs text-ig-muted">Active scenario</p>
           <p className="mt-0.5 text-sm font-medium text-ig-frost">{scenario.label}</p>
           <p className="mt-1 text-xs leading-5 text-ig-muted">
@@ -204,7 +204,7 @@ export function AskIgnisDrawer() {
                   key={suggestion}
                   type="button"
                   onClick={() => void send(suggestion)}
-                  className="w-full rounded-control border border-ig-line bg-ig-hull px-2.5 py-2 text-left text-sm text-ig-frost hover:bg-ig-raised"
+                  className="w-full rounded-control border border-ig-glass-control-rim bg-ig-glass-control px-2.5 py-2 text-left text-sm text-ig-frost hover:bg-ig-glass-hover"
                 >
                   {suggestion}
                 </button>
@@ -217,12 +217,12 @@ export function AskIgnisDrawer() {
           {messages.map((message) =>
             message.role === "user" ? (
               <div key={message.id} className="flex justify-end">
-                <p className="max-w-[85%] rounded-panel border border-ig-line bg-ig-raised px-3 py-2 text-sm leading-6 text-ig-frost">
+                <p className="max-w-[85%] rounded-panel border border-ig-glass-control-rim bg-ig-glass-pressed px-3 py-2 text-sm leading-6 text-ig-frost">
                   {message.text}
                 </p>
               </div>
             ) : (
-              <div key={message.id} className="rounded-panel border border-ig-line bg-ig-hull p-3">
+              <div key={message.id} className="rounded-panel border border-ig-glass-field-rim bg-ig-glass-sunken p-3">
                 <div className="mb-2 flex flex-wrap items-center gap-2">
                   <Badge tone={isOfflineAnswer(message.response) ? "amber" : "olive"}>
                     {isOfflineAnswer(message.response) ? "Offline fallback" : "Model answer"}
@@ -267,18 +267,18 @@ export function AskIgnisDrawer() {
           )}
 
           {loading ? (
-            <div className="rounded-panel border border-ig-line bg-ig-hull p-3" aria-busy="true">
+            <div className="rounded-panel border border-ig-glass-field-rim bg-ig-glass-sunken p-3" aria-busy="true">
               <p className="text-xs text-ig-muted">Searching the evidence library…</p>
               <div className="mt-2 space-y-1.5">
-                <div className="h-3 w-4/5 animate-pulse rounded-control bg-ig-raised" />
-                <div className="h-3 w-3/5 animate-pulse rounded-control bg-ig-raised" />
+                <div className="h-3 w-4/5 animate-pulse rounded-control bg-ig-glass-control" />
+                <div className="h-3 w-3/5 animate-pulse rounded-control bg-ig-glass-control" />
               </div>
             </div>
           ) : null}
         </div>
 
         {error ? (
-          <p role="alert" className="rounded-control border border-ig-alarm px-3 py-2 text-sm text-ig-alarm">
+          <p role="alert" className="rounded-control border border-ig-alarm bg-ig-glass-sunken px-3 py-2 text-sm text-ig-alarm">
             {error}
           </p>
         ) : null}
