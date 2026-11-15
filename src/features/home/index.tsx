@@ -1,9 +1,9 @@
-import { ArrowRight, Sparkles } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import type { Severity } from "@/contracts/types";
 import { Link } from "react-router-dom";
 import { getExperiments, getInsights, useIgnis } from "@/app/data";
-import { Badge, Button, Card, CardContent, Tooltip } from "@/design-system";
+import { Badge, Card, CardContent, Tooltip } from "@/design-system";
 import { InsightCard } from "@/features/insights/InsightCard";
 import { FlameOrb } from "./Orb";
 
@@ -27,7 +27,7 @@ const ENTRY_POINTS = [
  * feel like opening the whole old app at once.
  */
 export function HomePage() {
-  const { scenario, setDrawerOpen } = useIgnis();
+  const { scenario } = useIgnis();
   const experiments = getExperiments();
   const insights = useMemo(() => getInsights(scenario), [scenario]);
   const [modelViewerReady, setModelViewerReady] = useState(false);
@@ -88,16 +88,6 @@ export function HomePage() {
                   Enter workspace
                   <ArrowRight size={15} aria-hidden="true" />
                 </Link>
-              </Tooltip>
-              <Tooltip label="Opens Ask Ignis, a chat grounded only in the dataset that cites experiment IDs.">
-                <Button
-                  variant="outline"
-                  size="lg"
-                  icon={<Sparkles size={15} />}
-                  onClick={() => setDrawerOpen(true)}
-                >
-                  Ask Ignis
-                </Button>
               </Tooltip>
             </div>
           </div>
