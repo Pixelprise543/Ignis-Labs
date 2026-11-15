@@ -10,10 +10,10 @@ import { Note, PageHeading } from '../explore/_shared'
 
 /** Ranges match levelForRisk in @/lib/severity: 25 / 45 / 70. */
 const RISK_STYLES: Record<Severity, { label: string; color: string; range: string }> = {
-  info: { label: 'Low', color: 'var(--ig-quench, #8DBF6A)', range: '0–24' },
-  caution: { label: 'Moderate', color: 'var(--ig-amber, #F5B942)', range: '25–44' },
-  high: { label: 'High', color: 'var(--ig-ember, #EE7B3A)', range: '45–69' },
-  critical: { label: 'Critical', color: 'var(--ig-alarm, #F06A6E)', range: '70–100' },
+  info: { label: 'Low', color: 'var(--ig-quench)', range: '0–24' },
+  caution: { label: 'Moderate', color: 'var(--ig-amber)', range: '25–44' },
+  high: { label: 'High', color: 'var(--ig-ember)', range: '45–69' },
+  critical: { label: 'Critical', color: 'var(--ig-alarm)', range: '70–100' },
 }
 
 const RISK_ORDER: Severity[] = ['info', 'caution', 'high', 'critical']
@@ -52,11 +52,11 @@ function HatchSwatch() {
     <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
       <defs>
         <pattern id={id} width="4" height="4" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
-          <rect width="4" height="4" fill="var(--ig-hull, #231D18)" />
-          <line x1="0" y1="0" x2="0" y2="4" stroke="var(--ig-line, #40362D)" strokeWidth="1.5" />
+          <rect width="4" height="4" fill="var(--ig-hull)" />
+          <line x1="0" y1="0" x2="0" y2="4" stroke="var(--ig-line)" strokeWidth="1.5" />
         </pattern>
       </defs>
-      <rect x="0.5" y="0.5" width="15" height="15" fill={`url(#${id})`} stroke="var(--ig-line, #40362D)" />
+      <rect x="0.5" y="0.5" width="15" height="15" fill={`url(#${id})`} stroke="var(--ig-line)" />
     </svg>
   )
 }
@@ -68,8 +68,8 @@ function NoDataCell({ label }: { label: string }) {
       <svg width="100%" height="100%" viewBox="0 0 64 40" preserveAspectRatio="none" aria-hidden="true" focusable="false">
         <defs>
           <pattern id={id} width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
-            <rect width="6" height="6" fill="var(--ig-vacuum, #1A1512)" />
-            <line x1="0" y1="0" x2="0" y2="6" stroke="var(--ig-line, #40362D)" strokeWidth="1.5" />
+            <rect width="6" height="6" fill="var(--ig-vacuum)" />
+            <line x1="0" y1="0" x2="0" y2="6" stroke="var(--ig-line)" strokeWidth="1.5" />
           </pattern>
         </defs>
         <rect width="64" height="40" fill={`url(#${id})`} />

@@ -104,7 +104,7 @@ export function OxygenLimitChart({ experiments, height }: OxygenLimitChartProps)
           />
           <Tooltip
             content={<OxygenTooltip />}
-            cursor={{ fill: 'var(--ig-raised, #2E2620)' }}
+            cursor={{ fill: 'var(--ig-raised)' }}
             wrapperStyle={{ outline: 'none', boxShadow: 'none' }}
           />
           <Bar dataKey="o2" name="Limiting oxygen" barSize={14} isAnimationActive={false}>

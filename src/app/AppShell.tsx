@@ -86,6 +86,8 @@ function RailGroups() {
   const [openGroups, setOpenGroups] = useState<NavGroup[]>(() =>
     activeGroup ? [activeGroup] : [],
   );
+  const [filter, setFilter] = useState("");
+  const [allOpen, setAllOpen] = useState(false);
 
   useEffect(() => {
     if (!activeGroup) return;
@@ -94,18 +96,81 @@ function RailGroups() {
     );
   }, [activeGroup]);
 
+  const matches = (text: string) =>
+    text.toLowerCase().includes(filter.toLowerCase());
+
   function toggle(group: NavGroup) {
     setOpenGroups((current) =>
       current.includes(group) ? current.filter((value) => value !== group) : [...current, group],
     );
   }
 
+  function setAll(open: boolean) {
+    setAllOpen(open);
+    if (open) setOpenGroups(NAV_GROUPS.slice());
+    else setOpenGroups([]);
+  }
+
+  const filteredGroups = NAV_GROUPS.map((group) => {
+    const routes = platformRoutesByGroup(group).filter(
+      (route) => matches(route.label) || matches(route.path),
+    );
+    const groupLabel = matches(group);
+    return { group, routes, groupLabel };
+  });
+
+  const hitCount = filteredGroups.reduce(
+    (sum, g) => sum + g.routes.length,
+    0,
+  );
+
   return (
     <nav aria-label="Main" className="ig-scroll-y mt-5 min-h-0 flex-1 space-y-3 overflow-y-auto pr-1">
-      {NAV_GROUPS.map((group) => {
-        const routes = platformRoutesByGroup(group);
-        if (routes.length === 0) return null;
-        const isOpen = openGroups.includes(group);
+      {/* Find a view: filters labels and paths; matching groups open automatically. */}
+      <div className="relative mb-2">
+        <input
+          id="rail-find"
+          type="search"
+          placeholder="Find a view"
+          value={filter}
+          onChange={(event) => setFilter(event.target.value)}
+          className="w-full h-8 rounded-control border border-ig-line bg-ig-hull px-2.5 text-xs text-ig-frost placeholder:text-ig-muted focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ig-flame-blue)]"
+          aria-label="Filter navigation views"
+          aria-describedby="rail-find-hint"
+        />
+        <span id="rail-find-hint" className="sr-only">
+          {hitCount} matching view{hitCount === 1 ? "" : "s"}
+        </span>
+      </div>
+
+      <div className="flex items-center justify-between gap-2 mb-1">
+        <p className="text-[10px] text-ig-muted">
+          {filter ? hitCount + " match" + (hitCount === 1 ? "" : "es") : "Navigation"}
+        </p>
+        <div className="flex gap-1">
+          <button
+            type="button"
+            onClick={() => setAll(true)}
+            aria-pressed={allOpen}
+            className="inline-flex h-6 items-center justify-center rounded-control px-2 text-[10px] text-ig-muted hover:bg-ig-raised hover:text-ig-frost"
+          >
+            Expand all
+          </button>
+          <button
+            type="button"
+            onClick={() => setAll(false)}
+            aria-pressed={!allOpen}
+            className="inline-flex h-6 items-center justify-center rounded-control px-2 text-[10px] text-ig-muted hover:bg-ig-raised hover:text-ig-frost"
+          >
+            Collapse all
+          </button>
+        </div>
+      </div>
+
+      {filteredGroups.map((entry) => {
+        const { group, routes, groupLabel } = entry;
+        if (routes.length === 0 && !filter) return null;
+        const isOpen = Boolean(openGroups.includes(group) || (filter && groupLabel));
         const isActive = activeGroup === group;
         const panelId = `rail-group-${group.replace(/\s+/g, "-").toLowerCase()}`;
 
@@ -269,6 +334,10 @@ function MoreSheet({ open, onClose }: { open: boolean; onClose: () => void }) {
   const location = useLocation();
   const activeGroup =
     PLATFORM_ROUTES.find((route) => route.path === location.pathname)?.group ?? null;
+  const [sheetFilter, setSheetFilter] = useState("");
+
+  const sheetMatches = (text: string) =>
+    text.toLowerCase().includes(sheetFilter.toLowerCase());
 
   useEffect(() => {
     if (!open) return;
@@ -283,7 +352,7 @@ function MoreSheet({ open, onClose }: { open: boolean; onClose: () => void }) {
 
   return (
     <div className="fixed inset-0 z-50 flex flex-col justify-end lg:hidden">
-      <div aria-hidden="true" className="absolute inset-0 bg-ig-vacuum/80" onClick={onClose} />
+      <div aria-hidden="true" className="absolute inset-0 bg-[var(--ig-scrim)]" onClick={onClose} />
       <div
         role="dialog"
         aria-modal="true"
@@ -302,16 +371,39 @@ function MoreSheet({ open, onClose }: { open: boolean; onClose: () => void }) {
           </button>
         </div>
 
+        {/* Find a view: filters labels; matching groups open automatically. */}
+        <div className="relative mb-2">
+          <input
+            id="sheet-find"
+            type="search"
+            placeholder="Find a view"
+            value={sheetFilter}
+            onChange={(event) => setSheetFilter(event.target.value)}
+            className="w-full h-8 rounded-control border border-ig-line bg-ig-hull px-2.5 text-xs text-ig-frost placeholder:text-ig-muted focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ig-flame-blue)]"
+            aria-label="Filter navigation views"
+          />
+        </div>
+
         <div className="space-y-2">
           {NAV_GROUPS.map((group) => {
-            const routes = platformRoutesByGroup(group);
-            if (routes.length === 0) return null;
+            const routes = platformRoutesByGroup(group).filter((route) =>
+              sheetMatches(route.label),
+            );
+            const groupLabelMatch = sheetMatches(group);
+            const isOpen = Boolean(
+              group === activeGroup || (sheetFilter && groupLabelMatch),
+            );
+            if (routes.length === 0 && !sheetFilter) return null;
             return (
               <Collapsible
                 key={group}
                 title={group}
-                summary={`${routes.length} ${routes.length === 1 ? "view" : "views"}`}
-                defaultOpen={group === activeGroup}
+                summary={
+                  routes.length +
+                  " view" +
+                  (routes.length === 1 ? "" : "s")
+                }
+                defaultOpen={isOpen}
                 headingLevel={2}
               >
                 <div className="space-y-0.5">

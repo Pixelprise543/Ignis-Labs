@@ -49,7 +49,7 @@ export function CommandPalette() {
         if (event.key === "Escape") close();
       }}
     >
-      <div aria-hidden="true" className="absolute inset-0 bg-ig-vacuum/80" onClick={close} />
+      <div aria-hidden="true" className="absolute inset-0 bg-[var(--ig-scrim)]" onClick={close} />
       <Command
         label="Command palette"
         className="ig-cmd relative w-full max-w-[560px] overflow-hidden rounded-panel border border-ig-line bg-ig-hull"

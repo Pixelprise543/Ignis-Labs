@@ -30,8 +30,8 @@ function flamePath(gravityG: number): string {
   return `${points.join(" ")} Z`;
 }
 
-const GOLD = "#E3B76B";
-const AMBER = "#F5B942";
+const GOLD = 'var(--ig-flame-blue)'
+const AMBER = 'var(--ig-amber)'
 
 export interface FlameOrbProps {
   gravityG: number;

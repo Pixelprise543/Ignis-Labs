@@ -77,7 +77,7 @@ export function CorporateShell({ children }: { children: React.ReactNode }) {
 
       {menuOpen ? (
         <div className="fixed inset-0 z-50 flex flex-col lg:hidden">
-          <div aria-hidden="true" className="absolute inset-0 bg-ig-vacuum/80" onClick={() => setMenuOpen(false)} />
+          <div aria-hidden="true" className="absolute inset-0 bg-[var(--ig-scrim)]" onClick={() => setMenuOpen(false)} />
           <div role="dialog" aria-modal="true" aria-label="Menu" className="relative max-h-[85dvh] overflow-y-auto border border-ig-line bg-ig-hull p-5">
             <div className="mb-4 flex items-center justify-between">
               <p className="text-sm font-semibold text-ig-frost">Menu</p>

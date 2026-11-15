@@ -527,7 +527,7 @@ export function ComparePage() {
               <Skeleton className="h-4 w-2/3" />
             </div>
           ) : siState.status === 'error' ? (
-            <Card bordered padding="md" className="border-ig-amber bg-ig-vacuum/50">
+            <Card bordered padding="md" className="border-ig-amber bg-[var(--ig-scrim)]">
               <CardContent>
                 <p className="text-xs text-ig-frost">
                   The comparison could not be generated: {siState.message}
