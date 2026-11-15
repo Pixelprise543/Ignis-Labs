@@ -1,199 +1,226 @@
 import type { Experiment, SIRequest, SIResponse } from '../src/contracts/types'
-import { auditCitations } from '../src/lib/citations'
-import { getExperiment, getExperiments } from '../src/lib/data'
-import { scenarioContextLabel } from '../src/lib/scenarios'
-import { normalizeRequest } from '../src/lib/si'
 import { offlineAnswer } from '../src/lib/siFallback'
+import { normalizeRequest } from '../src/lib/si'
+import { auditCitations } from '../src/lib/citations'
+import { getExperiments, getExperiment } from '../src/lib/data'
+import { scenarioContextLabel, formatGravity } from '../src/lib/scenarios'
+import { defaultWeights, rankExperiments } from '../src/lib/scoring'
 
 /**
- * POST /api/si - the only place a model provider key is read.
+ * POST /api/si - safety intelligence endpoint.
  *
- * The browser never sees a key. Without SI_PROVIDER and SI_API_KEY the route
- * serves the deterministic offline answer, so the deployed app works with no
- * secret configured and the same request always returns grounded markdown.
+ * The provider is chosen server-side through SI_PROVIDER so the browser never
+ * sees a model key:
+ *  - unset / "none": deterministic offline answer built from the local dataset
+ *  - anything else with SI_API_KEY set: that provider's OpenAI-compatible chat
+ *    completions endpoint, grounded in the dataset, with the deterministic
+ *    offline answer as the failure fallback
  *
- * A provider answer is audited exactly like a client answer: citations that do
- * not resolve are stripped and the grounding score is attached, so a fluent but
- * ungrounded model cannot masquerade as evidence.
+ * NVIDIA NIM is the recommended provider: set SI_PROVIDER=nvidia,
+ * SI_API_KEY=<nvapi-key>, SI_MODEL=<nim-model>. The key is read server-side
+ * only and never reaches the browser bundle.
+ *
+ * Runs on the Edge runtime for the same reason as api/nasa.ts: Vercel bundles
+ * the module graph, so a deployment cannot fail on an unresolved import. The
+ * dev server calls handleSiRequest directly via vite.config.ts.
+ *
+ * Honesty: the model is instructed to cite only real experiment ids in
+ * brackets. Every answer passes through auditCitations, which strips invented
+ * citations and reports a grounding score. The offline fallback is used
+ * whenever the model is unavailable, slow, rate-limited, or returns an
+ * empty/ungrounded answer.
  */
 
-type Provider = 'openai' | 'anthropic' | 'openrouter' | 'none'
+export const config = { runtime: 'edge' }
 
-const PROVIDERS: Provider[] = ['openai', 'anthropic', 'openrouter', 'none']
+const NVIDIA_BASE = 'https://integrate.api.nvidia.com/v1/chat/completions'
+const OPENAI_BASE = 'https://api.openai.com/v1/chat/completions'
+const REQUEST_TIMEOUT_MS = 8000
+const MAX_EXPERIMENTS_IN_PROMPT = 12
+const MAX_PROMPT_CHARS = 6000
 
-const DEFAULT_MODELS: Record<Exclude<Provider, 'none'>, string> = {
-  openai: 'gpt-4o-mini',
-  anthropic: 'claude-3-5-haiku-latest',
-  openrouter: 'openai/gpt-4o-mini',
+/** Default NIM model when SI_MODEL is not set. */
+const DEFAULT_MODEL = 'meta/llama-3.1-8b-instruct'
+
+function env(name: string): string | undefined {
+  const value = process.env[name]
+  return typeof value === 'string' ? value.trim() : undefined
 }
 
-interface ProviderConfig {
-  provider: Provider
-  apiKey: string
-  model: string
+function provider(): string | undefined {
+  return env('SI_PROVIDER')
 }
 
-function readConfig(): ProviderConfig {
-  const raw = (process.env.SI_PROVIDER ?? 'none').trim().toLowerCase()
-  const provider = PROVIDERS.find((candidate) => candidate === raw) ?? 'none'
-  return {
-    provider,
-    apiKey: (process.env.SI_API_KEY ?? '').trim(),
-    model: (process.env.SI_MODEL ?? '').trim(),
-  }
+function apiKey(): string | undefined {
+  return env('SI_API_KEY')
 }
 
-const MODE_INSTRUCTION: Record<SIRequest['mode'], string> = {
-  summarize:
-    'Summarise the selected records. For each, state what was tested, what happened and the safety takeaway. Do not add facts that are not in the records.',
-  compare:
-    'Compare the selected records. Call out differences in gravity, oxygen fraction, pressure, flow and material, and say which difference matters most for the scenario.',
-  interpret:
-    'Interpret the scenario. Rank the fire-safety concerns by urgency, explain each with record evidence, and name the evidence gaps that remain.',
-  ask:
-    'Answer the question using only the records. If the records do not answer it, say so and name what evidence would be needed.',
-  brief:
-    'Write a short mission safety brief: scenario, top ranked records, the three most urgent concerns, evidence gaps and limitations.',
-  playbook:
-    'Write a crew response playbook with the phases detect, isolate, suppress, ventilate and recover. Cite evidence for every step and keep suppression advice qualitative.',
+function modelId(): string {
+  return env('SI_MODEL') ?? DEFAULT_MODEL
 }
 
-function buildContext(request: SIRequest): string {
+function isProviderConfigured(): boolean {
+  const p = provider()
+  return Boolean(p) && p !== 'none' && Boolean(apiKey())
+}
+
+function providerBaseUrl(): string {
+  return provider() === 'openai' ? OPENAI_BASE : NVIDIA_BASE
+}
+
+/**
+ * Pick the experiments the model may cite: the selected experiments first, then
+ * the top-ranked experiments for the scenario. Deduped, capped, and ordered so
+ * the most relevant context arrives first.
+ */
+function contextExperiments(request: SIRequest): Experiment[] {
   const selected = request.experimentIds
     .map((id) => getExperiment(id))
-    .filter((experiment): experiment is Experiment => experiment !== undefined)
+    .filter((experiment): experiment is Experiment => Boolean(experiment))
 
-  const records = selected.length > 0 ? selected : getExperiments()
+  const ranked = rankExperiments(getExperiments(), defaultWeights, request.scenario)
+    .map((entry) => entry.experiment)
+    .filter((experiment) => !selected.some((s) => s.id === experiment.id))
 
-  const blocks = records.slice(0, 12).map((experiment) => {
-    const findings = experiment.findings.map((finding) => `${finding.id}: ${finding.text}`)
-    return [
-      `- id: ${experiment.id}`,
-      `  acronym: ${experiment.acronym}`,
-      `  facility: ${experiment.facility} | regime: ${experiment.regime} | fuel: ${experiment.fuel}`,
-      `  years: ${experiment.years[0]}-${experiment.years[1] ?? 'present'} | confidence: ${experiment.confidence}`,
-      `  summary: ${experiment.summary}`,
-      `  safety takeaway: ${experiment.safetyTakeaway}`,
-      `  findings: ${findings.join(' || ')}`,
-    ].join('\n')
-  })
+  const combined = [...selected, ...ranked]
+  const seen = new Set<string>()
+  const result: Experiment[] = []
+  for (const experiment of combined) {
+    if (seen.has(experiment.id)) continue
+    seen.add(experiment.id)
+    result.push(experiment)
+    if (result.length === MAX_EXPERIMENTS_IN_PROMPT) break
+  }
+  return result
+}
 
+function experimentLine(experiment: Experiment): string {
+  const { conditions } = experiment
+  const oxygen = conditions.o2Percent === null ? 'not published' : `${conditions.o2Percent}% O2`
+  const pressure =
+    conditions.pressureKPa === null ? 'not published' : `${Number(conditions.pressureKPa.toPrecision(3))} kPa`
+  const flow = conditions.flowCmPerS === null ? 'not published' : `${conditions.flowCmPerS} cm/s`
+  const source = experiment.sources[0]
+  const sourceLine = source
+    ? `Source: ${source.org} - ${source.title}${source.year ? ` (${source.year})` : ''}`
+    : 'no published source'
   return [
-    `Scenario: ${scenarioContextLabel(request.scenario)}`,
-    `Scenario note: ${request.scenario.assumption ? 'notional design point (assumption)' : 'operational reference'}`,
-    '',
-    `RECORDS (${records.length} available, showing ${Math.min(12, records.length)}):`,
-    ...blocks,
+    `- [${experiment.id}] ${experiment.acronym} - ${experiment.name}`,
+    `  Summary: ${experiment.summary}`,
+    `  Conditions: ${formatGravity(conditions.gravityG)} | ${oxygen} | ${pressure} | flow ${flow}`,
+    `  Safety takeaway: ${experiment.safetyTakeaway}`,
+    `  Confidence: ${experiment.confidence}. ${sourceLine}`,
   ].join('\n')
 }
 
-const SYSTEM_PROMPT = [
-  'You are Ignis, a fire-safety analyst for human spaceflight.',
-  'Use only the RECORDS block provided by the user. Do not use outside knowledge to add numbers, materials, experiments or NASA programmes.',
-  'Cite every factual claim with a bracketed experiment id from the records, for example [saffire-i].',
-  'Never invent an experiment id, a measurement or a source.',
-  'If the records do not answer the question, say what is missing instead of guessing.',
-  'This is decision support, not a qualified flight procedure. End every answer with one line saying so.',
-].join('\n')
+function buildPrompt(request: SIRequest): string {
+  const experiments = contextExperiments(request)
+  const lines = experiments.map(experimentLine)
+  let context = lines.join('\n\n')
+  if (context.length > MAX_PROMPT_CHARS) {
+    context = context.slice(0, MAX_PROMPT_CHARS).replace(/\n\s*$/, '') + '\n…'
+  }
 
-function userPrompt(request: SIRequest): string {
+  const scenarioLabel = scenarioContextLabel(request.scenario)
+  const assumptionNote = request.scenario.assumption
+    ? 'This is a notional design point: treat every number as an assumption to verify.'
+    : 'This is an operational reference atmosphere, not an assumption.'
+
   return [
-    MODE_INSTRUCTION[request.mode],
-    request.question ? `Question: ${request.question}` : '',
-    request.context ? `Extra context: ${request.context}` : '',
+    'You are Ignis, a fire-safety assistant for NASA microgravity combustion data.',
+    'Answer ONLY using the dataset below. Never invent experiment ids, numbers, or sources.',
+    'Cite experiments exactly as [experiment-id] (for example [saffire-i]).',
+    'If the dataset does not cover the topic, say so instead of making an answer up.',
+    `Scenario: ${scenarioLabel}. ${assumptionNote}`,
     '',
-    buildContext(request),
+    '## Dataset (citable experiments)',
+    '',
+    context,
+    '',
+    '## User request',
+    `Mode: ${request.mode}`,
+    request.question ? `Question: ${request.question}` : '',
+    request.context ? `Context: ${request.context}` : '',
+    '',
+    'Answer in plain language, then list the experiment ids you relied on as [id] citations.',
   ]
     .filter((line) => line !== '')
     .join('\n')
 }
 
-async function callOpenAiCompatible(
-  config: ProviderConfig,
-  system: string,
-  user: string,
-): Promise<string> {
-  const base =
-    config.provider === 'openrouter'
-      ? 'https://openrouter.ai/api/v1'
-      : 'https://api.openai.com/v1'
-  const model = config.model || DEFAULT_MODELS[config.provider as Exclude<Provider, 'none'>]
+async function providerAnswer(request: SIRequest): Promise<SIResponse | null> {
+  if (!isProviderConfigured()) return null
 
-  const response = await fetch(`${base}/chat/completions`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${config.apiKey}`,
-      ...(config.provider === 'openrouter'
-        ? { 'HTTP-Referer': 'https://ignis.local', 'X-Title': 'Ignis' }
-        : {}),
-    },
-    body: JSON.stringify({
-      model,
-      temperature: 0.2,
-      messages: [
-        { role: 'system', content: system },
-        { role: 'user', content: user },
-      ],
-    }),
-  })
+  const prompt = buildPrompt(request)
 
-  if (!response.ok) {
-    throw new Error(`Provider responded ${response.status}`)
+  try {
+    const controller = new AbortController()
+    const timer = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS)
+
+    const response = await fetch(providerBaseUrl(), {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${apiKey()}`,
+        Accept: 'application/json',
+      },
+      body: JSON.stringify({
+        model: modelId(),
+        messages: [
+          {
+            role: 'system',
+            content:
+              'You are a grounded fire-safety assistant. Cite only real experiment ids from the dataset in brackets. Never invent ids, numbers, or sources.',
+          },
+          { role: 'user', content: prompt },
+        ],
+        temperature: 0.2,
+        max_tokens: 700,
+        stream: false,
+      }),
+      signal: controller.signal,
+    })
+
+    clearTimeout(timer)
+
+    if (!response.ok) return null
+
+    const body: unknown = await response.json()
+    const content =
+      typeof body === 'object' &&
+      body !== null &&
+      Array.isArray((body as Record<string, unknown>).choices) &&
+      (body as Record<string, unknown>).choices.length > 0
+        ? typeof (body as Record<string, unknown>).choices[0] === 'object' &&
+          (body as Record<string, unknown>).choices[0] !== null &&
+          typeof ((body as Record<string, unknown>).choices[0] as Record<string, unknown>).message === 'object' &&
+          ((body as Record<string, unknown>).choices[0] as Record<string, unknown>).message !== null &&
+          typeof (((body as Record<string, unknown>).choices[0] as Record<string, unknown>).message as Record<string, unknown>)
+            .content === 'string'
+          ? (((body as Record<string, unknown>).choices[0] as Record<string, unknown>).message as Record<string, unknown>)
+              .content
+          : ''
+        : ''
+
+    if (!content.trim()) return null
+
+    const audit = auditCitations(content)
+    return {
+      answerMarkdown: audit.markdown,
+      citations: audit.citations,
+      model: modelId(),
+      fallback: false,
+      groundingScore: audit.groundingScore,
+      invalidCitationsRemoved: audit.invalidCitationsRemoved,
+    }
+  } catch {
+    return null
   }
-
-  const body = (await response.json()) as {
-    choices?: Array<{ message?: { content?: string } }>
-  }
-  return body.choices?.[0]?.message?.content ?? ''
-}
-
-async function callAnthropic(
-  config: ProviderConfig,
-  system: string,
-  user: string,
-): Promise<string> {
-  const response = await fetch('https://api.anthropic.com/v1/messages', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'x-api-key': config.apiKey,
-      'anthropic-version': '2023-06-01',
-    },
-    body: JSON.stringify({
-      model: config.model || DEFAULT_MODELS.anthropic,
-      max_tokens: 1200,
-      temperature: 0.2,
-      system,
-      messages: [{ role: 'user', content: user }],
-    }),
-  })
-
-  if (!response.ok) {
-    throw new Error(`Provider responded ${response.status}`)
-  }
-
-  const body = (await response.json()) as {
-    content?: Array<{ type?: string; text?: string }>
-  }
-  return (body.content ?? [])
-    .filter((block) => block.type === 'text')
-    .map((block) => block.text ?? '')
-    .join('')
-}
-
-async function callProvider(
-  config: ProviderConfig,
-  system: string,
-  user: string,
-): Promise<string> {
-  return config.provider === 'anthropic'
-    ? callAnthropic(config, system, user)
-    : callOpenAiCompatible(config, system, user)
 }
 
 /**
- * The route's whole behaviour, exported so a test can call it without a server.
+ * The route's whole behaviour, exported so a test - and the Vite dev
+ * middleware in vite.config.ts - can call it without a server.
  * Never throws, never returns an ungrounded answer unmarked.
  */
 export async function handleSiRequest(input: unknown): Promise<SIResponse> {
@@ -204,62 +231,43 @@ export async function handleSiRequest(input: unknown): Promise<SIResponse> {
     request = normalizeRequest(null)
   }
 
-  const config = readConfig()
-  if (config.provider === 'none' || config.apiKey === '') {
-    return offlineAnswer(request)
+  const live = await providerAnswer(request)
+  if (live) return live
+  return offlineAnswer(request)
+}
+
+function json(body: unknown, status: number): Response {
+  return new Response(JSON.stringify(body), {
+    status,
+    headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' },
+  })
+}
+
+/** Vercel edge handler. The dev server calls handleSiRequest directly. */
+export default async function handler(req: Request): Promise<Response> {
+  if (req.method !== 'POST') {
+    return json({ error: 'Use POST for /api/si' }, 405)
+  }
+
+  let body: unknown = {}
+  try {
+    body = await req.json()
+  } catch {
+    // An unreadable body is treated as an empty request, not an error: the
+    // deterministic answer still works and the client never sees a 500.
+    body = {}
   }
 
   try {
-    const answer = await callProvider(config, SYSTEM_PROMPT, userPrompt(request))
-    if (answer.trim() === '') return offlineAnswer(request)
-
-    const audit = auditCitations(answer)
-    return {
-      answerMarkdown: audit.markdown,
-      citations: audit.citations,
-      model: config.model || DEFAULT_MODELS[config.provider as Exclude<Provider, 'none'>],
-      fallback: false,
-      groundingScore: audit.groundingScore,
-      invalidCitationsRemoved: audit.invalidCitationsRemoved,
-    }
-  } catch {
-    return offlineAnswer(request)
+    const result = await handleSiRequest(body)
+    return json(result, 200)
+  } catch (error) {
+    return json(
+      {
+        error: 'The answer engine failed on that request.',
+        detail: error instanceof Error ? error.message : String(error),
+      },
+      503,
+    )
   }
-}
-
-interface ApiRequest {
-  method?: string
-  body?: unknown
-}
-
-interface ApiResponse {
-  statusCode: number
-  setHeader: (name: string, value: string) => void
-  end: (body?: string) => void
-}
-
-/** Vercel/Node handler. The dev server calls handleSiRequest directly. */
-export default async function handler(req: ApiRequest, res: ApiResponse): Promise<void> {
-  if (req.method !== 'POST') {
-    res.statusCode = 405
-    res.setHeader('Content-Type', 'application/json')
-    res.end(JSON.stringify({ error: 'Use POST for /api/si' }))
-    return
-  }
-
-  const body =
-    typeof req.body === 'string'
-      ? (() => {
-          try {
-            return JSON.parse(req.body) as unknown
-          } catch {
-            return {}
-          }
-        })()
-      : req.body
-
-  const result = await handleSiRequest(body)
-  res.statusCode = 200
-  res.setHeader('Content-Type', 'application/json')
-  res.end(JSON.stringify(result))
 }
