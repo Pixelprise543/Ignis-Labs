@@ -256,6 +256,20 @@
     background-color: var(--ig-glass-base-nav);
   }
 
+  /*
+   * ...and the reverse: an overlay drawn INSIDE a sheet (a chart tooltip, a
+   * glossary term tooltip, a chart legend popover) must not blur a second time.
+   * Two stacked backdrop-filters are expensive and read as mud. Inside a sheet
+   * the overlay keeps its near-solid warm fill and simply drops the blur.
+   * Full-screen overlays are portaled to <body>, so they are not matched here
+   * and keep their heavy blur.
+   */
+  .ig-glass .ig-glass-overlay,
+  .ig-glass-nav .ig-glass-overlay {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+
   /* Dialogs, drawers, popovers, tooltips, toasts. */
   .ig-glass-overlay {
     border: 1px solid var(--ig-glass-rim-strong);
