@@ -3,6 +3,7 @@ import { AlertTriangle } from "lucide-react";
 import { useState } from "react";
 import type { Scenario } from "@/contracts/types";
 import { SCENARIOS, customScenario, useIgnis } from "@/app/data";
+import { Tooltip } from "@/design-system";
 
 const fieldClass =
   "h-8 w-20 rounded-field border border-ig-glass-field-rim bg-ig-glass-field px-2 text-sm text-ig-frost ig-num";
@@ -56,26 +57,27 @@ export function ScenarioBar() {
           {SCENARIOS.map((entry) => {
             const active = entry.id === scenario.id;
             return (
-              <button
-                key={entry.id}
-                type="button"
-                aria-pressed={active}
-                onClick={() => choose(entry)}
-                className={clsx(
-                  "relative h-8 shrink-0 rounded-control px-3 text-sm font-medium transition-colors",
-                  active
-                    ? "bg-ig-glass-pressed text-ig-frost"
-                    : "text-ig-muted hover:bg-ig-glass-hover hover:text-ig-frost",
-                )}
-              >
-                {active ? (
-                  <span
-                    aria-hidden="true"
-                    className="absolute inset-y-1 left-0 w-0.5 rounded-full bg-ig-flame-blue"
-                  />
-                ) : null}
-                {entry.label}
-              </button>
+              <Tooltip key={entry.id} label={entry.description}>
+                <button
+                  key={entry.id}
+                  type="button"
+                  aria-pressed={active}
+                  onClick={() => choose(entry)}
+                  className={clsx(
+                    "relative h-8 shrink-0 rounded-control px-3 text-sm font-medium transition-colors",
+                    active
+                      ? "bg-ig-glass-pressed text-ig-frost"
+                      : "text-ig-muted hover:bg-ig-glass-hover hover:text-ig-frost",
+                  )}>
+                  {active ? (
+                    <span
+                      aria-hidden="true"
+                      className="absolute inset-y-1 left-0 w-0.5 rounded-full bg-ig-flame-blue"
+                    />
+                  ) : null}
+                  {entry.label}
+                </button>
+              </Tooltip>
             );
           })}
         </div>
@@ -137,13 +139,15 @@ export function ScenarioBar() {
               onChange={(event) => setDraft((prev) => ({ ...prev, kPa: Number(event.target.value) }))}
             />
           </label>
-          <button
-            type="button"
-            onClick={() => setScenario(customScenario(draft.g, draft.o2, draft.kPa))}
-            className="h-8 rounded-control bg-ig-flame-blue px-3 text-sm font-medium text-ig-on-accent hover:bg-ig-amber"
-          >
-            Apply custom scenario
-          </button>
+          <Tooltip label="Applies your custom gravity, oxygen and pressure to every view.">
+            <button
+              type="button"
+              onClick={() => setScenario(customScenario(draft.g, draft.o2, draft.kPa))}
+              className="h-8 rounded-control bg-ig-flame-blue px-3 text-sm font-medium text-ig-on-accent hover:bg-ig-amber"
+            >
+              Apply custom scenario
+            </button>
+          </Tooltip>
           <p className="text-xs leading-5 text-ig-muted">
             Every view re-scores against these values. Gravity above 0g assumes buoyant flow.
           </p>

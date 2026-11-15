@@ -3,7 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 import type { Severity } from "@/contracts/types";
 import { Link } from "react-router-dom";
 import { getExperiments, getInsights, useIgnis } from "@/app/data";
-import { Badge, Button, Card, CardContent } from "@/design-system";
+import { Badge, Button, Card, CardContent, Tooltip } from "@/design-system";
 import { InsightCard } from "@/features/insights/InsightCard";
 import { FlameOrb } from "./Orb";
 
@@ -80,21 +80,25 @@ export function HomePage() {
             </p>
 
             <div className="mt-6 flex flex-wrap gap-3">
-              <Link
-                to="/app/explore"
-                className="inline-flex h-11 items-center gap-2 rounded-control bg-ig-flame-blue px-5 text-sm font-medium text-ig-on-accent hover:bg-ig-amber"
-              >
-                Enter workspace
-                <ArrowRight size={15} aria-hidden="true" />
-              </Link>
-              <Button
-                variant="outline"
-                size="lg"
-                icon={<Sparkles size={15} />}
-                onClick={() => setDrawerOpen(true)}
-              >
-                Ask Ignis
-              </Button>
+              <Tooltip label="Opens the experiment library where you can search, filter and compare every record in the dataset.">
+                <Link
+                  to="/app/explore"
+                  className="inline-flex h-11 items-center gap-2 rounded-control bg-ig-flame-blue px-5 text-sm font-medium text-ig-on-accent hover:bg-ig-amber"
+                >
+                  Enter workspace
+                  <ArrowRight size={15} aria-hidden="true" />
+                </Link>
+              </Tooltip>
+              <Tooltip label="Opens Ask Ignis, a chat grounded only in the dataset that cites experiment IDs.">
+                <Button
+                  variant="outline"
+                  size="lg"
+                  icon={<Sparkles size={15} />}
+                  onClick={() => setDrawerOpen(true)}
+                >
+                  Ask Ignis
+                </Button>
+              </Tooltip>
             </div>
           </div>
 
@@ -184,25 +188,39 @@ export function HomePage() {
           Go deeper
         </h2>
         <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
-          {ENTRY_POINTS.map((entry) => (
-            <Link
-              key={entry.to}
-              to={entry.to}
-              className="group flex items-center justify-between gap-3 rounded-panel border border-ig-glass-control-rim bg-ig-glass-control px-4 py-3 hover:bg-ig-glass-hover"
-            >
-              <span className="min-w-0">
-                <span className="block text-sm font-medium text-ig-frost group-hover:text-ig-flame-blue">
-                  {entry.title}
-                </span>
-                <span className="mt-0.5 block text-xs leading-4 text-ig-muted">{entry.text}</span>
-              </span>
-              <ArrowRight
-                size={14}
-                aria-hidden="true"
-                className="shrink-0 text-ig-muted group-hover:text-ig-flame-blue"
-              />
-            </Link>
-          ))}
+          {ENTRY_POINTS.map((entry) => {
+            const descriptions: Record<string, string> = {
+              Explore:
+                "Search the full experiment library with filters for gravity, oxygen, fuel type and facility.",
+              Simulator:
+                "Estimate fire risk for any material, gravity, oxygen, pressure and flow combination.",
+              Brief:
+                "Generate a one-click Mission Safety Brief with citations, exportable as markdown or PDF.",
+              Insights:
+                "Read evidence-linked fire-safety insights grouped by severity.",
+            };
+            return (
+              <Tooltip key={entry.to} label={descriptions[entry.title] ?? entry.text}>
+                <Link
+                  key={entry.to}
+                  to={entry.to}
+                  className="group flex items-center justify-between gap-3 rounded-panel border border-ig-glass-control-rim bg-ig-glass-control px-4 py-3 hover:bg-ig-glass-hover"
+                >
+                  <span className="min-w-0">
+                    <span className="block text-sm font-medium text-ig-frost group-hover:text-ig-flame-blue">
+                      {entry.title}
+                    </span>
+                    <span className="mt-0.5 block text-xs leading-4 text-ig-muted">{entry.text}</span>
+                  </span>
+                  <ArrowRight
+                    size={14}
+                    aria-hidden="true"
+                    className="shrink-0 text-ig-muted group-hover:text-ig-flame-blue"
+                  />
+                </Link>
+              </Tooltip>
+            );
+          })}
         </div>
       </section>
     </div>

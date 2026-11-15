@@ -4,7 +4,7 @@ import type { ScoreWeights } from '@/contracts/types'
 import { getExperiments } from '@/lib/data'
 import { rankExperiments } from '@/lib/scoring'
 import { useIgnis } from '@/store/useIgnis'
-import { Button, EmptyState } from '@/design-system'
+import { Button, EmptyState, Tooltip } from '@/design-system'
 import { Note, PageHeading, RegimeBadge, ScoreBar } from '../explore/_shared'
 
 const FACTORS: Array<{ key: keyof ScoreWeights; label: string; help: string }> = [
@@ -142,26 +142,38 @@ export function RankingsPage() {
                       <p className="text-[11px] text-[var(--ig-muted)]">composite</p>
                     </div>
                     <div className="flex flex-wrap justify-end gap-1.5">
-                      <Link
-                        to="/explore"
-                        onClick={() => select(entry.experiment.id)}
-                        className="inline-flex min-h-8 items-center rounded-[4px] border border-[var(--ig-line)] px-2 text-xs text-[var(--ig-frost)] hover:bg-[var(--ig-raised)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ig-flame-blue)]"
-                      >
-                        Open
-                      </Link>
-                      <button
-                        type="button"
-                        aria-pressed={inCompare}
-                        disabled={!inCompare && compareFull}
-                        onClick={() => toggleCompare(entry.experiment.id)}
-                        className={`inline-flex min-h-8 items-center rounded-[4px] border px-2 text-xs focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ig-flame-blue)] disabled:cursor-not-allowed disabled:opacity-50 ${
+                      <Tooltip label="Opens the detail drawer for this experiment.">
+                        <Link
+                          to="/explore"
+                          onClick={() => select(entry.experiment.id)}
+                          className="inline-flex min-h-8 items-center rounded-[4px] border border-[var(--ig-line)] px-2 text-xs text-[var(--ig-frost)] hover:bg-[var(--ig-raised)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ig-flame-blue)]"
+                        >
+                          Open
+                        </Link>
+                      </Tooltip>
+                      <Tooltip
+                        label={
                           inCompare
-                            ? 'border-[var(--ig-flame-blue)] bg-[var(--ig-raised)] text-[var(--ig-frost)]'
-                            : 'border-[var(--ig-line)] text-[var(--ig-muted)] hover:bg-[var(--ig-raised)]'
-                        }`}
+                            ? 'Removes this experiment from your compare selection.'
+                            : compareFull
+                              ? 'Compare already holds four experiments. Remove one first.'
+                              : 'Adds this experiment to compare so you can view it side by side with others.'
+                        }
                       >
-                        {inCompare ? 'In compare' : 'Add to compare'}
-                      </button>
+                        <button
+                          type="button"
+                          aria-pressed={inCompare}
+                          disabled={!inCompare && compareFull}
+                          onClick={() => toggleCompare(entry.experiment.id)}
+                          className={`inline-flex min-h-8 items-center rounded-[4px] border px-2 text-xs focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ig-flame-blue)] disabled:cursor-not-allowed disabled:opacity-50 ${
+                            inCompare
+                              ? 'border-[var(--ig-flame-blue)] bg-[var(--ig-raised)] text-[var(--ig-frost)]'
+                              : 'border-[var(--ig-line)] text-[var(--ig-muted)] hover:bg-[var(--ig-raised)]'
+                          }`}
+                        >
+                          {inCompare ? 'In compare' : 'Add to compare'}
+                        </button>
+                      </Tooltip>
                     </div>
                   </div>
                 </div>
