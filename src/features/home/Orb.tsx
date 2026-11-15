@@ -1,6 +1,6 @@
 ﻿import { motion, useReducedMotion } from "framer-motion";
 import { Pause, Play } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 
 const CENTER_X = 110;
 const CENTER_Y = 128;
@@ -49,6 +49,22 @@ export function FlameOrb({ gravityG, scenarioLabel }: FlameOrbProps) {
   const path = useMemo(() => flamePath(gravityG), [gravityG]);
   const t = Math.min(Math.max(gravityG, 0), 1);
 
+  // Manual turn: accumulated across drag gestures so the model stays where
+  // you leave it. rotateX from vertical drag, rotateY from horizontal drag.
+  const [turn, setTurn] = useState({ x: 0, y: 0 });
+  const base = useRef({ x: 0, y: 0 });
+
+  const startDrag = () => {
+    base.current = { ...turn };
+  };
+
+  function turnBy(dx: number, dy: number) {
+    setTurn((current) => ({
+      x: Math.min(Math.max(current.x + dy * 0.5, -90), 90),
+      y: current.y + dx * 0.5,
+    }));
+  }
+
   return (
     <div className="ig-glass rounded-panel p-4">
       <div className="flex items-start justify-between gap-3">
@@ -68,11 +84,58 @@ export function FlameOrb({ gravityG, scenarioLabel }: FlameOrbProps) {
       </div>
 
       <div className="mt-2 flex justify-center">
-        <div
-          className="ig-orb-pulse"
-          data-paused={paused ? "true" : "false"}
-          style={{ width: "min(100%, 260px)" }}
+        {/* Outer layer handles the drag gesture; inner layer spins in place so
+            the drag transform and the rotation transform never fight. */}
+        <motion.div
+          drag={true}
+          dragConstraints={{ left: -90, right: 90, top: -90, bottom: 90 }}
+          dragElastic={0.15}
+          onDragStart={startDrag}
+          onDrag={(_, info) => {
+            setTurn({
+              x: Math.min(Math.max(base.current.x + info.point.y * 0.5, -90), 90),
+              y: base.current.y + info.point.x * 0.5,
+            });
+          }}
+          className="relative inline-block cursor-grab active:cursor-grabbing select-none"
         >
+          <div
+            style={{
+              transform: `rotateX(${turn.x}deg) rotateY(${turn.y}deg)`,
+              transformOrigin: "center center",
+              display: "inline-block",
+            }}
+            onKeyDown={(event) => {
+              switch (event.key) {
+                case "ArrowLeft":
+                  event.preventDefault();
+                  turnBy(-12, 0);
+                  break;
+                case "ArrowRight":
+                  event.preventDefault();
+                  turnBy(12, 0);
+                  break;
+                case "ArrowUp":
+                  event.preventDefault();
+                  turnBy(0, -12);
+                  break;
+                case "ArrowDown":
+                  event.preventDefault();
+                  turnBy(0, 12);
+                  break;
+                default:
+                  break;
+              }
+            }}
+            tabIndex={0}
+            role="region"
+            aria-label={`Flame model for ${scenarioLabel}. Drag or use arrow keys to turn.`}
+          >
+            <div
+              className="ig-orb-pulse"
+              data-paused={paused ? "true" : "false"}
+              style={{ width: "min(100%, 260px)" }}
+            >
           <svg
             viewBox="0 0 220 240"
             role="img"
@@ -99,12 +162,14 @@ export function FlameOrb({ gravityG, scenarioLabel }: FlameOrbProps) {
               strokeWidth={1}
             />
           </svg>
-        </div>
+            </div>
+          </div>
+        </motion.div>
       </div>
 
       <p className="mt-2 text-center text-xs leading-5 text-ig-muted">
-        A round flame sphere without buoyancy, an amber teardrop with it. Schematic only, not measured
-        flame geometry.
+        A round flame sphere without buoyancy, an amber teardrop with it. Drag to
+        turn, arrow keys to rotate. Schematic only, not measured flame geometry.
       </p>
     </div>
   );
