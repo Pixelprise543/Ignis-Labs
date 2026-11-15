@@ -98,35 +98,24 @@ describe('handleSiRequest', () => {
 
 describe('default handler', () => {
   it('rejects a non-POST method', async () => {
-    const chunks: string[] = []
-    const res = {
-      statusCode: 0,
-      setHeader: () => undefined,
-      end: (body?: string) => {
-        if (body) chunks.push(body)
-      },
-    }
+    const response = await handler(new Request('http://x/api/si', { method: 'GET' }))
 
-    await handler({ method: 'GET' }, res)
-
-    expect(res.statusCode).toBe(405)
-    expect(chunks[0]).toContain('POST')
+    expect(response.status).toBe(405)
+    const text = await response.text()
+    expect(text).toContain('POST')
   })
 
   it('returns JSON for a POST', async () => {
-    const chunks: string[] = []
-    const res = {
-      statusCode: 0,
-      setHeader: () => undefined,
-      end: (body?: string) => {
-        if (body) chunks.push(body)
-      },
-    }
+    const response = await handler(
+      new Request('http://x/api/si', {
+        method: 'POST',
+        body: JSON.stringify({ mode: 'playbook' }),
+        headers: { 'Content-Type': 'application/json' },
+      })
+    )
 
-    await handler({ method: 'POST', body: { mode: 'playbook' } }, res)
-
-    expect(res.statusCode).toBe(200)
-    const parsed = JSON.parse(chunks[0]) as { answerMarkdown: string }
+    expect(response.status).toBe(200)
+    const parsed = JSON.parse(await response.text()) as { answerMarkdown: string }
     expect(parsed.answerMarkdown).toContain('Detect')
   })
 })

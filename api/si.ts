@@ -186,21 +186,26 @@ async function providerAnswer(request: SIRequest): Promise<SIResponse | null> {
     if (!response.ok) return null
 
     const body: unknown = await response.json()
-    const content =
+    let content = ''
+    if (
       typeof body === 'object' &&
       body !== null &&
-      Array.isArray((body as Record<string, unknown>).choices) &&
-      (body as Record<string, unknown>).choices.length > 0
-        ? typeof (body as Record<string, unknown>).choices[0] === 'object' &&
-          (body as Record<string, unknown>).choices[0] !== null &&
-          typeof ((body as Record<string, unknown>).choices[0] as Record<string, unknown>).message === 'object' &&
-          ((body as Record<string, unknown>).choices[0] as Record<string, unknown>).message !== null &&
-          typeof (((body as Record<string, unknown>).choices[0] as Record<string, unknown>).message as Record<string, unknown>)
-            .content === 'string'
-          ? (((body as Record<string, unknown>).choices[0] as Record<string, unknown>).message as Record<string, unknown>)
-              .content
-          : ''
-        : ''
+      Array.isArray((body as Record<string, unknown>).choices)
+    ) {
+      const choices = (body as Record<string, unknown>).choices as unknown[]
+      if (choices.length > 0) {
+        const first = choices[0]
+        if (typeof first === 'object' && first !== null) {
+          const message = (first as Record<string, unknown>).message
+          if (typeof message === 'object' && message !== null) {
+            const c = (message as Record<string, unknown>).content
+            if (typeof c === 'string') {
+              content = c
+            }
+          }
+        }
+      }
+    }
 
     if (!content.trim()) return null
 
