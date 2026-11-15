@@ -51,7 +51,7 @@ export function ScenarioBar() {
         <div
           role="group"
           aria-label="Choose a mission scenario"
-          className="ig-scroll-x flex min-w-0 flex-1 items-center gap-1 overflow-x-auto rounded-control border border-ig-line bg-ig-hull p-1"
+          className="flex min-w-0 flex-1 flex-wrap items-center gap-1 rounded-control border border-ig-line bg-ig-hull p-1"
         >
           {SCENARIOS.map((entry) => {
             const active = entry.id === scenario.id;

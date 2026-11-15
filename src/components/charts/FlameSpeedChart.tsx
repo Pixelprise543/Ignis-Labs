@@ -2,7 +2,7 @@ import { CartesianGrid, ResponsiveContainer, Scatter, ScatterChart, Tooltip, XAx
 import type { Experiment } from '@/contracts/types'
 import { ChartFrame } from './ChartFrame'
 import { FlatTooltip } from './FlatTooltip'
-import { regimeStyle, CHART_TOKENS, REGIME_STYLES } from './chartTheme'
+import { regimeStyle, CHART_CANVAS, CHART_TOKENS, REGIME_STYLES } from './chartTheme'
 import { RegimeLegend } from './markers'
 import { flameSpreadPoints, formatNumber, type FlameSpreadPoint } from './chartData'
 
@@ -36,7 +36,7 @@ export interface FlameSpeedChartProps {
  * Flame-spread metric against gravity. One scatter series per regime so the
  * marker shape (circle / diamond / square) carries the regime too.
  */
-export function FlameSpeedChart({ experiments, height = 280 }: FlameSpeedChartProps) {
+export function FlameSpeedChart({ experiments, height }: FlameSpeedChartProps) {
   const points = flameSpreadPoints(experiments)
   const regimes = REGIME_STYLES.filter((style) => points.some((p) => p.regime === style.key)).map(
     (style) => style.key,
@@ -61,7 +61,7 @@ export function FlameSpeedChart({ experiments, height = 280 }: FlameSpeedChartPr
     <ChartFrame
       title="Flame spread vs gravity"
       summary={summary}
-      minHeight={height}
+      minHeight={height ?? 240}
       empty={points.length === 0}
       emptyMessage="No flame-spread measurements in this set. Clear a filter or add experiments that record a flame-speed metric."
       table={{
@@ -77,63 +77,68 @@ export function FlameSpeedChart({ experiments, height = 280 }: FlameSpeedChartPr
       }}
     >
       <RegimeLegend regimes={regimes} />
-      <ResponsiveContainer width="100%" height={height - 16}>
-        <ScatterChart margin={{ top: 12, right: 20, bottom: 28, left: 4 }}>
-          <CartesianGrid stroke={CHART_TOKENS.grid} vertical={false} />
-          <XAxis
-            type="number"
-            dataKey="g"
-            name="Gravity"
-            domain={[0, 1]}
-            ticks={[0, 0.16, 0.38, 1]}
-            tickFormatter={(value: number) => `${value}g`}
-            tick={{ fill: CHART_TOKENS.axis, fontSize: 11, fontFamily: CHART_TOKENS.sans }}
-            tickLine={{ stroke: CHART_TOKENS.line }}
-            axisLine={{ stroke: CHART_TOKENS.line }}
-            label={{
-              value: 'Gravity (g)',
-              position: 'insideBottom',
-              offset: -18,
-              fill: CHART_TOKENS.axis,
-              fontSize: 11,
-            }}
-          />
-          <YAxis
-            type="number"
-            dataKey="value"
-            name="Flame spread"
-            domain={['auto', 'auto']}
-            tick={{ fill: CHART_TOKENS.axis, fontSize: 11, fontFamily: CHART_TOKENS.mono }}
-            tickLine={{ stroke: CHART_TOKENS.line }}
-            axisLine={{ stroke: CHART_TOKENS.line }}
-            width={56}
-            label={{
-              value: sharedUnit || 'Flame spread',
-              angle: -90,
-              position: 'insideLeft',
-              fill: CHART_TOKENS.axis,
-              fontSize: 11,
-            }}
-          />
-          <Tooltip
-            content={<SpreadTooltip />}
-            cursor={{ stroke: CHART_TOKENS.line, strokeWidth: 1 }}
-            wrapperStyle={{ outline: 'none', boxShadow: 'none' }}
-          />
-          {REGIME_STYLES.filter((style) => points.some((p) => p.regime === style.key)).map(
-            (style) => (
-              <Scatter
-                key={style.key}
-                name={style.label}
-                data={points.filter((p) => p.regime === style.key)}
-                fill={style.color}
-                shape={style.shape}
-                isAnimationActive={false}
-              />
-            ),
-          )}
-        </ScatterChart>
-      </ResponsiveContainer>
+      <div
+        className={height ? undefined : CHART_CANVAS}
+        style={height ? { height: height - 16 } : undefined}
+      >
+        <ResponsiveContainer width="100%" height="100%">
+          <ScatterChart margin={{ top: 12, right: 20, bottom: 28, left: 4 }}>
+            <CartesianGrid stroke={CHART_TOKENS.grid} vertical={false} />
+            <XAxis
+              type="number"
+              dataKey="g"
+              name="Gravity"
+              domain={[0, 1]}
+              ticks={[0, 0.16, 0.38, 1]}
+              tickFormatter={(value: number) => `${value}g`}
+              tick={{ fill: CHART_TOKENS.axis, fontSize: 11, fontFamily: CHART_TOKENS.sans }}
+              tickLine={{ stroke: CHART_TOKENS.line }}
+              axisLine={{ stroke: CHART_TOKENS.line }}
+              label={{
+                value: 'Gravity (g)',
+                position: 'insideBottom',
+                offset: -18,
+                fill: CHART_TOKENS.axis,
+                fontSize: 11,
+              }}
+            />
+            <YAxis
+              type="number"
+              dataKey="value"
+              name="Flame spread"
+              domain={['auto', 'auto']}
+              tick={{ fill: CHART_TOKENS.axis, fontSize: 11, fontFamily: CHART_TOKENS.mono }}
+              tickLine={{ stroke: CHART_TOKENS.line }}
+              axisLine={{ stroke: CHART_TOKENS.line }}
+              width={56}
+              label={{
+                value: sharedUnit || 'Flame spread',
+                angle: -90,
+                position: 'insideLeft',
+                fill: CHART_TOKENS.axis,
+                fontSize: 11,
+              }}
+            />
+            <Tooltip
+              content={<SpreadTooltip />}
+              cursor={{ stroke: CHART_TOKENS.line, strokeWidth: 1 }}
+              wrapperStyle={{ outline: 'none', boxShadow: 'none' }}
+            />
+            {REGIME_STYLES.filter((style) => points.some((p) => p.regime === style.key)).map(
+              (style) => (
+                <Scatter
+                  key={style.key}
+                  name={style.label}
+                  data={points.filter((p) => p.regime === style.key)}
+                  fill={style.color}
+                  shape={style.shape}
+                  isAnimationActive={false}
+                />
+              ),
+            )}
+          </ScatterChart>
+        </ResponsiveContainer>
+      </div>
     </ChartFrame>
   )
 }

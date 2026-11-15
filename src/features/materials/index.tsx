@@ -64,8 +64,8 @@ function HatchSwatch() {
 function NoDataCell({ label }: { label: string }) {
   const id = useId()
   return (
-    <span className="flex h-10 w-full items-center justify-center" title={`${label}: no evidence in the set`}>
-      <svg width="100%" height="40" viewBox="0 0 64 40" preserveAspectRatio="none" aria-hidden="true" focusable="false">
+    <span className="flex h-9 w-full items-center justify-center sm:h-10" title={`${label}: no evidence in the set`}>
+      <svg width="100%" height="100%" viewBox="0 0 64 40" preserveAspectRatio="none" aria-hidden="true" focusable="false">
         <defs>
           <pattern id={id} width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
             <rect width="6" height="6" fill="var(--ig-vacuum, #1A1512)" />
@@ -198,8 +198,13 @@ export function MaterialsPage() {
           <RiskLegend />
         </div>
 
+        <p className="mt-2 text-xs leading-relaxed text-[var(--ig-muted)] sm:hidden">
+          On a narrow screen this shows the {scenario.label} column only. Switch scenario above to
+          compare another environment, or open the data table below for every value.
+        </p>
+
         <div className="mt-3 overflow-x-auto">
-          <table className="w-full min-w-[720px] border-collapse text-left text-sm">
+          <table className="w-full border-collapse text-left text-sm">
             <caption className="sr-only">
               Material by scenario flammability risk. Colour, shape and a numeric value all encode the
               same severity.
@@ -220,7 +225,9 @@ export function MaterialsPage() {
                       scope="col"
                       aria-current={current ? 'true' : undefined}
                       className={`border-b border-[var(--ig-line)] px-2 py-2 text-center align-bottom text-xs font-medium ${
-                        current ? 'text-[var(--ig-frost)]' : 'text-[var(--ig-muted)]'
+                        current
+                          ? 'text-[var(--ig-frost)]'
+                          : 'hidden text-[var(--ig-muted)] sm:table-cell'
                       }`}
                       style={current ? { borderTop: '2px solid var(--ig-flame-blue)' } : undefined}
                     >
@@ -261,7 +268,14 @@ export function MaterialsPage() {
                       const label = `${material.name}, ${column.label}`
                       if (typeof value !== 'number') {
                         return (
-                          <td key={column.id} className="px-1 py-1.5">
+                          <td
+                            key={column.id}
+                            className={
+                              column.id === scenario.id
+                                ? 'px-1 py-1.5'
+                                : 'hidden px-1 py-1.5 sm:table-cell'
+                            }
+                          >
                             <NoDataCell label={label} />
                           </td>
                         )
@@ -269,7 +283,14 @@ export function MaterialsPage() {
                       const level = levelForRisk(value)
                       const style = RISK_STYLES[level]
                       return (
-                        <td key={column.id} className="px-1 py-1.5">
+                        <td
+                          key={column.id}
+                          className={
+                            column.id === scenario.id
+                              ? 'px-1 py-1.5'
+                              : 'hidden px-1 py-1.5 sm:table-cell'
+                          }
+                        >
                           <button
                             type="button"
                             aria-pressed={isSelected}
@@ -278,7 +299,7 @@ export function MaterialsPage() {
                             onClick={() =>
                               setSelected(isSelected ? null : { materialId: material.id, scenarioId: column.id })
                             }
-                            className={`flex h-10 w-full min-w-[56px] items-center justify-center gap-1.5 rounded-[2px] font-mono text-xs tabular-nums text-[var(--ig-vacuum)] transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ig-frost)] ${
+                            className={`flex h-9 w-full items-center justify-center gap-1.5 rounded-[2px] font-mono text-xs tabular-nums text-[var(--ig-vacuum)] transition-colors sm:h-10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ig-frost)] ${
                               isSelected ? 'outline outline-2 outline-offset-1 outline-[var(--ig-frost)]' : ''
                             }`}
                             style={{ backgroundColor: style.color }}

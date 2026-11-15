@@ -131,8 +131,11 @@ export function RankingsPage() {
                     </div>
                   </div>
 
-                  <div className="flex shrink-0 flex-col items-end gap-2">
-                    <div className="text-right">
+                  {/* On phones the score and buttons drop to their own full-width
+                      row, so the experiment name and the regime badge are never
+                      squeezed to the point of clipping. */}
+                  <div className="flex w-full flex-row items-center justify-between gap-2 sm:w-auto sm:shrink-0 sm:flex-col sm:items-end">
+                    <div className="text-left sm:text-right">
                       <p className="font-mono text-lg tabular-nums text-[var(--ig-frost)]">
                         {Math.round(entry.composite)}
                       </p>

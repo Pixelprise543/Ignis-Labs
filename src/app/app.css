@@ -25,6 +25,9 @@
   line-height: 1.6;
   color: var(--ig-frost);
   overflow-wrap: anywhere;
+  /* SI answers can contain a markdown table wider than a phone. Scroll it
+     inside the message rather than pushing the whole page sideways. */
+  overflow-x: auto;
 }
 
 .ig-markdown > * + * {

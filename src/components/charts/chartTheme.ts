@@ -56,6 +56,14 @@ export const CHART_TOKENS = {
   mono: "'JetBrains Mono', ui-monospace, SFMono-Regular, monospace",
 } as const
 
+/**
+ * Chart canvases fill the panel width at every breakpoint and scale height with
+ * the viewport. Charts previously took a fixed pixel height, which left dead
+ * space beside and below the plot on wide screens and squashed it on phones.
+ */
+export const CHART_CANVAS = 'h-[clamp(220px,24vw,360px)] w-full'
+export const CHART_CANVAS_TALL = 'h-[clamp(260px,30vw,420px)] w-full'
+
 /** Series order for multi-experiment charts (radar). Distinguishable without fill. */
 export const SERIES_STYLES = [
   { color: 'var(--ig-frost, #F6EFE6)', dash: '0' },

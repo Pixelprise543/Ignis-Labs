@@ -71,6 +71,16 @@ export function AskIgnisDrawer() {
   const [error, setError] = useState<string | null>(null);
   const requestRef = useRef(0);
   const bottomRef = useRef<HTMLDivElement | null>(null);
+  const questionRef = useRef<HTMLTextAreaElement | null>(null);
+
+  // The question box grows with what is typed, up to eight lines, so a long
+  // question is not read through a two-row keyhole.
+  useEffect(() => {
+    const element = questionRef.current;
+    if (!element) return;
+    element.style.height = "auto";
+    element.style.height = `${Math.min(element.scrollHeight, 160)}px`;
+  }, [input]);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ block: "end" });
@@ -145,6 +155,7 @@ export function AskIgnisDrawer() {
           <div className="flex items-end gap-2">
             <textarea
               id="ignis-question"
+              ref={questionRef}
               rows={2}
               value={input}
               onChange={(event) => setInput(event.target.value)}
@@ -155,7 +166,7 @@ export function AskIgnisDrawer() {
                 }
               }}
               placeholder={`Ask about ${scenario.label} fire safety…`}
-              className="min-h-[44px] flex-1 resize-none rounded-control border border-ig-line bg-ig-hull px-2.5 py-2 text-sm text-ig-frost placeholder:text-ig-muted"
+              className="min-h-[44px] max-h-40 flex-1 resize-none overflow-y-auto rounded-control border border-ig-line bg-ig-hull px-2.5 py-2 text-sm text-ig-frost placeholder:text-ig-muted"
             />
             <button
               type="submit"

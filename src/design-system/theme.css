@@ -65,7 +65,9 @@
   *::before,
   *::after { box-sizing: border-box; }
 
-  html { background-color: var(--ig-vacuum); scrollbar-gutter: stable; }
+  /* clip, not hidden: keeps `position: sticky` working while stopping a stray
+     wide child from adding a horizontal scrollbar to the whole page. */
+  html { background-color: var(--ig-vacuum); scrollbar-gutter: stable; overflow-x: clip; }
 
   body {
     margin: 0;

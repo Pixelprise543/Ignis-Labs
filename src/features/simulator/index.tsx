@@ -136,7 +136,7 @@ export function SimulatorPage() {
         </p>
       </header>
 
-      <div className="grid gap-4 lg:grid-cols-[minmax(0,380px)_minmax(0,1fr)]">
+      <div className="grid gap-4 xl:grid-cols-[minmax(0,380px)_minmax(0,1fr)]">
         <Panel title="Inputs" description={`Baseline follows ${scenario.label}`}>
           <div className="space-y-4">
             <div>
