@@ -16,6 +16,7 @@ import { Badge, BookmarkButton, Stat, Term } from "@/design-system";
 import { InsightCard } from "@/features/insights/InsightCard";
 import { FlameOrb } from "./Orb";
 import { OnboardingGuide } from "./StartHereGuide";
+import { FlameBehaviorGraph } from "@/components/charts/flameBehaviorGraph";
 
 const SEVERITY_ORDER: Record<Severity, number> = {
   critical: 0,
@@ -177,6 +178,8 @@ export function HomePage() {
           hint="Traceable, not invented"
         />
       </section>
+
+      <FlameBehaviorGraph />
 
       <section aria-labelledby="top-insights">
         <div className="mb-2 flex flex-wrap items-end justify-between gap-2">
