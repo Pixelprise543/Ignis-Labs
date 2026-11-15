@@ -33,6 +33,13 @@ Body copy is `text-sm` (14px) minimum. Secondary text is `text-xs` (12px) minimu
 all-caps eyebrow labels anywhere - the theme forbids them and they were the main reason the
 marketing pages felt like walls of text.
 
+## No scenario page
+
+There is no `/app/scenario`. The scenario bar is global and already covers the presets and the
+custom g / O2 / pressure editor, so a second page was a copy of the same component. Both
+`/scenario` and `/app/scenario` redirect to `/app`. Do not re-add a page for this unless the bar
+loses the custom editor first.
+
 ## Local dev gotcha
 
 A stale Vite server from another checkout (`C:\dev\Ignis-Labs`) can squat port 5173. Playwright

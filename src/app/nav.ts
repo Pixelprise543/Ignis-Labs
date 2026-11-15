@@ -51,7 +51,6 @@ export const CORPORATE_ROUTES: RouteDefinition[] = [
 
 export const PLATFORM_ROUTES: RouteDefinition[] = [
   { path: "/app", label: "Mission overview", folder: "home", exportName: "HomePage", group: "Overview", icon: LayoutDashboard },
-  { path: "/app/scenario", label: "Scenario", folder: "scenario", exportName: "ScenarioPage", group: "Overview", icon: Settings },
   { path: "/app/explore", label: "Explore", folder: "explore", exportName: "ExplorePage", group: "Research", icon: Compass },
   { path: "/app/compare", label: "Compare", folder: "compare", exportName: "ComparePage", group: "Research", icon: Sparkles },
   { path: "/app/coverage", label: "Coverage", folder: "coverage", exportName: "CoveragePage", group: "Research", icon: Settings },
@@ -109,5 +108,6 @@ export const REDIRECTS: Record<string, string> = {
   "/brief": "/app/brief",
   "/glossary": "/app/glossary",
   "/method": "/app/method",
-  "/scenario": "/app/scenario",
+  "/scenario": "/app",
+  "/app/scenario": "/app",
 };
