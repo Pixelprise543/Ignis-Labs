@@ -44,7 +44,7 @@ export function HomePage() {
           </div>
         </div>
         <div className="mt-8 flex flex-wrap gap-3 lg:mt-10">
-          <Link to="/app/explore" className="inline-flex h-11 items-center gap-2 rounded-control bg-ig-flame-blue px-5 text-sm font-medium text-white hover:bg-ig-amber">Explore the evidence<ArrowRight size={15} aria-hidden="true" /></Link>
+          <Link to="/app" className="inline-flex h-11 items-center gap-2 rounded-control bg-ig-flame-blue px-5 text-sm font-medium text-ig-on-accent hover:bg-ig-amber">Open the platform<ArrowRight size={15} aria-hidden="true" /></Link>
           <Button variant="outline" size="lg" icon={<Sparkles size={15} />} onClick={() => setDrawerOpen(true)}>Ask Ignis</Button>
         </div>
       </section>

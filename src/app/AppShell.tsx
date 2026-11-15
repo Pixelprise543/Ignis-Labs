@@ -1,64 +1,303 @@
 import { clsx } from "clsx";
-import { Flame, Menu, Sparkles, X } from "lucide-react";
+import { Command as CommandIcon, Menu, Sparkles, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link, NavLink, useLocation } from "react-router-dom";
-import { ROUTES } from "./nav";
+import {
+  CORPORATE_ROUTES,
+  MOBILE_TABS,
+  NAV_GROUPS,
+  PLATFORM_HOME,
+  platformRoutesByGroup,
+} from "./nav";
 import type { RouteDefinition } from "./nav";
+import { ScenarioBar } from "./ScenarioBar";
 import { useIgnis } from "./data";
 import { AskIgnisDrawer } from "@/features/assistant";
-import { Button, ThemeToggle } from "@/design-system";
+import { CommandPalette } from "@/features/palette";
 import { CorporateShell } from "./corporate/CorporateShell";
 
-function Brand() {
+function Brand({ compact = false }: { compact?: boolean }) {
   return (
-    <Link to="/" className="flex items-center gap-2.5 rounded-control px-3 py-2 hover:bg-ig-hull">
-      <span aria-hidden="true" className="relative grid h-8 w-8 shrink-0 place-items-center rounded-lg border border-ig-line bg-ig-hull"><Flame size={18} strokeWidth={2} /></span>
-      <span className="min-w-0"><span className="block text-sm font-semibold leading-tight text-ig-frost">Ignis</span><span className="block text-[10px] leading-tight text-ig-muted uppercase tracking-wider">Fire safety</span></span>
+    <Link
+      to={PLATFORM_HOME}
+      className="flex items-center gap-2.5 rounded-control p-1 hover:bg-ig-raised"
+    >
+      <span
+        aria-hidden="true"
+        className="relative grid h-7 w-7 shrink-0 place-items-center rounded-full border border-ig-line bg-ig-flame-blue"
+      >
+        <span className="h-2.5 w-2.5 rounded-full bg-ig-vacuum" />
+      </span>
+      <span className="min-w-0">
+        <span className="block text-sm font-semibold leading-tight text-ig-frost">Ignis</span>
+        {compact ? null : (
+          <span className="block text-xs leading-tight text-ig-muted">Fire safety intelligence</span>
+        )}
+      </span>
     </Link>
   );
 }
 
-function NavLinkItem({ route }: { route: RouteDefinition }) {
+function RailLink({ route }: { route: RouteDefinition }) {
   const Icon = route.icon;
   return (
-    <NavLink to={route.path} end={route.path === "/"} className={({ isActive }) => clsx("relative flex h-10 items-center gap-2 rounded-control px-3 text-sm font-medium transition-colors border-transparent", isActive ? "bg-ig-hull text-ig-flame-blue border-b-2 border-ig-flame-blue" : "text-ig-muted hover:bg-ig-hull hover:text-ig-frost")}>
-      <Icon size={15} aria-hidden="true" className="shrink-0" />
-      <span>{route.label}</span>
+    <NavLink
+      to={route.path}
+      end={route.path === PLATFORM_HOME}
+      className={({ isActive }) =>
+        clsx(
+          "relative flex h-9 items-center gap-2.5 rounded-control px-2.5 text-sm transition-colors",
+          isActive
+            ? "bg-ig-raised font-medium text-ig-frost"
+            : "text-ig-muted hover:bg-ig-raised hover:text-ig-frost",
+        )
+      }
+    >
+      {({ isActive }) => (
+        <>
+          {isActive ? (
+            <span
+              aria-hidden="true"
+              className="absolute inset-y-1.5 left-0 w-0.5 rounded-full bg-ig-flame-blue"
+            />
+          ) : null}
+          <Icon size={16} aria-hidden="true" className="shrink-0" />
+          <span className="truncate">{route.label}</span>
+        </>
+      )}
     </NavLink>
   );
 }
 
-function TopBar({ onOpenAsk }: { onOpenAsk: () => void }) {
+function SideRail({ onOpenPalette, onOpenAsk }: { onOpenPalette: () => void; onOpenAsk: () => void }) {
   return (
-    <header className="border-b border-ig-line bg-ig-vacuum sticky top-0 z-20">
-      <div className="flex items-center justify-between gap-3 px-4 py-2 lg:px-6 lg:py-2.5">
-        <div className="flex items-center gap-5">
-          <Brand />
-          <nav aria-label="Main" className="hidden lg:flex items-center gap-0.5">{ROUTES.map((route) => <NavLinkItem key={route.path} route={route} />)}</nav>
-        </div>
-        <div className="flex items-center gap-2"><Button variant="primary" size="sm" icon={<Sparkles size={13} />} onClick={onOpenAsk}>Ask Ignis</Button><Button variant="ghost" size="sm" onClick={onOpenAsk}>Ask</Button><ThemeToggle /></div>
+    <aside className="sticky top-0 hidden h-dvh w-[236px] shrink-0 flex-col border-r border-ig-line bg-ig-vacuum px-3 py-4 lg:flex">
+      <Brand />
+
+      <nav aria-label="Main" className="ig-scroll-y mt-5 min-h-0 flex-1 space-y-5 overflow-y-auto pr-1">
+        {NAV_GROUPS.map((group) => {
+          const routes = platformRoutesByGroup(group);
+          if (routes.length === 0) return null;
+          return (
+            <div key={group}>
+              <p className="px-2.5 pb-1.5 text-xs font-medium text-ig-muted">{group}</p>
+              <div className="space-y-0.5">
+                {routes.map((route) => (
+                  <RailLink key={route.path} route={route} />
+                ))}
+              </div>
+            </div>
+          );
+        })}
+      </nav>
+
+      <div className="mt-4 space-y-2 border-t border-ig-line pt-3">
+        <button
+          type="button"
+          onClick={onOpenAsk}
+          className="flex h-9 w-full items-center gap-2 rounded-control bg-ig-flame-blue px-2.5 text-sm font-medium text-ig-on-accent hover:bg-ig-amber"
+        >
+          <Sparkles size={16} aria-hidden="true" />
+          Ask Ignis
+        </button>
+        <button
+          type="button"
+          onClick={onOpenPalette}
+          className="flex h-9 w-full items-center justify-between gap-2 rounded-control px-2.5 text-sm text-ig-muted hover:bg-ig-raised hover:text-ig-frost"
+        >
+          <span className="inline-flex items-center gap-2">
+            <CommandIcon size={16} aria-hidden="true" />
+            Command palette
+          </span>
+          <kbd className="rounded-control border border-ig-line px-1.5 py-0.5 text-[10px] text-ig-muted">
+            ⌘K
+          </kbd>
+        </button>
+        <Link
+          to="/"
+          className="flex h-9 w-full items-center gap-2 rounded-control px-2.5 text-sm text-ig-muted hover:bg-ig-raised hover:text-ig-frost"
+        >
+          Ignis Labs site
+        </Link>
       </div>
-    </header>
+    </aside>
   );
 }
 
-function MobileMenu({ open, onClose }: { open: boolean; onClose: () => void }) {
-  const { setDrawerOpen } = useIgnis();
-  useEffect(() => { if (!open) return; function onKeyDown(event: KeyboardEvent) { if (event.key === "Escape") onClose(); } document.addEventListener("keydown", onKeyDown); return () => document.removeEventListener("keydown", onKeyDown); }, [open, onClose]);
-  if (!open) return null;
+function MobileHeader({
+  onOpenPalette,
+  onOpenAsk,
+}: {
+  onOpenPalette: () => void;
+  onOpenAsk: () => void;
+}) {
   return (
-    <div className="fixed inset-0 z-50 flex flex-col lg:hidden"><div aria-hidden="true" className="absolute inset-0 bg-black/30" onClick={onClose} /><div role="dialog" aria-modal="true" aria-label="Menu" className="relative max-h-[85dvh] overflow-y-auto border border-ig-line bg-ig-hull p-5"><div className="mb-4 flex items-center justify-between"><p className="text-sm font-semibold text-ig-frost">Menu</p><button type="button" onClick={onClose} aria-label="Close menu" className="inline-flex h-8 w-8 items-center justify-center rounded-control text-ig-muted hover:bg-ig-raised hover:text-ig-frost"><X size={16} aria-hidden="true" /></button></div><nav className="space-y-0.5">{ROUTES.map((route) => { const Icon = route.icon; return <Link key={route.path} to={route.path} onClick={onClose} className="flex min-h-10 items-center gap-2.5 rounded-control px-3 text-sm font-medium text-ig-muted hover:bg-ig-raised hover:text-ig-frost"><Icon size={15} aria-hidden="true" />{route.label}</Link>; }) }</nav><div className="mt-5 border-t border-ig-line pt-4"><Button variant="primary" size="lg" icon={<Sparkles size={14} />} onClick={() => { onClose(); setDrawerOpen(true); }} className="w-full">Ask Ignis</Button></div></div></div>
+    <div className="flex items-center justify-between gap-2 border-b border-ig-line bg-ig-vacuum px-3 py-2 lg:hidden">
+      <Brand compact />
+      <div className="flex items-center gap-1">
+        <button
+          type="button"
+          onClick={onOpenPalette}
+          aria-label="Open command palette"
+          className="inline-flex h-9 w-9 items-center justify-center rounded-control text-ig-muted hover:bg-ig-raised hover:text-ig-frost"
+        >
+          <CommandIcon size={18} aria-hidden="true" />
+        </button>
+        <button
+          type="button"
+          onClick={onOpenAsk}
+          className="inline-flex h-9 items-center gap-1.5 rounded-control bg-ig-flame-blue px-2.5 text-sm font-medium text-ig-on-accent hover:bg-ig-amber"
+        >
+          <Sparkles size={14} aria-hidden="true" />
+          Ask Ignis
+        </button>
+      </div>
+    </div>
   );
 }
 
-export function AppShell({ children }: { children: React.ReactNode }) {
-  const [menuOpen, setMenuOpen] = useState(false);
+function MobileTabs({ onMore }: { onMore: () => void }) {
+  return (
+    <nav
+      aria-label="Main"
+      className="fixed inset-x-0 bottom-0 z-30 grid grid-cols-5 border-t border-ig-line bg-ig-vacuum pb-[env(safe-area-inset-bottom)] lg:hidden"
+    >
+      {MOBILE_TABS.map((route) => {
+        const Icon = route.icon;
+        return (
+          <NavLink
+            key={route.path}
+            to={route.path}
+            end={route.path === PLATFORM_HOME}
+            className={({ isActive }) =>
+              clsx(
+                "relative flex min-h-14 flex-col items-center justify-center gap-0.5 px-1 text-center text-[11px] leading-tight",
+                isActive ? "text-ig-flame-blue" : "text-ig-muted",
+              )
+            }
+          >
+            {({ isActive }) => (
+              <>
+                {isActive ? (
+                  <span
+                    aria-hidden="true"
+                    className="absolute inset-x-3 top-0 h-0.5 rounded-full bg-ig-flame-blue"
+                  />
+                ) : null}
+                <Icon size={18} aria-hidden="true" />
+                <span>{route.label}</span>
+              </>
+            )}
+          </NavLink>
+        );
+      })}
+      <button
+        type="button"
+        onClick={onMore}
+        className="flex min-h-14 flex-col items-center justify-center gap-0.5 px-1 text-[11px] text-ig-muted"
+      >
+        <Menu size={18} aria-hidden="true" />
+        More
+      </button>
+    </nav>
+  );
+}
+
+function MoreSheet({ open, onClose }: { open: boolean; onClose: () => void }) {
   const { setDrawerOpen } = useIgnis();
+
+  useEffect(() => {
+    if (!open) return;
+    function onKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") onClose();
+    }
+    document.addEventListener("keydown", onKeyDown);
+    return () => document.removeEventListener("keydown", onKeyDown);
+  }, [open, onClose]);
+
+  if (!open) return null;
+
+  return (
+    <div className="fixed inset-0 z-50 flex flex-col justify-end lg:hidden">
+      <div aria-hidden="true" className="absolute inset-0 bg-ig-vacuum/80" onClick={onClose} />
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-label="All views"
+        className="relative max-h-[80dvh] overflow-y-auto rounded-t-panel border border-ig-line bg-ig-hull p-4 pb-[calc(1rem+env(safe-area-inset-bottom))]"
+      >
+        <div className="mb-3 flex items-center justify-between">
+          <p className="text-sm font-semibold text-ig-frost">All views</p>
+          <button
+            type="button"
+            onClick={onClose}
+            aria-label="Close menu"
+            className="inline-flex h-8 w-8 items-center justify-center rounded-control text-ig-muted hover:bg-ig-raised hover:text-ig-frost"
+          >
+            <X size={16} aria-hidden="true" />
+          </button>
+        </div>
+        <div className="grid grid-cols-2 gap-1">
+          {NAV_GROUPS.flatMap((group) =>
+            platformRoutesByGroup(group).map((route) => {
+              const Icon = route.icon;
+              return (
+                <Link
+                  key={route.path}
+                  to={route.path}
+                  onClick={onClose}
+                  className="flex min-h-11 items-center gap-2 rounded-control px-2.5 text-sm text-ig-muted hover:bg-ig-raised hover:text-ig-frost"
+                >
+                  <Icon size={16} aria-hidden="true" />
+                  {route.label}
+                </Link>
+              );
+            }),
+          )}
+        </div>
+        <button
+          type="button"
+          onClick={() => {
+            onClose();
+            setDrawerOpen(true);
+          }}
+          className="mt-3 flex h-10 w-full items-center justify-center gap-2 rounded-control bg-ig-flame-blue text-sm font-medium text-ig-on-accent hover:bg-ig-amber"
+        >
+          <Sparkles size={16} aria-hidden="true" />
+          Ask Ignis
+        </button>
+        <Link
+          to="/"
+          onClick={onClose}
+          className="mt-2 flex h-10 w-full items-center justify-center rounded-control border border-ig-line text-sm text-ig-muted hover:bg-ig-raised hover:text-ig-frost"
+        >
+          Ignis Labs site
+        </Link>
+      </div>
+    </div>
+  );
+}
+
+/**
+ * Two shells, one router:
+ * - Marketing pages (`/`, `/product`, …) render the corporate shell.
+ * - Every research view renders the platform shell: left rail on desktop,
+ *   bottom tabs plus a "More" sheet on mobile, scenario bar on both.
+ */
+export function AppShell({ children }: { children: React.ReactNode }) {
+  const [moreOpen, setMoreOpen] = useState(false);
+  const { setDrawerOpen, setPaletteOpen } = useIgnis();
   const location = useLocation();
 
-  const isCorporateRoute = ["/", "/product", "/solutions", "/technology", "/pricing", "/about"].some((p) => location.pathname.endsWith(p));
+  const isCorporateRoute = CORPORATE_ROUTES.some((route) => route.path === location.pathname);
 
-  useEffect(() => { window.scrollTo({ top: 0, behavior: "auto" }); }, [location.pathname]);
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "auto" });
+  }, [location.pathname]);
+
+  useEffect(() => {
+    setMoreOpen(false);
+  }, [location.pathname]);
 
   if (isCorporateRoute) {
     return <CorporateShell>{children}</CorporateShell>;
@@ -66,12 +305,53 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="min-h-dvh bg-ig-vacuum">
-      <a href="#main" className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded-control focus:bg-ig-raised focus:px-3 focus:py-2 focus:text-sm focus:text-ig-frost">Skip to content</a>
-      <TopBar onOpenAsk={() => setDrawerOpen(true)} />
-      <button type="button" onClick={() => setMenuOpen(true)} className="fixed top-4 left-4 z-50 inline-flex h-9 w-9 items-center justify-center rounded-control border border-ig-line bg-ig-hull text-ig-frost hover:bg-ig-raised lg:hidden" aria-label="Open menu"><Menu size={18} aria-hidden="true" /></button>
-      <div className="lg:flex"><div className="min-w-0 flex-1">{children}</div></div>
-      <MobileMenu open={menuOpen} onClose={() => setMenuOpen(false)} />
+      <a
+        href="#main"
+        className="sr-only focus:not-sr-only focus:fixed focus:left-3 focus:top-3 focus:z-50 focus:rounded-control focus:bg-ig-raised focus:px-3 focus:py-2 focus:text-sm focus:text-ig-frost"
+      >
+        Skip to content
+      </a>
+
+      <div className="lg:flex">
+        <SideRail
+          onOpenPalette={() => setPaletteOpen(true)}
+          onOpenAsk={() => setDrawerOpen(true)}
+        />
+
+        <div className="min-w-0 flex-1">
+          <MobileHeader
+            onOpenPalette={() => setPaletteOpen(true)}
+            onOpenAsk={() => setDrawerOpen(true)}
+          />
+          <ScenarioBar />
+
+          <main
+            id="main"
+            tabIndex={-1}
+            className="mx-auto w-full max-w-[1440px] px-3 pb-24 pt-4 lg:px-6 lg:pb-10"
+          >
+            {children}
+
+            <footer className="mt-10 border-t border-ig-line pt-4 text-xs leading-5 text-ig-muted">
+              <p>
+                Ignis is decision support. Scores, material risks and simulator output are estimates
+                from cited experiments, not physics simulations. Check every badge and source before
+                you rely on a number.
+              </p>
+              <p className="mt-1">
+                <Link to="/app/method" className="text-ig-flame-blue hover:underline">
+                  How the scoring and evidence work
+                </Link>
+              </p>
+            </footer>
+          </main>
+        </div>
+      </div>
+
+      <MobileTabs onMore={() => setMoreOpen(true)} />
+      <MoreSheet open={moreOpen} onClose={() => setMoreOpen(false)} />
       <AskIgnisDrawer />
+      <CommandPalette />
     </div>
   );
 }

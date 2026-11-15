@@ -67,7 +67,7 @@ export function TechnologyPage() {
             <h2 className="mt-2 text-xl font-semibold text-ig-frost">What Ignis does not do</h2>
           </div>
           <div className="flex justify-end">
-            <Link to="/app/method" className="inline-flex h-10 items-center gap-2 rounded-control bg-ig-flame-blue px-4 text-sm font-medium text-white hover:bg-ig-amber">Read methodology<ArrowRight size={15} aria-hidden="true" /></Link>
+            <Link to="/app/method" className="inline-flex h-10 items-center gap-2 rounded-control bg-ig-flame-blue px-4 text-sm font-medium text-ig-on-accent hover:bg-ig-amber">Read methodology<ArrowRight size={15} aria-hidden="true" /></Link>
           </div>
         </div>
         <div className="mt-4 text-sm leading-6 text-ig-muted space-y-2">

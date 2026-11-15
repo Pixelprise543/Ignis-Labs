@@ -114,7 +114,7 @@ export function ComparePage() {
           action={
             <Link
               to="/explore"
-              className="inline-flex min-h-10 items-center gap-2 rounded-control border border-transparent bg-ig-flame-blue px-4 text-sm font-medium text-white hover:bg-ig-amber"
+              className="inline-flex min-h-10 items-center gap-2 rounded-control border border-transparent bg-ig-flame-blue px-4 text-sm font-medium text-ig-on-accent hover:bg-ig-amber"
             >
               Browse experiments
             </Link>

@@ -16,7 +16,7 @@ const base =
 // Solid fills only. No gradients, glows, blurs or shadows by design.
 const variants: Record<ButtonVariant, string> = {
   primary:
-    "bg-ig-flame-blue text-white hover:bg-ig-amber active:bg-b45309",
+    "bg-ig-flame-blue text-ig-on-accent hover:bg-ig-amber active:bg-ig-ember",
   secondary:
     "bg-ig-hull text-ig-frost hover:bg-ig-raised active:bg-ig-line",
   outline:

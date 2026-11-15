@@ -1,6 +1,7 @@
 import { ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Card, CardContent } from "@/design-system";
+import { PLATFORM_HOME } from "@/app/nav";
 
 const tiers = [
   {
@@ -20,7 +21,7 @@ const tiers = [
       { label: "Team collaboration", available: false },
     ],
     button: "Launch Platform",
-    buttonLink: "/app/explore",
+    buttonLink: PLATFORM_HOME,
   },
   {
     id: "pro",
@@ -91,7 +92,7 @@ export function PricingPage() {
                   ))}
                 </div>
                 {tier.button && tier.buttonLink ? (
-                  <Link to={tier.buttonLink} className="inline-flex h-10 items-center gap-2 rounded-control bg-ig-flame-blue px-4 text-sm font-medium text-white hover:bg-ig-amber">{tier.button}<ArrowRight size={15} aria-hidden="true" /></Link>
+                  <Link to={tier.buttonLink} className="inline-flex h-10 items-center gap-2 rounded-control bg-ig-flame-blue px-4 text-sm font-medium text-ig-on-accent hover:bg-ig-amber">{tier.button}<ArrowRight size={15} aria-hidden="true" /></Link>
                 ) : null}
               </div>
             </CardContent>
@@ -122,7 +123,7 @@ export function PricingPage() {
                     const available = t.features.find((f) => f.label === feature)?.available ?? false;
                     return (
                       <td key={t.id} className="py-3 text-center">
-                        <span className={`inline-flex items-center justify-center w-5 h-5 rounded-full ${available ? "bg-ig-quench text-white" : "bg-ig-line text-ig-muted"}`}>{available ? "\u2713" : "\u2013"}</span>
+                        <span className={`inline-flex items-center justify-center w-5 h-5 rounded-full ${available ? "bg-ig-quench text-ig-vacuum" : "bg-ig-line text-ig-muted"}`}>{available ? "\u2713" : "\u2013"}</span>
                       </td>
                     );
                   })}

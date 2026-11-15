@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 import { getExperiments, getInsights, useIgnis } from "@/app/data";
 import { Badge, Button, Card, CardContent, CardFooter } from "@/design-system";
 import { InsightCard } from "@/features/insights/InsightCard";
+import { FlameOrb } from "./Orb";
 
 const SEVERITY_ORDER: Record<Severity, number> = {
   critical: 0,
@@ -15,22 +16,22 @@ const SEVERITY_ORDER: Record<Severity, number> = {
 
 const ENTRY_POINTS = [
   {
-    to: "/explore",
+    to: "/app/explore",
     title: "Explore the library",
     text: "Search NASA fire experiments by fuel, facility, gravity regime and oxygen band.",
   },
   {
-    to: "/simulator",
+    to: "/app/simulator",
     title: "Run a what-if",
     text: "Change gravity, oxygen, pressure and flow to see the explained risk drivers.",
   },
   {
-    to: "/brief",
+    to: "/app/brief",
     title: "Mission safety brief",
     text: "Export a cited Markdown brief for your crew or reviewer.",
   },
   {
-    to: "/insights",
+    to: "/app/insights",
     title: "Fire-safety insights",
     text: "Read evidence-linked findings tuned to your scenario.",
   },
@@ -71,29 +72,32 @@ export function HomePage() {
               Moon and Mars. Pick a scenario once and every view follows it.
             </p>
           </div>
-          <div className="lg:col-span-5 flex items-end gap-3">
-            <Badge tone="gold" className="text-[10px]">
-              {scenario.label}
-            </Badge>
-            <span className="ig-num text-xs text-ig-muted leading-none">
-              {scenario.gravityG.toFixed(2)}g
-            </span>
-            <span className="ig-num text-xs text-ig-muted leading-none">
-              {scenario.o2Percent ?? "—"}% O2
-            </span>
-            <span className="ig-num text-xs text-ig-muted leading-none">
-              {scenario.pressureKPa ? scenario.pressureKPa.toFixed(1) : "—"} kPa
-            </span>
-            {scenario.assumption && (
-              <span className="text-[10px] text-ig-ember font-medium">Assumed values — verify</span>
-            )}
+          <div className="lg:col-span-5 space-y-3">
+            <div className="flex flex-wrap items-center gap-3">
+              <Badge tone="gold" className="text-[10px]">
+                {scenario.label}
+              </Badge>
+              <span className="ig-num text-xs leading-none text-ig-muted">
+                {scenario.gravityG.toFixed(2)}g
+              </span>
+              <span className="ig-num text-xs leading-none text-ig-muted">
+                {scenario.o2Percent ?? "—"}% O2
+              </span>
+              <span className="ig-num text-xs leading-none text-ig-muted">
+                {scenario.pressureKPa ? scenario.pressureKPa.toFixed(1) : "—"} kPa
+              </span>
+              {scenario.assumption && (
+                <span className="text-[10px] font-medium text-ig-ember">Assumed values — verify</span>
+              )}
+            </div>
+            <FlameOrb gravityG={scenario.gravityG} scenarioLabel={scenario.label} />
           </div>
         </div>
 
         <div className="mt-8 flex flex-wrap gap-3 lg:mt-10">
           <Link
-            to="/explore"
-            className="inline-flex h-11 items-center gap-2 rounded-control bg-ig-flame-blue px-5 text-sm font-medium text-white hover:bg-ig-amber"
+            to="/app/explore"
+            className="inline-flex h-11 items-center gap-2 rounded-control bg-ig-flame-blue px-5 text-sm font-medium text-ig-on-accent hover:bg-ig-amber"
           >
             Explore the evidence
             <ArrowRight size={15} aria-hidden="true" />
@@ -148,7 +152,7 @@ export function HomePage() {
             </p>
           </div>
           <Link
-            to="/insights"
+            to="/app/insights"
             className="inline-flex items-center gap-1 text-[10px] font-medium text-ig-flame-blue hover:underline"
           >
             All insights <ArrowRight size={11} aria-hidden="true" />

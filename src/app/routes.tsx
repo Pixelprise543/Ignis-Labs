@@ -1,5 +1,5 @@
 import React, { lazy, Suspense } from "react";
-import { Link, Route, Routes, useLocation, useNavigate } from "react-router-dom";
+import { Link, Navigate, Route, Routes, useLocation } from "react-router-dom";
 import { EmptyState, Skeleton } from "@/design-system";
 import { ALL_ROUTES, REDIRECTS } from "./nav";
 
@@ -32,13 +32,10 @@ function PageFallback() {
 }
 
 function RedirectToApp() {
-  const navigate = useNavigate();
-  const location = useLocation();
-  const target = REDIRECTS[location.pathname];
-  if (target) {
-    navigate(target, { replace: true });
-  }
-  return null;
+  const { pathname } = useLocation();
+  const target = REDIRECTS[pathname];
+  if (!target) return null;
+  return <Navigate to={target} replace />;
 }
 
 export function AppRoutes() {

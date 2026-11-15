@@ -1,7 +1,33 @@
 import type { LucideIcon } from "lucide-react";
-import { Compass, FileText, Home, Lightbulb, SlidersHorizontal, Settings, Sparkles } from "lucide-react";
+import {
+  Compass,
+  FileText,
+  Home,
+  LayoutDashboard,
+  Lightbulb,
+  Settings,
+  SlidersHorizontal,
+  Sparkles,
+} from "lucide-react";
 
-export type NavGroup = "Company" | "Overview" | "Explore data" | "Decide" | "Research" | "Analysis" | "Mission Tools" | "Resources";
+/**
+ * One route table for the whole app.
+ *
+ * Two surfaces read this file:
+ * - The corporate marketing site (`CORPORATE_ROUTES`) at the top level.
+ * - The research platform (`PLATFORM_ROUTES`) under `/app`.
+ *
+ * `ALL_ROUTES` feeds the router and the command palette. The left rail and the
+ * mobile tab bar read `PLATFORM_NAV_GROUPS`, so marketing pages never leak into
+ * the platform navigation.
+ */
+export type NavGroup =
+  | "Company"
+  | "Overview"
+  | "Research"
+  | "Analysis"
+  | "Mission Tools"
+  | "Resources";
 
 export type NavIcon = LucideIcon;
 
@@ -24,32 +50,53 @@ export const CORPORATE_ROUTES: RouteDefinition[] = [
 ];
 
 export const PLATFORM_ROUTES: RouteDefinition[] = [
+  { path: "/app", label: "Mission overview", folder: "home", exportName: "HomePage", group: "Overview", icon: LayoutDashboard },
+  { path: "/app/scenario", label: "Scenario", folder: "scenario", exportName: "ScenarioPage", group: "Overview", icon: Settings },
   { path: "/app/explore", label: "Explore", folder: "explore", exportName: "ExplorePage", group: "Research", icon: Compass },
   { path: "/app/compare", label: "Compare", folder: "compare", exportName: "ComparePage", group: "Research", icon: Sparkles },
-  { path: "/app/rankings", label: "Rankings", folder: "rankings", exportName: "RankingsPage", group: "Analysis", icon: FileText },
-  { path: "/app/materials", label: "Materials", folder: "materials", exportName: "MaterialsPage", group: "Analysis", icon: Lightbulb },
   { path: "/app/coverage", label: "Coverage", folder: "coverage", exportName: "CoveragePage", group: "Research", icon: Settings },
   { path: "/app/timeline", label: "Timeline", folder: "timeline", exportName: "TimelinePage", group: "Research", icon: Compass },
+  { path: "/app/rankings", label: "Rankings", folder: "rankings", exportName: "RankingsPage", group: "Analysis", icon: FileText },
+  { path: "/app/materials", label: "Materials", folder: "materials", exportName: "MaterialsPage", group: "Analysis", icon: Lightbulb },
   { path: "/app/simulator", label: "Simulator", folder: "simulator", exportName: "SimulatorPage", group: "Analysis", icon: SlidersHorizontal },
   { path: "/app/insights", label: "Insights", folder: "insights", exportName: "InsightsPage", group: "Analysis", icon: Lightbulb },
   { path: "/app/playbook", label: "Playbook", folder: "playbook", exportName: "PlaybookPage", group: "Mission Tools", icon: FileText },
   { path: "/app/brief", label: "Brief", folder: "brief", exportName: "BriefPage", group: "Mission Tools", icon: SlidersHorizontal },
   { path: "/app/glossary", label: "Glossary", folder: "glossary", exportName: "GlossaryPage", group: "Resources", icon: Settings },
-  { path: "/app/method", label: "Methodology", folder: "method", exportName: "MethodPage", group: "Resources", icon: Sparkles },
-  { path: "/app/scenario", label: "Scenario", folder: "scenario", exportName: "ScenarioPage", group: "Overview", icon: Settings },
+  { path: "/app/method", label: "Method", folder: "method", exportName: "MethodPage", group: "Resources", icon: Sparkles },
 ];
 
 export const ALL_ROUTES = [...CORPORATE_ROUTES, ...PLATFORM_ROUTES];
 export const ROUTES = ALL_ROUTES;
 
-export const NAV_GROUPS: NavGroup[] = ["Company", "Overview", "Research", "Analysis", "Mission Tools", "Resources"];
+/** Groups shown in the platform rail and the mobile "All views" sheet. */
+export const NAV_GROUPS: NavGroup[] = [
+  "Overview",
+  "Research",
+  "Analysis",
+  "Mission Tools",
+  "Resources",
+];
 
 export function routesByGroup(group: NavGroup): RouteDefinition[] {
   return ALL_ROUTES.filter((route) => route.group === group);
 }
 
+export function platformRoutesByGroup(group: NavGroup): RouteDefinition[] {
+  return PLATFORM_ROUTES.filter((route) => route.group === group);
+}
+
+/** Four primary views on the mobile bottom bar; everything else lives in "More". */
+export const MOBILE_TAB_PATHS = ["/app", "/app/explore", "/app/rankings", "/app/insights"];
+
+export const MOBILE_TABS: RouteDefinition[] = PLATFORM_ROUTES.filter((route) =>
+  MOBILE_TAB_PATHS.includes(route.path),
+);
+
+/** Platform landing shown by the "Launch Platform" calls to action. */
+export const PLATFORM_HOME = "/app";
+
 export const REDIRECTS: Record<string, string> = {
-  "/": "/",
   "/explore": "/app/explore",
   "/compare": "/app/compare",
   "/rankings": "/app/rankings",

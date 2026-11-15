@@ -93,7 +93,7 @@ export function SolutionsPage() {
             </ul>
           </div>
           <div className="flex justify-end">
-            <Link to="/app/explore" className="inline-flex h-10 items-center gap-2 rounded-control bg-ig-flame-blue px-4 text-sm font-medium text-white hover:bg-ig-amber">Start exploring<ArrowRight size={15} aria-hidden="true" /></Link>
+            <Link to="/app/explore" className="inline-flex h-10 items-center gap-2 rounded-control bg-ig-flame-blue px-4 text-sm font-medium text-ig-on-accent hover:bg-ig-amber">Start exploring<ArrowRight size={15} aria-hidden="true" /></Link>
           </div>
         </div>
       </section>

@@ -6,19 +6,18 @@ import { expect, test } from "@playwright/test";
  * Timeline) are covered by their own owner; here a missing page must still
  * render the shell's EmptyState instead of breaking the build.
  *
- * The project config launches bundled Chromium. This suite uses the installed
- * Chrome channel so it also runs on machines without `playwright install`.
+ * The project config launches the bundled Chromium installed by
+ * `npx playwright install chromium`.
  */
-test.use({ channel: "chrome" });
 
 test.describe("experience shell", () => {
   test("home renders and the scenario bar drives the orb and URL", async ({ page }) => {
-    await page.goto("/");
+    await page.goto("/app");
 
     await expect(page.getByRole("heading", { level: 1 })).toContainText(
       "Fire behaves differently when nothing falls",
     );
-    await expect(page.getByText("Experiments in library")).toBeVisible();
+    await expect(page.getByText("NASA records with sources")).toBeVisible();
 
     const orb = page.locator('svg[aria-label^="Schematic flame shape"] path');
     const before = await orb.getAttribute("d");
@@ -33,7 +32,7 @@ test.describe("experience shell", () => {
   });
 
   test("Ask Ignis answers offline with valid citations", async ({ page }) => {
-    await page.goto("/");
+    await page.goto("/app");
 
     await page.locator("aside").getByRole("button", { name: "Ask Ignis" }).click();
     const dialog = page.getByRole("dialog", { name: "Ask Ignis" });
@@ -57,7 +56,7 @@ test.describe("experience shell", () => {
   });
 
   test("insights filter by severity and keep evidence chips resolvable", async ({ page }) => {
-    await page.goto("/insights");
+    await page.goto("/app/insights");
 
     await expect(page.getByRole("heading", { name: "Fire-safety insights" })).toBeVisible();
 
@@ -70,7 +69,7 @@ test.describe("experience shell", () => {
   });
 
   test("simulator recalculates and explains its drivers", async ({ page }) => {
-    await page.goto("/simulator");
+    await page.goto("/app/simulator");
 
     await expect(page.getByRole("heading", { name: "What-if risk simulator" })).toBeVisible();
     const risk = page.locator('[aria-label^="Estimated risk"]');
@@ -84,7 +83,7 @@ test.describe("experience shell", () => {
   });
 
   test("brief previews the generated markdown", async ({ page }) => {
-    await page.goto("/brief");
+    await page.goto("/app/brief");
 
     await expect(page.getByRole("heading", { name: "Mission safety brief", exact: true })).toBeVisible();
     await expect(page.locator(".ig-markdown")).toContainText("Ignis Mission Safety Brief");
@@ -93,7 +92,7 @@ test.describe("experience shell", () => {
   });
 
   test("print mode drops the shell chrome", async ({ page }) => {
-    await page.goto("/brief");
+    await page.goto("/app/brief");
     await page.emulateMedia({ media: "print" });
 
     await expect(page.locator("aside")).toBeHidden();
@@ -102,7 +101,7 @@ test.describe("experience shell", () => {
   });
 
   test("command palette navigates with the keyboard", async ({ page }) => {
-    await page.goto("/");
+    await page.goto("/app");
     await expect(page.getByRole("heading", { level: 1 })).toBeVisible();
 
     await page.keyboard.press("Meta+k");
@@ -112,7 +111,7 @@ test.describe("experience shell", () => {
     await palette.getByPlaceholder(/Jump to a view/).fill("glossary");
     await page.keyboard.press("Enter");
 
-    await expect(page).toHaveURL(/\/glossary(\?|$)/);
+    await expect(page).toHaveURL(/\/app\/glossary(\?|$)/);
     await expect(page.getByRole("heading", { name: "Glossary", exact: true })).toBeVisible();
   });
 });
@@ -121,7 +120,7 @@ test.describe("mobile shell", () => {
   test.use({ viewport: { width: 375, height: 812 } });
 
   test("bottom tabs and the More sheet expose every view", async ({ page }) => {
-    await page.goto("/");
+    await page.goto("/app");
 
     await expect(page.locator("aside")).toBeHidden();
     const tabs = page.locator('nav[aria-label="Main"]').filter({ hasText: "More" });
@@ -133,6 +132,6 @@ test.describe("mobile shell", () => {
     await expect(sheet.getByRole("link", { name: "Method" })).toBeVisible();
 
     await sheet.getByRole("link", { name: "Glossary" }).click();
-    await expect(page).toHaveURL(/\/glossary(\?|$)/);
+    await expect(page).toHaveURL(/\/app\/glossary(\?|$)/);
   });
 });
