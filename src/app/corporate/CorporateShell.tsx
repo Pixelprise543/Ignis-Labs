@@ -2,17 +2,12 @@
 import { useEffect, useState } from "react";
 import { ArrowRight, Menu, Sparkles, X } from "lucide-react";
 import { CORPORATE_ROUTES, PLATFORM_HOME } from "../nav";
+import { Logo } from "@/design-system";
 
 function Brand() {
   return (
     <NavLink to="/" className="flex items-center gap-2 rounded-control px-3 py-2 hover:bg-ig-glass-hover">
-      <span className="relative grid h-8 w-8 shrink-0 place-items-center rounded-lg border border-ig-glass-control-rim bg-ig-glass-control" aria-hidden="true">
-        <span className="h-3 w-3 rounded-full bg-ig-flame-blue" />
-      </span>
-      <span className="min-w-0">
-        <span className="block text-sm font-semibold leading-tight text-ig-frost">Ignis Labs</span>
-        <span className="block text-xs leading-tight text-ig-muted">Scientific intelligence</span>
-      </span>
+      <Logo size={32} />
     </NavLink>
   );
 }
