@@ -15,7 +15,8 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:e2e": "playwright test",
-    "validate:data": "node scripts/validate-data.ts"
+    "validate:data": "node scripts/validate-data.ts",
+    "check:budget": "node scripts/check-budget.ts"
   },
   "dependencies": {
     "@fontsource-variable/inter": "^5.3.0",
