@@ -23,8 +23,8 @@ export function Card({
   return (
     <div
       className={clsx(
-        "rounded-panel bg-ig-vacuum",
-        bordered ? "border border-ig-line" : "",
+        "ig-glass rounded-panel",
+        bordered ? "" : "ig-glass--borderless",
         paddingClasses[padding],
         className,
       )}

@@ -12,8 +12,12 @@ export interface PanelProps {
 }
 
 /**
- * Flat surface: hull fill, 1px line border, 6px radius. No shadow.
- * Depth comes only from the vacuum/hull/raised background steps.
+ * Glass sheet: a translucent, blurred panel with a 1px rim. Depth comes from the
+ * rim plus the backdrop showing through - never from a shadow.
+ *
+ * The blur is painted on .ig-glass::before, not on this element, so the rim and
+ * the content never sit on a backdrop-filter (that combination flickers over a
+ * photo backdrop). See src/design-system/theme.css.
  */
 export function Panel({
   title,
@@ -27,7 +31,7 @@ export function Panel({
   return (
     <section
       className={clsx(
-        "rounded-panel border border-ig-line bg-ig-hull",
+        "ig-glass rounded-panel",
         className,
       )}
     >
@@ -57,7 +61,7 @@ export interface StatProps {
 
 export function Stat({ label, value, unit, hint, className }: StatProps) {
   return (
-    <div className={clsx("rounded-panel border border-ig-line bg-ig-hull px-4 py-3", className)}>
+    <div className={clsx("ig-glass rounded-panel px-4 py-3", className)}>
       <p className="text-xs text-ig-muted">{label}</p>
       <p className="mt-1 flex items-baseline gap-1">
         <span className="ig-num text-2xl font-semibold leading-none text-ig-frost">{value}</span>

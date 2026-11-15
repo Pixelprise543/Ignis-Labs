@@ -13,18 +13,20 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 const base =
   "inline-flex items-center justify-center gap-2 rounded-control font-medium transition-colors disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-ig-flame-blue focus-visible:outline-offset-2";
 
-// Solid fills only. No gradients, glows, blurs or shadows by design.
+// Primary stays a solid gold fill (dark ink, AA-checked). The rest are glass
+// controls: a translucent fill and a rim, never a backdrop-filter, so they
+// cannot flicker over the photo.
 const variants: Record<ButtonVariant, string> = {
   primary:
     "bg-ig-flame-blue text-ig-on-accent hover:bg-ig-amber active:bg-ig-ember",
   secondary:
-    "bg-ig-hull text-ig-frost hover:bg-ig-raised active:bg-ig-line",
+    "border border-ig-glass-control-rim bg-ig-glass-control text-ig-frost hover:bg-ig-glass-hover active:bg-ig-glass-pressed",
   outline:
-    "border border-ig-line bg-transparent text-ig-frost hover:bg-ig-raised active:bg-ig-line",
+    "border border-ig-glass-control-rim bg-transparent text-ig-frost hover:bg-ig-glass-hover active:bg-ig-glass-pressed",
   ghost:
-    "bg-transparent text-ig-muted hover:bg-ig-hull hover:text-ig-frost active:bg-ig-line",
+    "bg-transparent text-ig-muted hover:bg-ig-glass-hover hover:text-ig-frost active:bg-ig-glass-pressed",
   tertiary:
-    "bg-ig-hull text-ig-frost hover:bg-ig-raised active:bg-ig-line",
+    "bg-ig-glass-field text-ig-frost hover:bg-ig-glass-hover active:bg-ig-glass-pressed",
 };
 
 const sizes: Record<ButtonSize, string> = {

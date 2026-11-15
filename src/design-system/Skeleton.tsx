@@ -7,15 +7,16 @@ export interface SkeletonProps {
 }
 
 /**
- * Flat solid blocks with an opacity pulse. No shimmer gradient: that would
- * break the flat rules.
+ * Loading placeholder. A translucent block with an opacity pulse - deliberately
+ * not a shimmer, because a moving gradient would be the one animation on the page
+ * that no user action asked for.
  */
 export function Skeleton({ lines = 1, className }: SkeletonProps) {
   if (lines <= 1) {
     return (
       <div
         aria-hidden="true"
-        className={clsx("h-4 animate-pulse rounded-control bg-ig-raised", className)}
+        className={clsx("h-4 animate-pulse rounded-control bg-ig-glass-control", className)}
       />
     );
   }
@@ -26,7 +27,7 @@ export function Skeleton({ lines = 1, className }: SkeletonProps) {
         <div
           key={index}
           className={clsx(
-            "h-4 animate-pulse rounded-control bg-ig-raised",
+            "h-4 animate-pulse rounded-control bg-ig-glass-control",
             index === lines - 1 && "w-2/3",
           )}
         />
@@ -48,7 +49,7 @@ export function EmptyState({ title, message, icon, action, className }: EmptySta
     <section
       role="status"
       className={clsx(
-        "rounded-panel border border-ig-line bg-ig-hull px-6 py-10 text-center",
+        "ig-glass rounded-panel px-6 py-10 text-center",
         className,
       )}
     >

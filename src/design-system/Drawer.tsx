@@ -17,8 +17,13 @@ export interface DrawerProps {
 }
 
 /**
- * Right-hand drawer with a hairline left border. Traps focus while open,
- * closes on Escape or backdrop click, and returns focus to the trigger.
+ * Right-hand drawer, floating as a glass sheet over a blurred scrim. Traps focus
+ * while open, closes on Escape or backdrop click, and returns focus to the trigger.
+ *
+ * The panel uses .ig-glass-overlay (a near-solid warm charcoal plus one heavy
+ * blur) rather than .ig-glass, because long-form answer text has to stay legible
+ * over any part of the backdrop. Nothing inside it may blur again - theme.css
+ * flattens nested sheets.
  */
 export function Drawer({ open, onClose, title, children, footer, className }: DrawerProps) {
   const panelRef = useRef<HTMLDivElement>(null);
@@ -79,10 +84,10 @@ export function Drawer({ open, onClose, title, children, footer, className }: Dr
   if (!open) return null;
 
   return createPortal(
-    <div className="fixed inset-0 z-50 flex justify-end">
+    <div className="fixed inset-0 z-50 flex justify-end p-2">
       <div
         aria-hidden="true"
-        className="absolute inset-0 bg-ig-vacuum/80"
+        className="ig-glass-scrim absolute inset-0"
         onClick={onClose}
       />
       <div
@@ -92,7 +97,7 @@ export function Drawer({ open, onClose, title, children, footer, className }: Dr
         aria-labelledby={titleId}
         tabIndex={-1}
         className={clsx(
-          "relative flex h-full w-full max-w-md flex-col border-l border-ig-line bg-ig-vacuum",
+          "ig-glass-overlay relative flex h-full w-full max-w-md flex-col overflow-hidden rounded-panel",
           className,
         )}
       >
@@ -104,7 +109,7 @@ export function Drawer({ open, onClose, title, children, footer, className }: Dr
             type="button"
             onClick={onClose}
             aria-label="Close panel"
-            className="inline-flex h-8 w-8 items-center justify-center rounded-control text-ig-muted hover:bg-ig-raised hover:text-ig-frost"
+            className="inline-flex h-8 w-8 items-center justify-center rounded-control text-ig-muted hover:bg-ig-glass-hover hover:text-ig-frost"
           >
             <X size={16} aria-hidden="true" />
           </button>

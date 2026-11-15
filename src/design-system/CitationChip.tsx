@@ -1,5 +1,6 @@
 import { clsx } from "clsx";
 import { FileText } from "lucide-react";
+import type { CSSProperties } from "react";
 import { resolveEvidence, useIgnis } from "@/app/data";
 
 export interface CitationChipProps {
@@ -18,6 +19,10 @@ function truncate(text: string, max = 48): string {
  * findings, so the chip resolves both and always selects the owning experiment.
  * An id that resolves to nothing stays visible but says so: never silently
  * dropped, never presented as valid.
+ *
+ * A resolved chip is a frosted tint. An unresolved one is a solid alarm fill with
+ * dark ink, because alarm-coloured text on an alarm-tinted wash measures 3.8:1 -
+ * below AA. The solid fill measures 6.0:1 and keeps the icon visible.
  */
 export function CitationChip({ id, label, onSelect, className }: CitationChipProps) {
   const { select } = useIgnis();
@@ -47,11 +52,12 @@ export function CitationChip({ id, label, onSelect, className }: CitationChipPro
         if (onSelect) onSelect(experiment.id);
         else select(experiment.id);
       }}
+      style={{ "--tint": experiment ? "var(--ig-line)" : "var(--ig-alarm)" } as CSSProperties}
       className={clsx(
-        "inline-flex max-w-full items-center gap-1 rounded-control border px-1.5 py-0.5 text-xs",
+        "inline-flex max-w-full items-center gap-1 rounded-control px-1.5 py-0.5 text-xs",
         experiment
-          ? "border-ig-line bg-ig-raised text-ig-muted hover:text-ig-frost"
-          : "border-ig-alarm text-ig-alarm",
+          ? "ig-glass-tint hover:text-ig-frost"
+          : "ig-solid-chip",
         className,
       )}
     >

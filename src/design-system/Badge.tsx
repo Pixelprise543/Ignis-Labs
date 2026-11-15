@@ -9,35 +9,58 @@ import {
   ShieldAlert,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
-import type { ReactNode } from "react";
+import type { CSSProperties, ReactNode } from "react";
 import type { Confidence, Severity } from "@/contracts/types";
 import { Tooltip } from "./Tooltip";
 
 export type BadgeTone = "neutral" | "gold" | "olive" | "amber" | "ember" | "alarm";
 
-// Text + border carry the tone; the surface stays flat.
-const toneClasses: Record<BadgeTone, string> = {
-  neutral: "border-ig-line text-ig-muted",
-  gold: "border-ig-flame-blue text-ig-flame-blue",
-  olive: "border-ig-quench text-ig-quench",
-  amber: "border-ig-amber text-ig-amber",
-  ember: "border-ig-ember text-ig-ember",
-  alarm: "border-ig-alarm text-ig-alarm",
+/**
+ * Every chip carries its hue on the --tint custom property, so there is exactly
+ * one styling path whether the chip ends up frosted or solid.
+ */
+const toneTint: Record<BadgeTone, string> = {
+  neutral: "var(--ig-muted)",
+  gold: "var(--ig-flame-blue)",
+  olive: "var(--ig-quench)",
+  amber: "var(--ig-amber)",
+  ember: "var(--ig-ember)",
+  alarm: "var(--ig-alarm)",
 };
 
 const badgeBase =
-  "inline-flex items-center gap-1 rounded-control border bg-ig-raised px-1.5 py-0.5 text-xs font-medium leading-5";
+  "inline-flex items-center gap-1 rounded-control px-1.5 py-0.5 text-xs font-medium leading-5";
 
 export interface BadgeProps {
   tone?: BadgeTone;
+  /**
+   * "tint" (default) is a frosted chip: cream text over a faint wash of the hue.
+   * "solid" is the high-legibility fill used by the severity and confidence
+   * badges, whose wording must stay readable over any part of the photo. Both
+   * keep an icon or a word, so the tone is never carried by colour alone.
+   */
+  variant?: "tint" | "solid";
   icon?: ReactNode;
   children: ReactNode;
   className?: string;
 }
 
-export function Badge({ tone = "neutral", icon, children, className }: BadgeProps) {
+export function Badge({
+  tone = "neutral",
+  variant = "tint",
+  icon,
+  children,
+  className,
+}: BadgeProps) {
   return (
-    <span className={clsx(badgeBase, toneClasses[tone], className)}>
+    <span
+      className={clsx(
+        badgeBase,
+        variant === "solid" ? "ig-solid-chip" : "ig-glass-tint",
+        className,
+      )}
+      style={{ "--tint": toneTint[tone] } as CSSProperties}
+    >
       {icon ? (
         <span aria-hidden="true" className="shrink-0">
           {icon}
@@ -69,7 +92,12 @@ export function SeverityBadge({
   const Icon = config.icon;
 
   return (
-    <Badge tone={config.tone} icon={<Icon size={12} aria-hidden={true} />} className={className}>
+    <Badge
+      tone={config.tone}
+      variant="solid"
+      icon={<Icon size={12} aria-hidden={true} />}
+      className={className}
+    >
       {config.label}
     </Badge>
   );
@@ -116,6 +144,7 @@ export function ConfidenceBadge({
     <Tooltip label={config.explanation}>
       <Badge
         tone={config.tone}
+        variant="solid"
         icon={<Icon size={12} aria-hidden={true} />}
         className={clsx("cursor-help", className)}
       >

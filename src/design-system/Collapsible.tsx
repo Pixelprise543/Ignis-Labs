@@ -26,8 +26,8 @@ export interface CollapsibleProps {
  * and opens the detail when they want it. Nothing is deleted - evidence stays one
  * click away, which the honesty rule requires.
  *
- * Flat by design: 1px --ig-line borders only, no shadow or gradient. The chevron
- * rotation is the only motion and it only fires on a user action.
+ * Glass by design: a translucent sheet with a 1px rim. The chevron rotation is
+ * the only motion and it only fires on a user action.
  */
 export function Collapsible({
   title,
@@ -48,7 +48,7 @@ export function Collapsible({
   return (
     <div
       className={clsx(
-        tone === "panel" ? "rounded-panel border border-ig-line bg-ig-hull" : "border-t border-ig-line",
+        tone === "panel" ? "ig-glass rounded-panel" : "border-t border-ig-line",
         className,
       )}
     >
@@ -61,7 +61,7 @@ export function Collapsible({
           className={clsx(
             "flex w-full items-start gap-2 rounded-control text-left",
             tone === "panel" ? "px-4 py-3" : "py-2",
-            "hover:bg-ig-raised",
+            "hover:bg-ig-glass-hover",
           )}
         >
           <ChevronRight

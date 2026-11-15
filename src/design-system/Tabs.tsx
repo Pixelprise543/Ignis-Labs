@@ -32,7 +32,10 @@ export function Tabs({ items, value, onChange, label, className }: TabsProps) {
       role="tablist"
       aria-label={label}
       onKeyDown={handleKeyDown}
-      className={clsx("flex flex-wrap gap-1 border-b border-ig-line", className)}
+      className={clsx(
+        "flex w-fit flex-wrap items-center gap-1 rounded-control border border-ig-glass-control-rim bg-ig-glass-field p-1",
+        className,
+      )}
     >
       {items.map((item) => {
         const active = item.id === value;
@@ -45,10 +48,12 @@ export function Tabs({ items, value, onChange, label, className }: TabsProps) {
             tabIndex={active ? 0 : -1}
             onClick={() => onChange(item.id)}
             className={clsx(
-              "-mb-px inline-flex min-h-9 items-center gap-2 border-b-2 px-3 text-sm font-medium transition-colors",
+              // The active tab changes fill AND text lightness AND carries a gold
+              // underline, so selection never rests on colour alone.
+              "inline-flex min-h-8 items-center gap-2 rounded-control border-b-2 px-3 text-sm font-medium transition-colors",
               active
-                ? "border-ig-flame-blue text-ig-frost"
-                : "border-transparent text-ig-muted hover:text-ig-frost",
+                ? "border-ig-flame-blue bg-ig-glass-pressed text-ig-frost"
+                : "border-transparent text-ig-muted hover:bg-ig-glass-hover hover:text-ig-frost",
             )}
           >
             {item.icon ? (
