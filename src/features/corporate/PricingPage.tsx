@@ -86,7 +86,7 @@ const COMPARE_ROWS = [
 export function PricingPage() {
   return (
     <div className="space-y-8">
-      <section className="rounded-panel border border-ig-line bg-ig-hull p-6 lg:p-10">
+      <section className="ig-glass rounded-panel p-6 lg:p-10">
         <p className="text-xs font-medium text-ig-muted">Pricing</p>
         <h1 className="mt-2 max-w-2xl text-3xl font-semibold leading-tight text-ig-frost lg:text-4xl">
           Pricing for research teams.

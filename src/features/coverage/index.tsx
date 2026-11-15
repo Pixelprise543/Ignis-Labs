@@ -62,8 +62,8 @@ function GravityHatch() {
     >
       <defs>
         <pattern id={id} width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
-          <rect width="6" height="6" fill="var(--ig-vacuum, #1A1512)" />
-          <line x1="0" y1="0" x2="0" y2="6" stroke="var(--ig-line, #40362D)" strokeWidth="1.5" />
+          <rect width="6" height="6" fill="var(--ig-vacuum)" />
+          <line x1="0" y1="0" x2="0" y2="6" stroke="var(--ig-line)" strokeWidth="1.5" />
         </pattern>
       </defs>
       <rect width="64" height="44" fill={`url(#${id})`} />
@@ -178,25 +178,25 @@ export function CoveragePage() {
 
       <section
         aria-labelledby="coverage-grid-heading"
-        className="rounded-[6px] border border-[var(--ig-line)] bg-[var(--ig-hull)] p-4"
+        className="ig-glass rounded-panel p-4"
       >
         <div className="flex flex-wrap items-center justify-between gap-2">
-          <h2 id="coverage-grid-heading" className="text-sm font-semibold text-[var(--ig-frost)]">
+          <h2 id="coverage-grid-heading" className="text-sm font-semibold text-ig-frost">
             Gravity × oxygen coverage
           </h2>
-          <ul className="flex flex-wrap items-center gap-3 text-xs text-[var(--ig-muted)]">
+          <ul className="flex flex-wrap items-center gap-3 text-xs text-ig-muted">
             <li className="inline-flex items-center gap-1.5">
-              <span className="inline-block h-4 w-5 rounded-[2px] border border-[var(--ig-line)] bg-[var(--ig-raised)]" />
+              <span className="inline-block h-4 w-5 rounded-[2px] border border-ig-glass-control-rim bg-ig-glass-pressed" />
               Has evidence
             </li>
             <li className="inline-flex items-center gap-1.5">
-              <span className="inline-block h-4 w-5 overflow-hidden rounded-[2px] border border-[var(--ig-line)]">
+              <span className="inline-block h-4 w-5 overflow-hidden rounded-[2px] border border-ig-line">
                 <GravityHatch />
               </span>
               No evidence
             </li>
             <li className="inline-flex items-center gap-1.5">
-              <span aria-hidden="true" className="text-[var(--ig-flame-blue)]">◆</span>
+              <span aria-hidden="true" className="text-ig-flame-blue">◆</span>
               Includes {scenario.label}
             </li>
           </ul>
@@ -209,14 +209,14 @@ export function CoveragePage() {
             </caption>
             <thead>
               <tr>
-                <th scope="col" className="border-b border-[var(--ig-line)] py-2 pr-3 text-xs font-medium text-[var(--ig-muted)]">
+                <th scope="col" className="border-b border-ig-line py-2 pr-3 text-xs font-medium text-ig-muted">
                   Gravity
                 </th>
                 {o2Bands.map((band) => (
                   <th
                     key={band}
                     scope="col"
-                    className="border-b border-[var(--ig-line)] px-1.5 py-2 text-center text-xs font-medium text-[var(--ig-muted)]"
+                    className="border-b border-ig-line px-1.5 py-2 text-center text-xs font-medium text-ig-muted"
                   >
                     {formatO2(band)}
                   </th>
@@ -225,8 +225,8 @@ export function CoveragePage() {
             </thead>
             <tbody>
               {gravityBands.map((gravityBand) => (
-                <tr key={gravityBand} className="border-b border-[var(--ig-line)] last:border-0">
-                  <th scope="row" className="py-1.5 pr-3 text-left text-xs font-medium text-[var(--ig-frost)]">
+                <tr key={gravityBand} className="border-b border-ig-line last:border-0">
+                  <th scope="row" className="py-1.5 pr-3 text-left text-xs font-medium text-ig-frost">
                     {formatGravity(gravityBand)}
                   </th>
                   {o2Bands.map((o2Band) => {
@@ -245,21 +245,21 @@ export function CoveragePage() {
                             onClick={() =>
                               setSelected(isSelected ? null : { gravityBand, o2Band })
                             }
-                            className={`block w-full overflow-hidden rounded-[2px] border text-center focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ig-frost)] ${
+                            className={`block w-full overflow-hidden rounded-[2px] border text-center focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ig-frost ${
                               isSelected
-                                ? 'border-[var(--ig-frost)]'
-                                : 'border-[var(--ig-line)] hover:border-[var(--ig-muted)]'
+                                ? 'border-ig-frost'
+                                : 'border-ig-glass-control-rim hover:border-ig-muted'
                             }`}
                           >
                             <span className="relative block">
                               <GravityHatch />
-                              <span className="absolute inset-0 flex items-center justify-center text-[10px] text-[var(--ig-muted)]">
+                              <span className="absolute inset-0 flex items-center justify-center text-[10px] text-ig-muted">
                                 Gap
                               </span>
                               {relevant ? (
                                 <span
                                   aria-hidden="true"
-                                  className="absolute right-1 top-0.5 text-[10px] text-[var(--ig-flame-blue)]"
+                                  className="absolute right-1 top-0.5 text-[10px] text-ig-flame-blue"
                                 >
                                   ◆
                                 </span>
@@ -276,17 +276,17 @@ export function CoveragePage() {
                           aria-pressed={isSelected}
                           aria-label={`${label}: ${cell.count} experiment${cell.count === 1 ? '' : 's'}. Show details.`}
                           onClick={() => setSelected(isSelected ? null : { gravityBand, o2Band })}
-                          className={`relative flex h-11 w-full items-center justify-center rounded-[2px] border font-mono text-sm tabular-nums text-[var(--ig-frost)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ig-frost)] ${
+                          className={`relative flex h-11 w-full items-center justify-center rounded-[2px] border font-mono text-sm tabular-nums text-ig-frost focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ig-frost ${
                             isSelected
-                              ? 'border-[var(--ig-frost)] bg-[var(--ig-raised)]'
-                              : 'border-[var(--ig-line)] bg-[var(--ig-raised)] hover:border-[var(--ig-muted)]'
+                              ? 'border-ig-frost bg-ig-glass-pressed'
+                              : 'border-ig-glass-control-rim bg-ig-glass-pressed hover:border-ig-muted'
                           }`}
                         >
                           {cell.count}
                           {relevant ? (
                             <span
                               aria-hidden="true"
-                              className="absolute right-1 top-0.5 text-[10px] text-[var(--ig-flame-blue)]"
+                              className="absolute right-1 top-0.5 text-[10px] text-ig-flame-blue"
                             >
                               ◆
                             </span>
@@ -301,7 +301,7 @@ export function CoveragePage() {
           </table>
         </div>
 
-        <p className="mt-2 text-xs text-[var(--ig-muted)]">
+        <p className="mt-2 text-xs text-ig-muted">
           {filledCells.length} covered combinations · {gapCount} gaps · {scenario.label} sits in the{' '}
           {formatGravity(gravityBandForScenario)} band.
         </p>
@@ -310,15 +310,15 @@ export function CoveragePage() {
       {selectedCell ? (
         <section
           aria-labelledby="coverage-detail-heading"
-          className="rounded-[6px] border border-[var(--ig-line)] bg-[var(--ig-hull)] p-4"
+          className="ig-glass rounded-panel p-4"
           style={{ borderLeft: '2px solid var(--ig-flame-blue)' }}
         >
           <div className="flex flex-wrap items-start justify-between gap-2">
             <div>
-              <h2 id="coverage-detail-heading" className="text-sm font-semibold text-[var(--ig-frost)]">
+              <h2 id="coverage-detail-heading" className="text-sm font-semibold text-ig-frost">
                 {formatGravity(selectedCell.gravityBand)} gravity · {formatO2(selectedCell.o2Band)} oxygen
               </h2>
-              <p className="mt-1 text-xs text-[var(--ig-muted)]">
+              <p className="mt-1 text-xs text-ig-muted">
                 {selectedCell.count === 0
                   ? 'No experiment in the set covers this combination.'
                   : `${selectedCell.count} experiment${selectedCell.count === 1 ? '' : 's'} cover this combination.`}
@@ -333,7 +333,7 @@ export function CoveragePage() {
           </div>
 
           {selectedCell.count === 0 ? (
-            <p className="mt-3 max-w-3xl text-sm leading-relaxed text-[var(--ig-muted)]">
+            <p className="mt-3 max-w-3xl text-sm leading-relaxed text-ig-muted">
               This is a research gap. Before relying on behaviour in this regime, look for evidence at
               the nearest covered cell, and treat any extrapolation as an assumption to verify.
             </p>
@@ -344,7 +344,7 @@ export function CoveragePage() {
                   <Link
                     to="/explore"
                     onClick={() => select(id)}
-                    className="inline-flex items-center gap-1.5 rounded-[4px] border border-[var(--ig-line)] bg-[var(--ig-vacuum)] px-2 py-1 font-mono text-xs text-[var(--ig-frost)] hover:bg-[var(--ig-raised)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ig-flame-blue)]"
+                    className="inline-flex items-center gap-1.5 rounded-field border border-ig-glass-field-rim bg-ig-glass-field px-2 py-1 font-mono text-xs text-ig-frost hover:bg-ig-glass-hover focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ig-flame-blue"
                   >
                     {id}
                   </Link>
@@ -357,23 +357,23 @@ export function CoveragePage() {
 
       <section
         aria-labelledby="coverage-si-heading"
-        className="rounded-[6px] border border-[var(--ig-line)] bg-[var(--ig-hull)] p-4"
+        className="ig-glass rounded-panel p-4"
       >
         <div className="flex flex-wrap items-center justify-between gap-2">
-          <h2 id="coverage-si-heading" className="text-sm font-semibold text-[var(--ig-frost)]">
+          <h2 id="coverage-si-heading" className="text-sm font-semibold text-ig-frost">
             What's missing
           </h2>
           {interpret.status === 'ready' ? (
-            <span className="flex flex-wrap items-center gap-2 text-xs text-[var(--ig-muted)]">
-              <span className="rounded-[4px] border border-[var(--ig-line)] px-1.5 py-0.5 font-mono">
+            <span className="flex flex-wrap items-center gap-2 text-xs text-ig-muted">
+              <span className="rounded-control border border-ig-glass-control-rim bg-ig-glass-control px-1.5 py-0.5 font-mono">
                 {interpret.model}
               </span>
               {interpret.fallback ? (
                 <span
-                  className="inline-flex items-center gap-1.5 rounded-[4px] border border-[var(--ig-line)] px-1.5 py-0.5"
+                  className="inline-flex items-center gap-1.5 rounded-control border border-ig-glass-control-rim bg-ig-glass-control px-1.5 py-0.5"
                   title="Generated offline from the local dataset. No language-model call was made."
                 >
-                  <span aria-hidden="true" className="h-1.5 w-1.5 rounded-full bg-[var(--ig-amber)]" />
+                  <span aria-hidden="true" className="h-1.5 w-1.5 rounded-full bg-ig-amber" />
                   Offline fallback
                 </span>
               ) : null}
@@ -389,17 +389,17 @@ export function CoveragePage() {
               <Skeleton className="h-3 w-5/6" />
             </div>
           ) : interpret.status === 'error' ? (
-            <p className="text-xs text-[var(--ig-frost)]">
+            <p className="text-xs text-ig-frost">
               The interpretation could not be generated: {interpret.message} Use the gap list above
               instead.
             </p>
           ) : interpret.status === 'ready' ? (
-            <div className="text-sm leading-relaxed text-[var(--ig-muted)] [&_h3]:text-sm [&_h3]:font-semibold [&_h3]:text-[var(--ig-frost)] [&_li]:mt-1 [&_p]:mt-2 [&_strong]:text-[var(--ig-frost)] [&_ul]:mt-2 [&_ul]:space-y-1">
+            <div className="text-sm leading-relaxed text-ig-muted [&_h3]:text-sm [&_h3]:font-semibold [&_h3]:text-ig-frost [&_li]:mt-1 [&_p]:mt-2 [&_strong]:text-ig-frost [&_ul]:mt-2 [&_ul]:space-y-1">
               <ReactMarkdown
                 remarkPlugins={[remarkGfm]}
                 components={{
                   h3: ({ children }) => (
-                    <h3 className="text-sm font-semibold text-[var(--ig-frost)]">{children}</h3>
+                    <h3 className="text-sm font-semibold text-ig-frost">{children}</h3>
                   ),
                   p: ({ children }) => <p className="mt-2 text-sm">{children}</p>,
                 }}
@@ -412,14 +412,14 @@ export function CoveragePage() {
 
         {nearbyEvidence.length > 0 ? (
           <div className="mt-3">
-            <h3 className="text-xs font-medium text-[var(--ig-frost)]">Nearest evidence cited</h3>
+            <h3 className="text-xs font-medium text-ig-frost">Nearest evidence cited</h3>
             <ul className="mt-2 flex flex-wrap gap-1.5">
               {nearbyEvidence.map((id) => (
                 <li key={id}>
                   <Link
                     to="/explore"
                     onClick={() => select(id)}
-                    className="inline-flex items-center gap-1.5 rounded-[4px] border border-[var(--ig-line)] bg-[var(--ig-vacuum)] px-2 py-1 font-mono text-xs text-[var(--ig-frost)] hover:bg-[var(--ig-raised)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ig-flame-blue)]"
+                    className="inline-flex items-center gap-1.5 rounded-field border border-ig-glass-field-rim bg-ig-glass-field px-2 py-1 font-mono text-xs text-ig-frost hover:bg-ig-glass-hover focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ig-flame-blue"
                   >
                     {id}
                   </Link>

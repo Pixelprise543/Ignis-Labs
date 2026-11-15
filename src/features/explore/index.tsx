@@ -85,7 +85,7 @@ export function ExplorePage() {
           compareIds.length >= 2 ? (
             <Link
               to="/compare"
-              className="inline-flex min-h-9 items-center rounded-[4px] border border-[var(--ig-line)] px-3 text-sm text-[var(--ig-frost)] hover:bg-[var(--ig-raised)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ig-flame-blue)]"
+              className="inline-flex min-h-9 items-center rounded-control border border-ig-glass-control-rim bg-ig-glass-control px-3 text-sm text-ig-frost hover:bg-ig-glass-hover focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ig-flame-blue"
             >
               Compare {compareIds.length} experiments
             </Link>
@@ -93,20 +93,20 @@ export function ExplorePage() {
         }
       />
 
-      <div className="flex flex-wrap items-end gap-2 rounded-[6px] border border-[var(--ig-line)] bg-[var(--ig-hull)] p-3">
+      <div className="flex flex-wrap items-end gap-2 ig-glass rounded-panel p-3">
         <label className="min-w-[220px] flex-1">
-          <span className="mb-1 block text-xs text-[var(--ig-muted)]">Search</span>
+          <span className="mb-1 block text-xs text-ig-muted">Search</span>
           <input
             type="search"
             value={filters.query}
             onChange={(event) => setFilters({ query: event.target.value })}
             placeholder="Name, acronym, fuel or tag"
-            className="w-full rounded-[4px] border border-[var(--ig-line)] bg-[var(--ig-vacuum)] px-2.5 py-1.5 text-sm text-[var(--ig-frost)] placeholder:text-[var(--ig-muted)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ig-flame-blue)]"
+            className="w-full rounded-field border border-ig-glass-field-rim bg-ig-glass-field px-2.5 py-1.5 text-sm text-ig-frost placeholder:text-ig-muted focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ig-flame-blue"
           />
         </label>
 
         <fieldset className="flex flex-wrap items-center gap-1.5">
-          <legend className="mb-1 block w-full text-xs text-[var(--ig-muted)]">Gravity regime</legend>
+          <legend className="mb-1 block w-full text-xs text-ig-muted">Gravity regime</legend>
           {REGIMES.map((regime) => {
             const active = filters.regimes.includes(regime.id)
             return (
@@ -121,10 +121,10 @@ export function ExplorePage() {
                       : [...filters.regimes, regime.id],
                   })
                 }
-                className={`rounded-[4px] border px-2 py-1 text-xs focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ig-flame-blue)] ${
+                className={`rounded-control border border-ig-glass-control-rim bg-ig-glass-control px-2 py-1 text-xs focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ig-flame-blue ${
                   active
-                    ? 'border-[var(--ig-flame-blue)] bg-[var(--ig-raised)] text-[var(--ig-frost)]'
-                    : 'border-[var(--ig-line)] text-[var(--ig-muted)] hover:bg-[var(--ig-raised)]'
+                    ? 'border-ig-flame-blue bg-ig-glass-pressed text-ig-frost'
+                    : 'border-ig-glass-control-rim text-ig-muted hover:bg-ig-glass-hover'
                 }`}
               >
                 {regime.label}
@@ -134,13 +134,13 @@ export function ExplorePage() {
         </fieldset>
 
         <label>
-          <span className="mb-1 block text-xs text-[var(--ig-muted)]">Fuel</span>
+          <span className="mb-1 block text-xs text-ig-muted">Fuel</span>
           <select
             value={filters.fuelTypes[0] ?? ''}
             onChange={(event) =>
               setFilters({ fuelTypes: event.target.value ? [event.target.value as FuelType] : [] })
             }
-            className="min-h-9 rounded-[4px] border border-[var(--ig-line)] bg-[var(--ig-vacuum)] px-2 text-sm text-[var(--ig-frost)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ig-flame-blue)]"
+            className="min-h-9 rounded-field border border-ig-glass-field-rim bg-ig-glass-field px-2 text-sm text-ig-frost focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ig-flame-blue"
           >
             <option value="">All fuels</option>
             {FUEL_TYPES.map((fuel) => (
@@ -152,7 +152,7 @@ export function ExplorePage() {
         </label>
 
         <label>
-          <span className="mb-1 block text-xs text-[var(--ig-muted)]">Facility</span>
+          <span className="mb-1 block text-xs text-ig-muted">Facility</span>
           <select
             value={filters.facilities[0] ?? ''}
             onChange={(event) =>
@@ -160,7 +160,7 @@ export function ExplorePage() {
                 facilities: event.target.value ? [event.target.value as Facility] : [],
               })
             }
-            className="min-h-9 rounded-[4px] border border-[var(--ig-line)] bg-[var(--ig-vacuum)] px-2 text-sm text-[var(--ig-frost)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ig-flame-blue)]"
+            className="min-h-9 rounded-field border border-ig-glass-field-rim bg-ig-glass-field px-2 text-sm text-ig-frost focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ig-flame-blue"
           >
             <option value="">All facilities</option>
             {FACILITIES.map((facility) => (
@@ -178,7 +178,7 @@ export function ExplorePage() {
         ) : null}
       </div>
 
-      <p className="text-xs text-[var(--ig-muted)]" role="status">
+      <p className="text-xs text-ig-muted" role="status">
         {visible.length} of {experiments.length} experiments
         {compareIds.length > 0 ? ` · ${compareIds.length} in compare` : ''}
       </p>
@@ -196,11 +196,11 @@ export function ExplorePage() {
               }
             />
           ) : (
-            <div className="overflow-x-auto rounded-[6px] border border-[var(--ig-line)] bg-[var(--ig-hull)]">
+            <div className="overflow-x-auto ig-glass rounded-panel">
               <table className="w-full border-collapse text-left text-sm">
                 <caption className="sr-only">Experiment library with filters applied</caption>
                 <thead>
-                  <tr className="border-b border-[var(--ig-line)] text-xs text-[var(--ig-muted)]">
+                  <tr className="border-b border-ig-line text-xs text-ig-muted">
                     <th scope="col" className="px-3 py-2 font-medium">Experiment</th>
                     <th scope="col" className="hidden px-3 py-2 font-medium sm:table-cell">Regime</th>
                     <th scope="col" className="hidden px-3 py-2 font-medium md:table-cell">Facility</th>
@@ -220,8 +220,8 @@ export function ExplorePage() {
                     return (
                       <tr
                         key={experiment.id}
-                        className={`border-b border-[var(--ig-line)] last:border-0 ${
-                          isSelected ? 'bg-[var(--ig-raised)]' : 'hover:bg-[var(--ig-raised)]'
+                        className={`border-b border-ig-line last:border-0 ${
+                          isSelected ? 'bg-ig-glass-hover' : 'hover:bg-ig-glass-hover'
                         }`}
                       >
                         <td className="px-3 py-2">
@@ -229,12 +229,12 @@ export function ExplorePage() {
                             type="button"
                             onClick={() => select(isSelected ? null : experiment.id)}
                             aria-expanded={isSelected}
-                            className="text-left focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ig-flame-blue)]"
+                            className="text-left focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ig-flame-blue"
                           >
-                            <span className="block font-medium text-[var(--ig-frost)]">
+                            <span className="block font-medium text-ig-frost">
                               {experiment.name}
                             </span>
-                            <span className="font-mono text-xs text-[var(--ig-muted)]">
+                            <span className="font-mono text-xs text-ig-muted">
                               {experiment.acronym}
                             </span>
                           </button>
@@ -242,16 +242,16 @@ export function ExplorePage() {
                         <td className="hidden px-3 py-2 sm:table-cell">
                           <RegimeBadge regime={experiment.regime} />
                         </td>
-                        <td className="hidden px-3 py-2 text-xs text-[var(--ig-muted)] md:table-cell">
+                        <td className="hidden px-3 py-2 text-xs text-ig-muted md:table-cell">
                           {experiment.facility}
                         </td>
-                        <td className="hidden px-3 py-2 text-xs text-[var(--ig-muted)] lg:table-cell">
+                        <td className="hidden px-3 py-2 text-xs text-ig-muted lg:table-cell">
                           {experiment.fuelType}
                         </td>
-                        <td className="hidden px-3 py-2 font-mono text-xs tabular-nums text-[var(--ig-muted)] lg:table-cell">
+                        <td className="hidden px-3 py-2 font-mono text-xs tabular-nums text-ig-muted lg:table-cell">
                           {experiment.years[0]}–{experiment.years[1] ?? 'now'}
                         </td>
-                        <td className="hidden px-3 py-2 font-mono text-xs tabular-nums text-[var(--ig-frost)] sm:table-cell">
+                        <td className="hidden px-3 py-2 font-mono text-xs tabular-nums text-ig-frost sm:table-cell">
                           {experiment.conditions.o2Percent ?? '—'}
                         </td>
                         <td className="px-3 py-2">
@@ -264,10 +264,10 @@ export function ExplorePage() {
                             disabled={!inCompare && compareFull}
                             title={!inCompare && compareFull ? 'Compare holds four experiments. Remove one first.' : undefined}
                             onClick={() => toggleCompare(experiment.id)}
-                            className={`rounded-[4px] border px-2 py-1 text-xs focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ig-flame-blue)] disabled:cursor-not-allowed disabled:opacity-50 ${
+                            className={`rounded-control border border-ig-glass-control-rim bg-ig-glass-control px-2 py-1 text-xs focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ig-flame-blue disabled:cursor-not-allowed disabled:opacity-50 ${
                               inCompare
-                                ? 'border-[var(--ig-flame-blue)] bg-[var(--ig-raised)] text-[var(--ig-frost)]'
-                                : 'border-[var(--ig-line)] text-[var(--ig-muted)] hover:bg-[var(--ig-raised)]'
+                                ? 'border-ig-flame-blue bg-ig-glass-pressed text-ig-frost'
+                                : 'border-ig-glass-control-rim text-ig-muted hover:bg-ig-glass-hover'
                             }`}
                           >
                             {inCompare ? 'In compare' : 'Add to compare'}
@@ -285,12 +285,12 @@ export function ExplorePage() {
         {selected ? (
           <aside
             aria-labelledby="experiment-detail-title"
-            className="h-fit rounded-[6px] border border-[var(--ig-line)] bg-[var(--ig-hull)] p-4 lg:sticky lg:top-4"
+            className="h-fit ig-glass rounded-panel p-4 lg:sticky lg:top-4"
           >
             <div className="flex items-start justify-between gap-3">
               <div>
-                <p className="font-mono text-xs text-[var(--ig-muted)]">{selected.acronym}</p>
-                <h2 id="experiment-detail-title" className="text-base font-semibold text-[var(--ig-frost)]">
+                <p className="font-mono text-xs text-ig-muted">{selected.acronym}</p>
+                <h2 id="experiment-detail-title" className="text-base font-semibold text-ig-frost">
                   {selected.name}
                 </h2>
               </div>
@@ -298,7 +298,7 @@ export function ExplorePage() {
                 ref={closeRef}
                 type="button"
                 onClick={() => select(null)}
-                className="rounded-[4px] border border-[var(--ig-line)] px-2 py-1 text-xs text-[var(--ig-muted)] hover:bg-[var(--ig-raised)] hover:text-[var(--ig-frost)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ig-flame-blue)]"
+                className="rounded-control border border-ig-glass-control-rim bg-ig-glass-control px-2 py-1 text-xs text-ig-muted hover:bg-ig-glass-hover hover:text-ig-frost focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ig-flame-blue"
               >
                 Close
               </button>
@@ -309,30 +309,30 @@ export function ExplorePage() {
               <RegimeBadge regime={selected.regime} />
             </div>
 
-            <p className="mt-3 text-sm leading-relaxed text-[var(--ig-muted)]">{selected.summary}</p>
+            <p className="mt-3 text-sm leading-relaxed text-ig-muted">{selected.summary}</p>
 
-            <div className="mt-3 rounded-[4px] border border-[var(--ig-line)] bg-[var(--ig-vacuum)] px-3 py-2">
-              <p className="text-xs font-medium text-[var(--ig-frost)]">Safety takeaway</p>
-              <p className="mt-1 text-xs leading-relaxed text-[var(--ig-muted)]">
+            <div className="mt-3 rounded-field border border-ig-glass-field-rim bg-ig-glass-field px-3 py-2">
+              <p className="text-xs font-medium text-ig-frost">Safety takeaway</p>
+              <p className="mt-1 text-xs leading-relaxed text-ig-muted">
                 {selected.safetyTakeaway}
               </p>
             </div>
 
-            <h3 className="mt-4 text-xs font-medium text-[var(--ig-frost)]">Metrics</h3>
+            <h3 className="mt-4 text-xs font-medium text-ig-frost">Metrics</h3>
             <table className="mt-1 w-full border-collapse text-left text-xs">
               <thead>
-                <tr className="text-[var(--ig-muted)]">
-                  <th scope="col" className="border-b border-[var(--ig-line)] py-1 font-medium">Metric</th>
-                  <th scope="col" className="border-b border-[var(--ig-line)] py-1 text-right font-medium">Value</th>
+                <tr className="text-ig-muted">
+                  <th scope="col" className="border-b border-ig-line py-1 font-medium">Metric</th>
+                  <th scope="col" className="border-b border-ig-line py-1 text-right font-medium">Value</th>
                 </tr>
               </thead>
               <tbody>
                 {selected.metrics.map((metric) => (
                   <tr key={metric.key}>
-                    <td className="border-b border-[var(--ig-line)] py-1 pr-2 text-[var(--ig-muted)]">
+                    <td className="border-b border-ig-line py-1 pr-2 text-ig-muted">
                       {metric.label}
                     </td>
-                    <td className="border-b border-[var(--ig-line)] py-1 text-right font-mono tabular-nums text-[var(--ig-frost)]">
+                    <td className="border-b border-ig-line py-1 text-right font-mono tabular-nums text-ig-frost">
                       {metric.value ?? '—'} {metric.unit}
                     </td>
                   </tr>
@@ -340,17 +340,17 @@ export function ExplorePage() {
               </tbody>
             </table>
 
-            <h3 className="mt-4 text-xs font-medium text-[var(--ig-frost)]">Findings</h3>
-            <ul className="mt-1 space-y-1 text-xs leading-relaxed text-[var(--ig-muted)]">
+            <h3 className="mt-4 text-xs font-medium text-ig-frost">Findings</h3>
+            <ul className="mt-1 space-y-1 text-xs leading-relaxed text-ig-muted">
               {selected.findings.map((finding) => (
-                <li key={finding.id} className="border-l border-[var(--ig-line)] pl-2">
+                <li key={finding.id} className="border-l border-ig-line pl-2">
                   {finding.text}
                 </li>
               ))}
             </ul>
 
-            <h3 className="mt-4 text-xs font-medium text-[var(--ig-frost)]">Sources</h3>
-            <ul className="mt-1 space-y-1 text-xs text-[var(--ig-muted)]">
+            <h3 className="mt-4 text-xs font-medium text-ig-frost">Sources</h3>
+            <ul className="mt-1 space-y-1 text-xs text-ig-muted">
               {selected.sources.map((source) => (
                 <li key={source.title}>
                   {source.url ? (
@@ -358,14 +358,14 @@ export function ExplorePage() {
                       href={source.url}
                       target="_blank"
                       rel="noreferrer"
-                      className="text-[var(--ig-flame-blue)] underline decoration-[var(--ig-line)] underline-offset-2"
+                      className="text-ig-flame-blue underline decoration-ig-line underline-offset-2"
                     >
                       {source.title}
                     </a>
                   ) : (
                     source.title
                   )}{' '}
-                  <span className="text-[var(--ig-muted)]">
+                  <span className="text-ig-muted">
                     · {source.org}
                     {source.year ? ` · ${source.year}` : ''}
                   </span>
@@ -384,7 +384,7 @@ export function ExplorePage() {
               {compareIds.length >= 2 ? (
                 <Link
                   to="/compare"
-                  className="inline-flex min-h-9 items-center rounded-[4px] px-3 text-sm text-[var(--ig-flame-blue)] hover:bg-[var(--ig-raised)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ig-flame-blue)]"
+                  className="inline-flex min-h-9 items-center rounded-control px-3 text-sm text-ig-flame-blue hover:bg-ig-glass-hover focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ig-flame-blue"
                 >
                   Open compare
                 </Link>

@@ -23,7 +23,7 @@ export function HomePage() {
 
   return (
     <div className="space-y-8">
-      <section className="rounded-panel border border-ig-line bg-ig-hull p-6 lg:p-10">
+      <section className="ig-glass rounded-panel p-6 lg:p-10">
         <div className="grid gap-6 lg:grid-cols-12">
           <div className="lg:col-span-8">
             <p className="text-xs font-medium text-ig-muted">Ignis Labs</p>
@@ -90,7 +90,7 @@ export function HomePage() {
             <Link
               key={item.to}
               to={item.to}
-              className="group flex items-center justify-between gap-3 rounded-panel border border-ig-line bg-ig-vacuum px-4 py-3 hover:bg-ig-raised"
+              className="group flex items-center justify-between gap-3 rounded-panel border border-ig-glass-control-rim bg-ig-glass-control px-4 py-3 hover:bg-ig-glass-hover"
             >
               <span className="min-w-0">
                 <span className="block text-sm font-medium text-ig-frost group-hover:text-ig-flame-blue">

@@ -59,7 +59,7 @@ export function ProductPage() {
 
   return (
     <div className="space-y-8">
-      <section className="rounded-panel border border-ig-line bg-ig-hull p-6 lg:p-10">
+      <section className="ig-glass rounded-panel p-6 lg:p-10">
         <p className="text-xs font-medium text-ig-muted">Product</p>
         <h1 className="mt-2 max-w-2xl text-3xl font-semibold leading-tight text-ig-frost lg:text-4xl">
           The Ignis research platform.
@@ -78,7 +78,7 @@ export function ProductPage() {
             <Link
               key={cap.id}
               to={cap.link}
-              className="group flex items-start justify-between gap-3 rounded-panel border border-ig-line bg-ig-vacuum px-4 py-3 hover:bg-ig-raised"
+              className="group flex items-start justify-between gap-3 rounded-panel border border-ig-glass-control-rim bg-ig-glass-control px-4 py-3 hover:bg-ig-glass-hover"
             >
               <span className="min-w-0">
                 <span className="block text-sm font-medium text-ig-frost group-hover:text-ig-flame-blue">
@@ -96,7 +96,7 @@ export function ProductPage() {
         </div>
       </section>
 
-      <section className="rounded-panel border border-ig-line bg-ig-hull p-6 lg:p-8">
+      <section className="ig-glass rounded-panel p-6 lg:p-8">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div>
             <h2 className="text-base font-semibold text-ig-frost">

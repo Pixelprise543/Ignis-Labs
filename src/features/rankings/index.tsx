@@ -50,9 +50,9 @@ export function RankingsPage() {
 
       <section
         aria-labelledby="weights-heading"
-        className="rounded-[6px] border border-[var(--ig-line)] bg-[var(--ig-hull)] p-4"
+        className="ig-glass rounded-panel p-4"
       >
-        <h2 id="weights-heading" className="text-sm font-semibold text-[var(--ig-frost)]">
+        <h2 id="weights-heading" className="text-sm font-semibold text-ig-frost">
           Weights
         </h2>
         <div className="mt-3 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
@@ -61,10 +61,10 @@ export function RankingsPage() {
             return (
               <div key={factor.key}>
                 <div className="flex items-baseline justify-between gap-2">
-                  <label htmlFor={inputId} className="text-xs text-[var(--ig-frost)]">
+                  <label htmlFor={inputId} className="text-xs text-ig-frost">
                     {factor.label}
                   </label>
-                  <span className="font-mono text-xs tabular-nums text-[var(--ig-muted)]">
+                  <span className="font-mono text-xs tabular-nums text-ig-muted">
                     {Math.round(weights[factor.key] * 100)}%
                   </span>
                 </div>
@@ -79,9 +79,9 @@ export function RankingsPage() {
                     setWeights({ ...weights, [factor.key]: Number(event.target.value) })
                   }
                   aria-describedby={`${inputId}-help`}
-                  className="mt-2 w-full accent-[var(--ig-flame-blue)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ig-flame-blue)]"
+                  className="mt-2 w-full accent-ig-flame-blue focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ig-flame-blue"
                 />
-                <p id={`${inputId}-help`} className="mt-1 text-[11px] leading-relaxed text-[var(--ig-muted)]">
+                <p id={`${inputId}-help`} className="mt-1 text-[11px] leading-relaxed text-ig-muted">
                   {factor.help}
                 </p>
               </div>
@@ -102,24 +102,24 @@ export function RankingsPage() {
             return (
               <li
                 key={entry.experiment.id}
-                className="rounded-[6px] border border-[var(--ig-line)] bg-[var(--ig-hull)] p-3"
+                className="ig-glass rounded-panel p-3"
               >
                 <div className="flex flex-wrap items-start gap-3">
-                  <span className="mt-0.5 w-7 shrink-0 font-mono text-sm tabular-nums text-[var(--ig-muted)]">
+                  <span className="mt-0.5 w-7 shrink-0 font-mono text-sm tabular-nums text-ig-muted">
                     {index + 1}
                   </span>
 
                   <div className="min-w-0 flex-1">
                     <div className="flex flex-wrap items-center gap-2">
-                      <h2 className="text-sm font-semibold text-[var(--ig-frost)]">
+                      <h2 className="text-sm font-semibold text-ig-frost">
                         {entry.experiment.name}
                       </h2>
-                      <span className="font-mono text-xs text-[var(--ig-muted)]">
+                      <span className="font-mono text-xs text-ig-muted">
                         {entry.experiment.acronym}
                       </span>
                       <RegimeBadge regime={entry.experiment.regime} />
                     </div>
-                    <p className="mt-1 text-xs leading-relaxed text-[var(--ig-muted)]">
+                    <p className="mt-1 text-xs leading-relaxed text-ig-muted">
                       {entry.rationale}
                     </p>
 
@@ -133,16 +133,16 @@ export function RankingsPage() {
 
                   <div className="flex shrink-0 flex-col items-end gap-2">
                     <div className="text-right">
-                      <p className="font-mono text-lg tabular-nums text-[var(--ig-frost)]">
+                      <p className="font-mono text-lg tabular-nums text-ig-frost">
                         {Math.round(entry.composite)}
                       </p>
-                      <p className="text-[11px] text-[var(--ig-muted)]">composite</p>
+                      <p className="text-[11px] text-ig-muted">composite</p>
                     </div>
                     <div className="flex flex-wrap justify-end gap-1.5">
                       <Link
                         to="/explore"
                         onClick={() => select(entry.experiment.id)}
-                        className="inline-flex min-h-8 items-center rounded-[4px] border border-[var(--ig-line)] px-2 text-xs text-[var(--ig-frost)] hover:bg-[var(--ig-raised)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ig-flame-blue)]"
+                        className="inline-flex min-h-8 items-center rounded-control border border-ig-glass-control-rim bg-ig-glass-control px-2 text-xs text-ig-frost hover:bg-ig-glass-hover focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ig-flame-blue"
                       >
                         Open
                       </Link>
@@ -151,10 +151,10 @@ export function RankingsPage() {
                         aria-pressed={inCompare}
                         disabled={!inCompare && compareFull}
                         onClick={() => toggleCompare(entry.experiment.id)}
-                        className={`inline-flex min-h-8 items-center rounded-[4px] border px-2 text-xs focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ig-flame-blue)] disabled:cursor-not-allowed disabled:opacity-50 ${
+                        className={`inline-flex min-h-8 items-center rounded-control border border-ig-glass-control-rim bg-ig-glass-control px-2 text-xs focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ig-flame-blue disabled:cursor-not-allowed disabled:opacity-50 ${
                           inCompare
-                            ? 'border-[var(--ig-flame-blue)] bg-[var(--ig-raised)] text-[var(--ig-frost)]'
-                            : 'border-[var(--ig-line)] text-[var(--ig-muted)] hover:bg-[var(--ig-raised)]'
+                            ? 'border-ig-flame-blue bg-ig-glass-pressed text-ig-frost'
+                            : 'border-ig-glass-control-rim text-ig-muted hover:bg-ig-glass-hover'
                         }`}
                       >
                         {inCompare ? 'In compare' : 'Add to compare'}

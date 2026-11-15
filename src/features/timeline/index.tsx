@@ -84,39 +84,39 @@ export function TimelinePage() {
         }
       />
 
-      <div className="flex flex-wrap items-end gap-3 rounded-[6px] border border-[var(--ig-line)] bg-[var(--ig-hull)] p-3">
+      <div className="flex flex-wrap items-end gap-3 ig-glass rounded-panel p-3">
         <label className="min-w-[220px] flex-1">
-          <span className="mb-1 block text-xs text-[var(--ig-muted)]">Search</span>
+          <span className="mb-1 block text-xs text-ig-muted">Search</span>
           <input
             type="search"
             value={query}
             onChange={(event) => setQuery(event.target.value)}
             placeholder="Title or summary"
-            className="w-full rounded-[4px] border border-[var(--ig-line)] bg-[var(--ig-vacuum)] px-2.5 py-1.5 text-sm text-[var(--ig-frost)] placeholder:text-[var(--ig-muted)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ig-flame-blue)]"
+            className="w-full rounded-field border border-ig-glass-field-rim bg-ig-glass-field px-2.5 py-1.5 text-sm text-ig-frost placeholder:text-ig-muted focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ig-flame-blue"
           />
         </label>
 
-        <label className="inline-flex min-h-9 items-center gap-2 text-xs text-[var(--ig-frost)]">
+        <label className="inline-flex min-h-9 items-center gap-2 text-xs text-ig-frost">
           <input
             type="checkbox"
             checked={milestonesOnly}
             onChange={(event) => setMilestonesOnly(event.target.checked)}
-            className="h-3.5 w-3.5 accent-[var(--ig-flame-blue)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ig-flame-blue)]"
+            className="h-3.5 w-3.5 accent-ig-flame-blue focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ig-flame-blue"
           />
           Milestones only
         </label>
 
-        <label className="inline-flex min-h-9 items-center gap-2 text-xs text-[var(--ig-frost)]">
+        <label className="inline-flex min-h-9 items-center gap-2 text-xs text-ig-frost">
           <input
             type="checkbox"
             checked={scenarioOnly}
             onChange={(event) => setScenarioOnly(event.target.checked)}
-            className="h-3.5 w-3.5 accent-[var(--ig-flame-blue)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ig-flame-blue)]"
+            className="h-3.5 w-3.5 accent-ig-flame-blue focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ig-flame-blue"
           />
           Relevant to {scenario.label}
         </label>
 
-        <p className="text-xs text-[var(--ig-muted)]" role="status">
+        <p className="text-xs text-ig-muted" role="status">
           {visible.length} of {events.length} entries
         </p>
       </div>
@@ -137,38 +137,38 @@ export function TimelinePage() {
             <section key={decade} aria-labelledby={`decade-${decade}`}>
               <h2
                 id={`decade-${decade}`}
-                className="text-xs font-medium text-[var(--ig-muted)]"
+                className="text-xs font-medium text-ig-muted"
               >
                 <span className="font-mono tabular-nums">{decade}s</span>
-                <span className="ml-2 text-[var(--ig-muted)]">
+                <span className="ml-2 text-ig-muted">
                   {entries.length} {entries.length === 1 ? 'entry' : 'entries'}
                 </span>
               </h2>
 
-              <ol className="mt-2 space-y-2 border-l border-[var(--ig-line)] pl-4">
+              <ol className="mt-2 space-y-2 border-l border-ig-line pl-4">
                 {entries.map((event) => (
                   <li key={`${event.year}-${event.title}`} className="relative">
                     <span
                       aria-hidden="true"
-                      className="absolute -left-[21px] top-3 h-2.5 w-2.5 rounded-full border border-[var(--ig-line)] bg-[var(--ig-flame-blue)]"
+                      className="absolute -left-[21px] top-3 h-2.5 w-2.5 rounded-full border border-ig-line bg-ig-flame-blue"
                     />
-                    <article className="rounded-[6px] border border-[var(--ig-line)] bg-[var(--ig-hull)] p-3">
+                    <article className="ig-glass rounded-panel p-3">
                       <div className="flex flex-wrap items-baseline gap-2">
-                        <span className="font-mono text-sm tabular-nums text-[var(--ig-frost)]">
+                        <span className="font-mono text-sm tabular-nums text-ig-frost">
                           {event.year}
                         </span>
-                        <h3 className="text-sm font-semibold text-[var(--ig-frost)]">{event.title}</h3>
+                        <h3 className="text-sm font-semibold text-ig-frost">{event.title}</h3>
                         {event.milestone ? (
-                          <span className="inline-flex items-center gap-1.5 rounded-[4px] border border-[var(--ig-line)] px-1.5 py-0.5 text-[11px] text-[var(--ig-frost)]">
+                          <span className="inline-flex items-center gap-1.5 rounded-control border border-ig-glass-control-rim bg-ig-glass-control px-1.5 py-0.5 text-[11px] text-ig-frost">
                             <span
                               aria-hidden="true"
-                              className="h-1.5 w-1.5 rounded-full bg-[var(--ig-flame-blue)]"
+                              className="h-1.5 w-1.5 rounded-full bg-ig-flame-blue"
                             />
                             Milestone
                           </span>
                         ) : null}
                       </div>
-                      <p className="mt-1 text-xs leading-relaxed text-[var(--ig-muted)]">
+                      <p className="mt-1 text-xs leading-relaxed text-ig-muted">
                         {event.summary}
                       </p>
                       <ul className="mt-2 flex flex-wrap gap-1.5">
@@ -179,7 +179,7 @@ export function TimelinePage() {
                               <Link
                                 to="/explore"
                                 onClick={() => select(id)}
-                                className="inline-flex items-center gap-1.5 rounded-[4px] border border-[var(--ig-line)] bg-[var(--ig-vacuum)] px-2 py-1 font-mono text-xs text-[var(--ig-frost)] hover:bg-[var(--ig-raised)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ig-flame-blue)]"
+                                className="inline-flex items-center gap-1.5 rounded-field border border-ig-glass-field-rim bg-ig-glass-field px-2 py-1 font-mono text-xs text-ig-frost hover:bg-ig-glass-hover focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ig-flame-blue"
                               >
                                 {experiment?.acronym ?? id}
                               </Link>

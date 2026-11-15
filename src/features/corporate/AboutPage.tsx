@@ -12,7 +12,7 @@ const ROLES = [
 export function AboutPage() {
   return (
     <div className="space-y-8">
-      <section className="rounded-panel border border-ig-line bg-ig-hull p-6 lg:p-10">
+      <section className="ig-glass rounded-panel p-6 lg:p-10">
         <p className="text-xs font-medium text-ig-muted">About</p>
         <h1 className="mt-2 max-w-2xl text-3xl font-semibold leading-tight text-ig-frost lg:text-4xl">
           Making hard research easier to use.
@@ -65,7 +65,7 @@ export function AboutPage() {
           </p>
           <ul className="mt-3 grid gap-2 sm:grid-cols-2">
             {ROLES.map((person) => (
-              <li key={person.id} className="rounded-control border border-ig-line px-3 py-2">
+              <li key={person.id} className="rounded-control border border-ig-glass-control-rim bg-ig-glass-control px-3 py-2">
                 <p className="text-sm font-medium text-ig-frost">{person.label}</p>
                 <p className="text-xs text-ig-muted">{person.role}</p>
                 <p className="mt-1 text-xs leading-5 text-ig-muted">{person.desc}</p>

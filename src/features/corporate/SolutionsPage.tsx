@@ -63,7 +63,7 @@ const SOLUTIONS = [
 export function SolutionsPage() {
   return (
     <div className="space-y-8">
-      <section className="rounded-panel border border-ig-line bg-ig-hull p-6 lg:p-10">
+      <section className="ig-glass rounded-panel p-6 lg:p-10">
         <p className="text-xs font-medium text-ig-muted">Solutions</p>
         <h1 className="mt-2 max-w-2xl text-3xl font-semibold leading-tight text-ig-frost lg:text-4xl">
           Research problems Ignis addresses.
@@ -110,7 +110,7 @@ export function SolutionsPage() {
         ))}
       </section>
 
-      <section className="rounded-panel border border-ig-line bg-ig-hull p-6 lg:p-8">
+      <section className="ig-glass rounded-panel p-6 lg:p-8">
         <h2 className="text-base font-semibold text-ig-frost">What Ignis does not claim</h2>
         <ul className="mt-3 list-disc space-y-1.5 pl-5 text-sm leading-6 text-ig-muted">
           <li>No claim that NASA, aerospace contractors or research institutions use Ignis.</li>

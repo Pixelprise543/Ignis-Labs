@@ -141,7 +141,7 @@ export function ComparePage() {
             {selected.length < 4 ? (
               <Link
                 to="/explore"
-                className="inline-flex min-h-10 items-center gap-2 rounded-control border border-ig-line bg-ig-vacuum px-4 text-sm font-medium text-ig-frost hover:bg-ig-raised"
+                className="inline-flex min-h-10 items-center gap-2 rounded-control border border-ig-glass-control-rim bg-ig-glass-control px-4 text-sm font-medium text-ig-frost hover:bg-ig-glass-hover"
               >
                 Add experiment
               </Link>
@@ -168,7 +168,7 @@ export function ComparePage() {
                 type="button"
                 onClick={() => toggleCompare(experiment.id)}
                 aria-label={`Remove ${experiment.name} from compare`}
-                className="ml-auto rounded-control p-1 text-ig-muted hover:bg-ig-raised hover:text-ig-frost focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ig-flame-blue"
+                className="ml-auto rounded-control p-1 text-ig-muted hover:bg-ig-glass-hover hover:text-ig-frost focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ig-flame-blue"
               >
                 ×
               </button>
@@ -388,12 +388,12 @@ export function ComparePage() {
           <div className="flex flex-wrap items-center gap-2 text-[10px] font-medium text-ig-muted">
             {siState.status === 'ready' ? (
               <>
-                <span className="rounded-control border border-ig-line px-2 py-0.5 font-mono">
+                <span className="rounded-control border border-ig-glass-field-rim bg-ig-glass-field px-2 py-0.5 font-mono">
                   {siState.response.model}
                 </span>
                 {siState.response.fallback ? (
                   <span
-                    className="inline-flex items-center gap-1.5 rounded-control border border-ig-line px-2 py-0.5"
+                    className="inline-flex items-center gap-1.5 rounded-control border border-ig-glass-control-rim bg-ig-glass-control px-2 py-0.5"
                     title="Generated offline from the local dataset. No language-model call was made."
                   >
                     <span aria-hidden="true" className="h-1.5 w-1.5 rounded-full bg-ig-amber" />
@@ -425,7 +425,7 @@ export function ComparePage() {
               <Skeleton className="h-4 w-2/3" />
             </div>
           ) : siState.status === 'error' ? (
-            <Card bordered padding="md" className="border-ig-amber bg-ig-vacuum/50">
+            <Card bordered padding="md" className="ig-glass-tint [--tint:var(--ig-amber)]">
               <CardContent>
                 <p className="text-xs text-ig-frost">
                   The comparison could not be generated: {siState.message}
@@ -469,7 +469,7 @@ export function ComparePage() {
                           onClick={() => {
                             // No-op: link navigation handled by router
                           }}
-                          className="inline-flex items-center gap-1.5 rounded-control border border-ig-line bg-ig-vacuum px-2.5 py-1 text-xs text-ig-frost hover:bg-ig-raised focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ig-flame-blue"
+                          className="inline-flex items-center gap-1.5 rounded-control border border-ig-glass-control-rim bg-ig-glass-control px-2.5 py-1 text-xs text-ig-frost hover:bg-ig-glass-hover focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ig-flame-blue"
                         >
                           <span aria-hidden="true" className="font-mono text-[10px] text-ig-flame-blue">
                             #
@@ -515,7 +515,7 @@ export function ComparePage() {
                 <p className="mt-3 text-xs leading-relaxed text-ig-muted">
                   {experiment.summary}
                 </p>
-                <div className="mt-4 rounded-control border border-ig-line bg-ig-vacuum px-3 py-3">
+                <div className="mt-4 rounded-control border border-ig-glass-field-rim bg-ig-glass-field px-3 py-3">
                   <p className="text-[10px] font-medium text-ig-frost uppercase tracking-wider">
                     Safety takeaway
                   </p>

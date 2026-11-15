@@ -10,10 +10,10 @@ import { Note, PageHeading } from '../explore/_shared'
 
 /** Ranges match levelForRisk in @/lib/severity: 25 / 45 / 70. */
 const RISK_STYLES: Record<Severity, { label: string; color: string; range: string }> = {
-  info: { label: 'Low', color: 'var(--ig-quench, #8DBF6A)', range: '0–24' },
-  caution: { label: 'Moderate', color: 'var(--ig-amber, #F5B942)', range: '25–44' },
-  high: { label: 'High', color: 'var(--ig-ember, #EE7B3A)', range: '45–69' },
-  critical: { label: 'Critical', color: 'var(--ig-alarm, #F06A6E)', range: '70–100' },
+  info: { label: 'Low', color: 'var(--ig-quench)', range: '0–24' },
+  caution: { label: 'Moderate', color: 'var(--ig-amber)', range: '25–44' },
+  high: { label: 'High', color: 'var(--ig-ember)', range: '45–69' },
+  critical: { label: 'Critical', color: 'var(--ig-alarm)', range: '70–100' },
 }
 
 const RISK_ORDER: Severity[] = ['info', 'caution', 'high', 'critical']
@@ -52,11 +52,11 @@ function HatchSwatch() {
     <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
       <defs>
         <pattern id={id} width="4" height="4" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
-          <rect width="4" height="4" fill="var(--ig-hull, #231D18)" />
-          <line x1="0" y1="0" x2="0" y2="4" stroke="var(--ig-line, #40362D)" strokeWidth="1.5" />
+          <rect width="4" height="4" fill="var(--ig-hull)" />
+          <line x1="0" y1="0" x2="0" y2="4" stroke="var(--ig-line)" strokeWidth="1.5" />
         </pattern>
       </defs>
-      <rect x="0.5" y="0.5" width="15" height="15" fill={`url(#${id})`} stroke="var(--ig-line, #40362D)" />
+      <rect x="0.5" y="0.5" width="15" height="15" fill={`url(#${id})`} stroke="var(--ig-line)" />
     </svg>
   )
 }
@@ -68,8 +68,8 @@ function NoDataCell({ label }: { label: string }) {
       <svg width="100%" height="40" viewBox="0 0 64 40" preserveAspectRatio="none" aria-hidden="true" focusable="false">
         <defs>
           <pattern id={id} width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
-            <rect width="6" height="6" fill="var(--ig-vacuum, #1A1512)" />
-            <line x1="0" y1="0" x2="0" y2="6" stroke="var(--ig-line, #40362D)" strokeWidth="1.5" />
+            <rect width="6" height="6" fill="var(--ig-vacuum)" />
+            <line x1="0" y1="0" x2="0" y2="6" stroke="var(--ig-line)" strokeWidth="1.5" />
           </pattern>
         </defs>
         <rect width="64" height="40" fill={`url(#${id})`} />
@@ -81,25 +81,25 @@ function NoDataCell({ label }: { label: string }) {
 
 function RiskLegend() {
   return (
-    <ul className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-[var(--ig-muted)]">
+    <ul className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-ig-muted">
       {RISK_ORDER.map((level) => {
         const style = RISK_STYLES[level]
         return (
           <li key={level} className="inline-flex items-center gap-1.5">
             <span
-              className="inline-flex h-4 w-4 items-center justify-center rounded-[2px] text-[var(--ig-vacuum)]"
+              className="inline-flex h-4 w-4 items-center justify-center rounded-[2px] text-ig-on-accent"
               style={{ backgroundColor: style.color }}
             >
               <RiskShape level={level} size={8} />
             </span>
-            <span className="text-[var(--ig-frost)]">{style.label}</span>
+            <span className="text-ig-frost">{style.label}</span>
             <span className="font-mono tabular-nums">{style.range}</span>
           </li>
         )
       })}
       <li className="inline-flex items-center gap-1.5">
         <HatchSwatch />
-        <span className="text-[var(--ig-frost)]">No data</span>
+        <span className="text-ig-frost">No data</span>
       </li>
     </ul>
   )
@@ -169,7 +169,7 @@ export function MaterialsPage() {
         actions={
           <Link
             to="/method"
-            className="inline-flex min-h-9 items-center rounded-[4px] border border-[var(--ig-line)] px-3 text-sm text-[var(--ig-frost)] hover:bg-[var(--ig-raised)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ig-flame-blue)]"
+            className="inline-flex min-h-9 items-center rounded-control border border-ig-glass-control-rim bg-ig-glass-control px-3 text-sm text-ig-frost hover:bg-ig-glass-hover focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ig-flame-blue"
           >
             How scoring works
           </Link>
@@ -184,14 +184,14 @@ export function MaterialsPage() {
 
       <section
         aria-labelledby="material-matrix-heading"
-        className="rounded-[6px] border border-[var(--ig-line)] bg-[var(--ig-hull)] p-4"
+        className="ig-glass rounded-panel p-4"
       >
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
-            <h2 id="material-matrix-heading" className="text-sm font-semibold text-[var(--ig-frost)]">
+            <h2 id="material-matrix-heading" className="text-sm font-semibold text-ig-frost">
               Flammability-risk matrix
             </h2>
-            <p className="mt-1 text-xs leading-relaxed text-[var(--ig-muted)]">
+            <p className="mt-1 text-xs leading-relaxed text-ig-muted">
               {summaryParts.join(' ')}
             </p>
           </div>
@@ -206,10 +206,10 @@ export function MaterialsPage() {
             </caption>
             <thead>
               <tr>
-                <th scope="col" className="border-b border-[var(--ig-line)] py-2 pr-3 text-xs font-medium text-[var(--ig-muted)]">
+                <th scope="col" className="border-b border-ig-line py-2 pr-3 text-xs font-medium text-ig-muted">
                   Material
                 </th>
-                <th scope="col" className="hidden border-b border-[var(--ig-line)] px-3 py-2 text-xs font-medium text-[var(--ig-muted)] lg:table-cell">
+                <th scope="col" className="hidden border-b border-ig-line px-3 py-2 text-xs font-medium text-ig-muted lg:table-cell">
                   Used for
                 </th>
                 {columns.map((column) => {
@@ -219,17 +219,17 @@ export function MaterialsPage() {
                       key={column.id}
                       scope="col"
                       aria-current={current ? 'true' : undefined}
-                      className={`border-b border-[var(--ig-line)] px-2 py-2 text-center align-bottom text-xs font-medium ${
-                        current ? 'text-[var(--ig-frost)]' : 'text-[var(--ig-muted)]'
+                      className={`border-b border-ig-line px-2 py-2 text-center align-bottom text-xs font-medium ${
+                        current ? 'text-ig-frost' : 'text-ig-muted'
                       }`}
                       style={current ? { borderTop: '2px solid var(--ig-flame-blue)' } : undefined}
                     >
                       <span className="block">{column.label}</span>
-                      <span className="mt-0.5 block font-mono text-[10px] font-normal text-[var(--ig-muted)]">
+                      <span className="mt-0.5 block font-mono text-[10px] font-normal text-ig-muted">
                         {column.gravityG}g · {column.o2Percent}% O₂
                       </span>
                       {current ? (
-                        <span className="mt-0.5 inline-block rounded-[2px] border border-[var(--ig-line)] px-1 text-[10px] text-[var(--ig-flame-blue)]">
+                        <span className="mt-0.5 inline-block rounded-[2px] border border-ig-line px-1 text-[10px] text-ig-flame-blue">
                           Current
                         </span>
                       ) : null}
@@ -243,15 +243,15 @@ export function MaterialsPage() {
                 const material = row.material
                 const currentRisk = row.risks[currentIndex]
                 return (
-                  <tr key={material.id} className="border-b border-[var(--ig-line)] last:border-0">
+                  <tr key={material.id} className="border-b border-ig-line last:border-0">
                     <th scope="row" className="py-1.5 pr-3 text-left align-middle">
-                      <span className="block text-xs font-medium text-[var(--ig-frost)]">{material.name}</span>
-                      <span className="text-[10px] text-[var(--ig-muted)]">
+                      <span className="block text-xs font-medium text-ig-frost">{material.name}</span>
+                      <span className="text-[10px] text-ig-muted">
                         {material.category}
                         {typeof currentRisk === 'number' ? ` · base ${material.baseFlammability}` : ''}
                       </span>
                     </th>
-                    <td className="hidden px-3 py-1.5 align-middle text-xs text-[var(--ig-muted)] lg:table-cell">
+                    <td className="hidden px-3 py-1.5 align-middle text-xs text-ig-muted lg:table-cell">
                       {material.usedFor}
                     </td>
                     {columns.map((column) => {
@@ -278,8 +278,8 @@ export function MaterialsPage() {
                             onClick={() =>
                               setSelected(isSelected ? null : { materialId: material.id, scenarioId: column.id })
                             }
-                            className={`flex h-10 w-full min-w-[56px] items-center justify-center gap-1.5 rounded-[2px] font-mono text-xs tabular-nums text-[var(--ig-vacuum)] transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ig-frost)] ${
-                              isSelected ? 'outline outline-2 outline-offset-1 outline-[var(--ig-frost)]' : ''
+                            className={`flex h-10 w-full min-w-[56px] items-center justify-center gap-1.5 rounded-[2px] font-mono text-xs tabular-nums text-ig-on-accent transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ig-frost ${
+                              isSelected ? 'outline outline-2 outline-offset-1 outline-ig-frost' : ''
                             }`}
                             style={{ backgroundColor: style.color }}
                           >
@@ -296,35 +296,35 @@ export function MaterialsPage() {
           </table>
         </div>
 
-        <details className="mt-3 rounded-[4px] border border-[var(--ig-line)] bg-[var(--ig-vacuum)] px-3 py-2">
-          <summary className="cursor-pointer text-xs font-medium text-[var(--ig-frost)]">
+        <details className="mt-3 rounded-field border border-ig-glass-field-rim bg-ig-glass-field px-3 py-2">
+          <summary className="cursor-pointer text-xs font-medium text-ig-frost">
             Data table (text alternative)
           </summary>
           <div className="mt-2 overflow-x-auto">
             <table className="w-full border-collapse text-left text-xs">
               <caption className="sr-only">All material risk values by scenario</caption>
               <thead>
-                <tr className="text-[var(--ig-muted)]">
-                  <th scope="col" className="border-b border-[var(--ig-line)] py-1 pr-3 font-medium">Material</th>
-                  <th scope="col" className="border-b border-[var(--ig-line)] py-1 pr-3 font-medium">Scenario</th>
-                  <th scope="col" className="border-b border-[var(--ig-line)] py-1 pr-3 text-right font-medium">Risk</th>
-                  <th scope="col" className="border-b border-[var(--ig-line)] py-1 font-medium">Level</th>
+                <tr className="text-ig-muted">
+                  <th scope="col" className="border-b border-ig-line py-1 pr-3 font-medium">Material</th>
+                  <th scope="col" className="border-b border-ig-line py-1 pr-3 font-medium">Scenario</th>
+                  <th scope="col" className="border-b border-ig-line py-1 pr-3 text-right font-medium">Risk</th>
+                  <th scope="col" className="border-b border-ig-line py-1 font-medium">Level</th>
                 </tr>
               </thead>
               <tbody>
                 {orderedRows.flatMap((row) =>
                   columns.map((column, index) => (
                     <tr key={`${row.material.id}-${column.id}`}>
-                      <td className="border-b border-[var(--ig-line)] py-1 pr-3 text-[var(--ig-frost)]">
+                      <td className="border-b border-ig-line py-1 pr-3 text-ig-frost">
                         {row.material.name}
                       </td>
-                      <td className="border-b border-[var(--ig-line)] py-1 pr-3 text-[var(--ig-muted)]">
+                      <td className="border-b border-ig-line py-1 pr-3 text-ig-muted">
                         {column.label}
                       </td>
-                      <td className="border-b border-[var(--ig-line)] py-1 pr-3 text-right font-mono tabular-nums text-[var(--ig-frost)]">
+                      <td className="border-b border-ig-line py-1 pr-3 text-right font-mono tabular-nums text-ig-frost">
                         {row.risks[index]}
                       </td>
-                      <td className="border-b border-[var(--ig-line)] py-1 text-[var(--ig-muted)]">
+                      <td className="border-b border-ig-line py-1 text-ig-muted">
                         {RISK_STYLES[levelForRisk(row.risks[index])].label}
                       </td>
                     </tr>
@@ -339,15 +339,15 @@ export function MaterialsPage() {
       {selectedMaterial && selectedScenario && selectedRisk && typeof selectedValue === 'number' && selectedLevel ? (
         <section
           aria-labelledby="material-detail-heading"
-          className="rounded-[6px] border border-[var(--ig-line)] bg-[var(--ig-hull)] p-4"
+          className="ig-glass rounded-panel p-4"
           style={{ borderLeft: '2px solid var(--ig-flame-blue)' }}
         >
           <div className="flex flex-wrap items-start justify-between gap-2">
             <div>
-              <h2 id="material-detail-heading" className="text-sm font-semibold text-[var(--ig-frost)]">
+              <h2 id="material-detail-heading" className="text-sm font-semibold text-ig-frost">
                 {selectedMaterial.name} in {selectedScenario.label}
               </h2>
-              <p className="mt-1 text-xs text-[var(--ig-muted)]">
+              <p className="mt-1 text-xs text-ig-muted">
                 {selectedMaterial.usedFor} · {selectedMaterial.category}
               </p>
             </div>
@@ -358,31 +358,31 @@ export function MaterialsPage() {
 
           <div className="mt-3 flex flex-wrap items-center gap-2">
             <span
-              className="inline-flex items-center gap-1.5 rounded-[4px] px-2 py-1 font-mono text-sm tabular-nums text-[var(--ig-vacuum)]"
+              className="inline-flex items-center gap-1.5 rounded-control px-2 py-1 font-mono text-sm tabular-nums text-ig-on-accent"
               style={{ backgroundColor: RISK_STYLES[selectedLevel].color }}
             >
               <RiskShape level={selectedLevel} size={12} />
               {selectedValue}
             </span>
-            <span className="text-sm text-[var(--ig-frost)]">{RISK_STYLES[selectedLevel].label} risk</span>
-            <span className="font-mono text-xs text-[var(--ig-muted)]">
+            <span className="text-sm text-ig-frost">{RISK_STYLES[selectedLevel].label} risk</span>
+            <span className="font-mono text-xs text-ig-muted">
               {selectedScenario.gravityG}g · {selectedScenario.o2Percent}% O₂ · {selectedScenario.pressureKPa} kPa
             </span>
           </div>
 
-          <p className="mt-3 max-w-3xl text-sm leading-relaxed text-[var(--ig-muted)]">
+          <p className="mt-3 max-w-3xl text-sm leading-relaxed text-ig-muted">
             {selectedRisk.rationale}
           </p>
-          <p className="mt-2 text-xs leading-relaxed text-[var(--ig-muted)]">{selectedMaterial.notes}</p>
+          <p className="mt-2 text-xs leading-relaxed text-ig-muted">{selectedMaterial.notes}</p>
 
           <div className="mt-3 flex flex-wrap items-center gap-2">
-            <span className="text-xs text-[var(--ig-muted)]">Evidence</span>
+            <span className="text-xs text-ig-muted">Evidence</span>
             {selectedRisk.evidenceIds.map((id) => (
               <Link
                 key={id}
                 to="/explore"
                 onClick={() => select(id)}
-                className="inline-flex items-center gap-1.5 rounded-[4px] border border-[var(--ig-line)] bg-[var(--ig-vacuum)] px-2 py-1 font-mono text-xs text-[var(--ig-frost)] hover:bg-[var(--ig-raised)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--ig-flame-blue)]"
+                className="inline-flex items-center gap-1.5 rounded-field border border-ig-glass-field-rim bg-ig-glass-field px-2 py-1 font-mono text-xs text-ig-frost hover:bg-ig-glass-hover focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ig-flame-blue"
               >
                 {id}
               </Link>
@@ -398,20 +398,20 @@ export function MaterialsPage() {
 
       <section
         aria-labelledby="material-list-heading"
-        className="rounded-[6px] border border-[var(--ig-line)] bg-[var(--ig-hull)] p-4"
+        className="ig-glass rounded-panel p-4"
       >
-        <h2 id="material-list-heading" className="text-sm font-semibold text-[var(--ig-frost)]">
+        <h2 id="material-list-heading" className="text-sm font-semibold text-ig-frost">
           Materials in the set
         </h2>
         <ul className="mt-2 grid gap-2 sm:grid-cols-2 xl:grid-cols-4">
           {orderedRows.map((row) => (
             <li
               key={row.material.id}
-              className="rounded-[4px] border border-[var(--ig-line)] bg-[var(--ig-vacuum)] p-2"
+              className="rounded-field border border-ig-glass-field-rim bg-ig-glass-field p-2"
             >
-              <p className="text-xs font-medium text-[var(--ig-frost)]">{row.material.name}</p>
-              <p className="mt-0.5 text-[11px] text-[var(--ig-muted)]">{row.material.category}</p>
-              <p className="mt-1 font-mono text-[11px] tabular-nums text-[var(--ig-muted)]">
+              <p className="text-xs font-medium text-ig-frost">{row.material.name}</p>
+              <p className="mt-0.5 text-[11px] text-ig-muted">{row.material.category}</p>
+              <p className="mt-1 font-mono text-[11px] tabular-nums text-ig-muted">
                 base {row.material.baseFlammability} · {row.material.evidenceIds.length} evidence
               </p>
             </li>
