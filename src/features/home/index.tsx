@@ -11,15 +11,6 @@ export function HomePage() {
       <div className="relative ig-glass p-8 rounded-2xl overflow-hidden border border-ig-line">
         <div className="absolute top-0 right-0 -mr-12 -mt-12 w-64 h-64 bg-black/30 rounded-full blur-3xl pointer-events-none" />
         <div className="relative z-10 flex flex-col lg:flex-row gap-8 items-start lg:items-center">
-          <div className="flex-shrink-0">
-            <div className="relative w-24 h-24 mb-4">
-              <div className="w-full h-full rounded-full bg-black/40 border border-ig-line flex items-center justify-center animate-pulse">
-                <div className="w-12 h-12 bg-ig-amber rounded-full shadow-[0_0_20px_rgba(245,185,66,0.4)] flex items-center justify-center">
-                  <span className="text-xs font-bold text-black">I</span>
-                </div>
-              </div>
-            </div>
-          </div>
           <div className="flex-1">
             <h1 className="text-4xl font-semibold text-ig-frost tracking-tight leading-tight">
               Fire safety in microgravity
