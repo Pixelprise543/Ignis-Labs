@@ -56,8 +56,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const { setDrawerOpen } = useIgnis();
   const location = useLocation();
 
-  const basename = import.meta.env.BASE_URL || "/";
-  const isCorporateRoute = ["/", "/product", "/solutions", "/technology", "/pricing", "/about"].some((p) => location.pathname === basename + p || location.pathname === basename + p.slice(1));
+  const isCorporateRoute = ["/", "/product", "/solutions", "/technology", "/pricing", "/about"].some((p) => location.pathname.endsWith(p));
 
   useEffect(() => { window.scrollTo({ top: 0, behavior: "auto" }); }, [location.pathname]);
 
