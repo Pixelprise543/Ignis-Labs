@@ -16,6 +16,7 @@ graphify-out/
 coverage
 playwright-report
 test-results
+.playwright-mcp
 .vite
 *.tsbuildinfo
 
