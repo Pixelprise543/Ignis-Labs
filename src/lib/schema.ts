@@ -1,6 +1,6 @@
 import { z } from 'zod'
 import type { Experiment } from '@/contracts/types'
-import { getCoverage } from './coverage'
+import { COVERAGE_GRAVITY_BANDS, getCoverage } from './coverage'
 import { getExperiments, getFinding, getFindings, getGlossary, getMaterials } from './data'
 import { getInsights } from './insights'
 import { getPlaybook } from './playbook'
@@ -14,6 +14,13 @@ import { getScenario, SCENARIOS } from './scenarios'
  * uniqueness, ordered years, resolvable evidence ids and the coverage grid
  * partitioning every record exactly once.
  *
+ * Added for the 30-record dataset: a null metric must explain itself, a
+ * verified/curated record must cite nasa.gov, a finding id must carry its
+ * experiment id, two records may not share one finding sentence, and the
+ * gravity regime must agree with the numeric gravity. Each rule exists because
+ * it is a shape the dataset drifted toward while records were being written by
+ * hand across sessions.
+ *
  * A citation that does not resolve is the failure mode this project cares about
  * most, so dangling evidence is an error in every consumer (materials, insights,
  * playbook), not a warning. `npm run validate:data` exits non-zero on any issue.
@@ -21,6 +28,25 @@ import { getScenario, SCENARIOS } from './scenarios'
 
 const KEBAB = /^[a-z0-9]+(?:-[a-z0-9]+)*$/
 const FINDING_ID = /^[a-z0-9]+(?:-[a-z0-9]+)*-f\d+$/
+
+/**
+ * Why `nasa.gov` specifically: the project's honesty rule says a `verified` or
+ * `curated` record must come from a NASA source that was actually retrieved.
+ * A record may still cite a non-NASA page, but only when it is badged
+ * `illustrative` - so the rule is enforced per record, not globally.
+ */
+const NASA_HOST = /(^|\.)nasa\.gov$/i
+
+/** Fields that must never contain filler: they are what a reader trusts. */
+const PLACEHOLDERS = /\b(lorem ipsum|tbd|todo|placeholder|xxx)\b/i
+
+/** Gravity regime names line up with the coverage bands, which spell them out. */
+const BAND_FOR_REGIME: Record<Experiment['regime'], string> = {
+  microgravity: 'microgravity',
+  'partial-g': 'partial-gravity',
+  'normal-g': 'normal-gravity',
+}
+
 
 const sourceSchema = z
   .object({
@@ -48,13 +74,22 @@ const metricSchema = z
     note: z.string().optional(),
   })
   .strict()
+  // A blank metric is allowed only if it explains itself. Without this, "value:
+  // null" silently becomes an empty cell and a reader cannot tell "not measured"
+  // from "we forgot". data/SCHEMA.md promises a note; this enforces the promise.
+  .refine((metric) => metric.value !== null || (metric.note?.trim().length ?? 0) >= 12, {
+    message: 'a null metric value needs a note explaining why (at least 12 characters)',
+    path: ['note'],
+  })
 
 const conditionsSchema = z
   .object({
     gravityG: z.number().finite().min(0).max(2),
     o2Percent: z.number().finite().min(0).max(100).nullable(),
     diluent: z.string().min(1),
-    pressureKPa: z.number().finite().min(0).max(200).nullable(),
+    // Strictly positive: 0 kPa would mean vacuum, and every record here was
+    // burned in a gas at some pressure. "No published value" is null, not 0.
+    pressureKPa: z.number().finite().gt(0).max(200).nullable(),
     flowCmPerS: z.number().finite().min(0).nullable(),
   })
   .strict()
@@ -76,7 +111,7 @@ export const experimentSchema = z
       'Ground',
     ]),
     regime: z.enum(['microgravity', 'partial-g', 'normal-g']),
-    years: z.tuple([z.number().int().min(1900), z.number().int().min(1900).nullable()]),
+    years: z.tuple([z.number().int().min(1900).max(2100), z.number().int().min(1900).max(2100).nullable()]),
     fuelType: z.enum(['solid', 'gas', 'liquid', 'droplet', 'dust', 'cool-flame']),
     fuel: z.string().min(1),
     conditions: conditionsSchema,
@@ -153,6 +188,25 @@ export function checkExperiments(experiments: Experiment[]): ValidationIssue[] {
     issues.push({ code: 'duplicate-finding', message: `finding id "${id}" is used more than once` })
   }
 
+  // The same sentence in two records means one of them was copied rather than
+  // read from its own source. Citation ids stay honest only if the claims do.
+  const textOwners = new Map<string, string[]>()
+  for (const experiment of experiments) {
+    for (const finding of experiment.findings) {
+      const owners = textOwners.get(finding.text) ?? []
+      owners.push(experiment.id)
+      textOwners.set(finding.text, owners)
+    }
+  }
+  for (const [text, owners] of textOwners) {
+    if (owners.length > 1) {
+      issues.push({
+        code: 'duplicate-finding-text',
+        message: `${owners.join(' and ')} share one finding sentence: "${text.slice(0, 60)}..."`,
+      })
+    }
+  }
+
   for (const experiment of experiments) {
     const repeatedMetrics = duplicates(experiment.metrics.map((metric) => metric.key))
     for (const key of repeatedMetrics) {
@@ -170,11 +224,63 @@ export function checkExperiments(experiments: Experiment[]): ValidationIssue[] {
       })
     }
 
+    // Finding ids carry their experiment id, so a copied finding is visible in
+    // the id itself and an insight citing `luci-f2` cannot silently point at a
+    // number that came from somewhere else.
+    for (const finding of experiment.findings) {
+      if (!finding.id.startsWith(`${experiment.id}-f`)) {
+        issues.push({
+          code: 'finding-id-prefix',
+          message: `${experiment.id} owns finding "${finding.id}", which does not start with "${experiment.id}-f"`,
+        })
+      }
+    }
+
     for (const source of experiment.sources) {
       if (!source.url) {
         issues.push({
           code: 'source-url',
           message: `${experiment.id} cites "${source.title}" without a URL`,
+        })
+        continue
+      }
+      if (experiment.confidence !== 'illustrative') {
+        let host = ''
+        try {
+          host = new URL(source.url).host
+        } catch {
+          host = ''
+        }
+        if (!NASA_HOST.test(host)) {
+          issues.push({
+            code: 'source-host',
+            message: `${experiment.id} is ${experiment.confidence} but cites "${source.url}" (${host || 'unparseable host'}), which is not on nasa.gov`,
+          })
+        }
+      }
+    }
+
+    // The regime is a claim about the conditions, so the two must agree. A
+    // record labelled partial-g at 0 g (or microgravity at 0.5 g) would quietly
+    // move a whole row of the coverage grid.
+    const band = COVERAGE_GRAVITY_BANDS.find((candidate) =>
+      candidate.matches(experiment.conditions.gravityG),
+    )
+    if (band && band.label !== BAND_FOR_REGIME[experiment.regime]) {
+      issues.push({
+        code: 'regime-gravity',
+        message: `${experiment.id} is labelled ${experiment.regime} but ${experiment.conditions.gravityG} g falls in the ${band.label} band`,
+      })
+    }
+
+    for (const [field, value] of [
+      ['summary', experiment.summary],
+      ['safetyTakeaway', experiment.safetyTakeaway],
+    ] as const) {
+      if (PLACEHOLDERS.test(value)) {
+        issues.push({
+          code: 'placeholder-copy',
+          message: `${experiment.id}.${field} contains filler text`,
         })
       }
     }

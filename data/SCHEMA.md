@@ -136,6 +136,19 @@ one finding. Across the catalogue it checks that every material, insight and
 playbook `evidenceIds` entry resolves to a real finding, that glossary `related`
 ids resolve, and that the 12-cell coverage grid lists each experiment once.
 
+Added for the 30-record dataset - each one closes a way the hand-written data
+actually drifted:
+
+| Rule | Why |
+|---|---|
+| `value: null` needs a `note` of 12+ characters | otherwise "not published" renders as an empty cell and looks like a missing feature |
+| `pressureKPa` must be `> 0` when present | `0` means vacuum, and every record here burned in a gas; "unknown" is `null` |
+| `verified` / `curated` sources must be on `nasa.gov` | the honesty rule says NASA sources only at those tiers; a non-NASA page forces `illustrative` |
+| finding id must start with `<experiment-id>-f` | a copied finding becomes visible in its own id instead of citing someone else's number |
+| no two records may share a finding sentence | a repeated sentence means a record was copied rather than read |
+| `regime` must match the numeric `gravityG` band | a label that disagrees with its gravity silently moves a coverage row |
+| summary and takeaway must not contain filler markers | `TODO`, `TBD`, `lorem ipsum`, `placeholder` are what a half-written record looks like |
+
 The script loads the validator through Vite, not plain Node, because the data
 modules import `@/contracts/types` and each other without extensions.
 
