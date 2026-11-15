@@ -1,5 +1,5 @@
 import { ArrowRight, Sparkles } from "lucide-react";
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type { Severity } from "@/contracts/types";
 import { Link } from "react-router-dom";
 import { getExperiments, getInsights, useIgnis } from "@/app/data";
@@ -30,6 +30,21 @@ export function HomePage() {
   const { scenario, setDrawerOpen } = useIgnis();
   const experiments = getExperiments();
   const insights = useMemo(() => getInsights(scenario), [scenario]);
+  const [modelViewerReady, setModelViewerReady] = useState(false);
+
+  useEffect(() => {
+    if (modelViewerReady) return;
+    if (document.querySelector('script[src*="model-viewer"]')) {
+      setModelViewerReady(true);
+      return;
+    }
+    const script = document.createElement("script");
+    script.type = "module";
+    script.src = "https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js";
+    script.onload = () => setModelViewerReady(true);
+    script.onerror = () => console.warn("model-viewer failed to load");
+    document.head.appendChild(script);
+  }, [modelViewerReady]);
 
   const topInsights = useMemo(
     () =>
@@ -100,6 +115,22 @@ export function HomePage() {
               )}
             </div>
             <FlameOrb gravityG={scenario.gravityG} scenarioLabel={scenario.label} />
+            {modelViewerReady ? (
+              <section className="ig-glass rounded-panel p-4 mt-4">
+                <p className="text-xs font-medium text-ig-muted mb-3">ISS CAD model</p>
+                <model-viewer
+                  src={`${import.meta.env.BASE_URL}iss-cad.glb`}
+                  alt="International Space Station"
+                  auto-rotate
+                  camera-controls
+                  className="w-full h-64 rounded-control bg-ig-vacuum"
+                ></model-viewer>
+              </section>
+            ) : (
+              <div className="ig-glass rounded-panel p-4 mt-4 h-64 flex items-center justify-center">
+                <p className="text-xs text-ig-muted">Loading ISS model…</p>
+              </div>
+            )}
           </div>
         </div>
       </section>
