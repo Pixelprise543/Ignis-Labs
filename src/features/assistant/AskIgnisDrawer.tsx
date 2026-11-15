@@ -5,11 +5,19 @@ import remarkGfm from "remark-gfm";
 import type { SIResponse } from "@/contracts/types";
 import { askSI, useIgnis } from "@/app/data";
 import { Badge, CitationChip, Drawer } from "@/design-system";
+import { findNasaPublications } from "@/lib/nasa";
+import type { NasaLiterature } from "@/lib/nasaTypes";
+import { NasaLiteraturePanel } from "./NasaLiteraturePanel";
 
 interface AssistantMessage {
   id: string;
   markdown: string;
   response: SIResponse;
+  /**
+   * undefined = the NTRS lookup is still running, null = it was not run,
+   * an object = the panel has something to show (or an empty result set).
+   */
+  literature?: NasaLiterature | null;
 }
 
 interface ChatMessage extends AssistantMessage {
@@ -78,6 +86,7 @@ export function AskIgnisDrawer() {
     setInput("");
     setMessages((current) => [...current, { role: "user", id: `q-${requestId}`, text: trimmed }]);
     setLoading(true);
+    const answerId = `a-${requestId}`;
 
     try {
       const response = await askSI({
@@ -89,8 +98,21 @@ export function AskIgnisDrawer() {
       if (requestRef.current !== requestId) return;
       setMessages((current) => [
         ...current,
-        { role: "assistant", id: `a-${requestId}`, markdown: response.answerMarkdown, response },
+        { role: "assistant", id: answerId, markdown: response.answerMarkdown, response },
       ]);
+
+      // The NASA lookup runs after the answer is on screen: it can take a few
+      // seconds, and a slow NTRS must never delay the dataset answer.
+      void findNasaPublications(trimmed).then((literature) => {
+        if (requestRef.current !== requestId) return;
+        setMessages((current) =>
+          current.map((message) =>
+            message.role === "assistant" && message.id === answerId
+              ? { ...message, literature }
+              : message,
+          ),
+        );
+      });
     } catch {
       if (requestRef.current !== requestId) return;
       setError("Ignis could not answer that just now. Check your connection and try again, or read the Insights view while the assistant recovers.");
@@ -144,8 +166,9 @@ export function AskIgnisDrawer() {
             </button>
           </div>
           <p className="text-[11px] leading-4 text-ig-muted">
-            Answers cite experiment IDs from this dataset. Grounded summaries, not a live model
-            flight computer. Enter sends, Shift+Enter adds a line.
+            Answers cite experiment IDs from this dataset and can link NASA technical reports
+            from the NTRS library. Grounded summaries, not a live model flight computer. Enter
+            sends, Shift+Enter adds a line.
           </p>
         </form>
       }
@@ -231,6 +254,13 @@ export function AskIgnisDrawer() {
                     Removed <span className="ig-num">{message.response.invalidCitationsRemoved}</span>{" "}
                     citation(s) that did not map to a real experiment.
                   </p>
+                ) : null}
+                {message.literature === undefined ? (
+                  <p role="status" className="mt-2 text-[11px] text-ig-muted">
+                    Checking NASA&rsquo;s technical report library…
+                  </p>
+                ) : message.literature ? (
+                  <NasaLiteraturePanel literature={message.literature} />
                 ) : null}
               </div>
             ),

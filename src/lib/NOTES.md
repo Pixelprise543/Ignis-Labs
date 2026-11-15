@@ -72,3 +72,34 @@ Read `AGENTS.md` at the repo root for the frozen contract and ownership rules.
 - `python3` does not exist on this machine; use `python`.
 - `npm create vite` resolves a relative path against the current working directory, not
   against the folder you named.
+
+## 2026-11-15 - live NASA literature and the Vercel 500
+
+Production (`ignis-labs.vercel.app`) answered every `POST /api/si` with a 500:
+`ERR_MODULE_NOT_FOUND: Cannot find module '/var/task/src/lib/siFallback'`. Vercel's
+Node runtime transpiled `api/si.ts` per file, so extensionless ESM imports and the
+`@/` alias reached Node unrewritten. Fix: both routes now run on the Edge runtime
+(`export const config = { runtime: 'edge' }`), which bundles the module graph.
+`vercel.json` adds the SPA rewrite, so `/app/explore` no longer 404s.
+
+Ask Ignis now also shows NASA's own literature next to the dataset answer:
+
+- `api/nasa.ts` - edge proxy for NTRS (`ntrs.nasa.gov/api/citations/search`). NTRS
+  sends no CORS header, so the browser cannot call it directly. 6h shared cache.
+- `src/lib/nasa.ts` - query mapping, zod validation, 4.5s timeout, snapshot fallback.
+  Never throws. NTRS ids never enter `SIResponse`.
+- `data/nasa/ntrs.ts` - 44 reports baked by `node scripts/sync-nasa.ts` for GitHub
+  Pages, which has no functions. Lazy-loaded, so it is not in the initial bundle.
+- `src/features/assistant/NasaLiteraturePanel.tsx` - renders titles, verbatim abstract
+  excerpts, report numbers and PDF links, labelled "Live" or "Snapshot" with a date.
+
+Rule kept: abstracts are NASA's words and are never turned into metrics or scores.
+
+## Traps (additions)
+
+- `server.middlewares.use(path, fn)` gives the handler `req.originalUrl`; the edge
+  handlers need the full URL including the query string, not `req.url`.
+- Vitest's jsdom environment shares Node's `Request`/`Response`, so the edge handlers
+  can be tested with real fetch objects.
+- PowerShell `curl.exe -d '{"json":...}'` mangles the body. Use `node -e "await
+  fetch(...)"` to smoke-test POST routes.
