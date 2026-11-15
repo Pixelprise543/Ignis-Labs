@@ -5,7 +5,6 @@ import { Link } from "react-router-dom";
 import { getExperiments, getInsights, useIgnis } from "@/app/data";
 import { Badge, Card, CardContent, Tooltip } from "@/design-system";
 import { InsightCard } from "@/features/insights/InsightCard";
-import { FlameOrb } from "./Orb";
 
 const SEVERITY_ORDER: Record<Severity, number> = {
   critical: 0,
@@ -108,7 +107,6 @@ export function HomePage() {
                 <span className="text-xs font-medium text-ig-ember">Assumed — verify</span>
               )}
             </div>
-            <FlameOrb gravityG={scenario.gravityG} scenarioLabel={scenario.label} />
             {modelViewerReady ? (
               <section className="ig-glass rounded-panel p-4 mt-4">
                 <p className="text-xs font-medium text-ig-muted mb-3">ISS CAD model</p>
