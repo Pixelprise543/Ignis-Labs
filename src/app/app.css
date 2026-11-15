@@ -242,7 +242,7 @@
     -webkit-backdrop-filter: none !important;
   }
 
-  /* Tinted chips keep their tone as a flat fill, and gain a border so they
+  /* Tinted chips keep their tone as a solid fill, and gain a border so they
      survive grayscale printing without relying on colour alone. */
   .ig-glass-tint {
     border: 1px solid #b9b2a7 !important;
