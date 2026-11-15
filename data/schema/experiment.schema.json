@@ -1,0 +1,100 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://github.com/Pixelprise543/Ignis-Labs/data/schema/experiment.schema.json",
+  "title": "Experiment",
+  "description": "One microgravity combustion experiment record. Mirrors CONTRACT.md. INPUT schema only: ai_summary, safety_relevance_score, rationale and mission_implications are backend output and are deliberately excluded so validate.py checks experiments.json, not enriched responses.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "title",
+    "year",
+    "platform",
+    "fuel_material",
+    "atmosphere",
+    "abstract",
+    "key_findings",
+    "safety_tags",
+    "source_url"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$",
+      "description": "Stable slug, e.g. flex-2012-iss"
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1
+    },
+    "year": {
+      "type": ["number", "null"],
+      "minimum": 1950,
+      "maximum": 2100
+    },
+    "platform": {
+      "type": "string",
+      "enum": [
+        "ISS",
+        "drop tower",
+        "parabolic flight",
+        "sounding rocket",
+        "free-flyer",
+        "other"
+      ]
+    },
+    "fuel_material": {
+      "type": "string"
+    },
+    "atmosphere": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["o2_percent", "pressure_kpa", "flow_cm_s"],
+      "properties": {
+        "o2_percent": {
+          "type": ["number", "null"],
+          "minimum": 0,
+          "maximum": 100
+        },
+        "pressure_kpa": {
+          "type": ["number", "null"],
+          "minimum": 0
+        },
+        "flow_cm_s": {
+          "type": ["number", "null"],
+          "minimum": 0
+        }
+      }
+    },
+    "abstract": {
+      "type": "string"
+    },
+    "key_findings": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "safety_tags": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "enum": [
+          "flammability",
+          "material-selection",
+          "detection",
+          "suppression",
+          "smoldering",
+          "flame-spread",
+          "extinction",
+          "cabin-atmosphere"
+        ]
+      }
+    },
+    "source_url": {
+      "type": "string",
+      "format": "uri",
+      "pattern": "^https?://"
+    }
+  }
+}

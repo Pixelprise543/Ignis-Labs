@@ -1,0 +1,10 @@
+Answer the question using ONLY the records below.
+
+{records}
+
+Question: {question}
+
+Rules:
+- Cite record ids in square brackets, e.g. [flex-2012-iss].
+- Never cite an id that is not in the records above.
+- At most 150 words.
