@@ -22,12 +22,7 @@ export function AppShell() {
       <div className="ig-bg" />
       <header className="ig-glass z-20 flex items-center justify-between px-4 py-3 border-b border-ig-line">
         <div className="flex items-center gap-4">
-          <div className="flex items-center gap-2">
-            <div className="w-7 h-7 rounded-full bg-ig-flame-blue flex items-center justify-center text-black text-xs font-bold">
-              I
-            </div>
-            <span className="font-semibold text-ig-frost tracking-tight">Ignis</span>
-          </div>
+          <span className="font-semibold text-ig-frost tracking-tight">Ignis</span>
           <nav className="hidden md:flex items-center gap-6 text-sm text-ig-muted">
             {SCENARIOS.map((s) => (
               <button
