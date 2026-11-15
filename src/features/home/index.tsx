@@ -1,6 +1,6 @@
 import { getExperiments } from "@/lib/data";
 import { SCENARIOS, formatGravity } from "@/lib/scenarios";
-import { Stat, Badge, Button } from "@/design-system";
+import { Stat, Badge, Button, IssCadViewer } from "@/design-system";
 
 export function HomePage() {
   const experiments = getExperiments();
@@ -36,6 +36,26 @@ export function HomePage() {
                 View rankings
               </Button>
             </div>
+          </div>
+        </div>
+      </div>
+
+      {/* ISS CAD model — ISS cabin view */}
+      <div className="ig-glass p-6 border border-ig-line rounded-xl">
+        <div className="flex flex-col lg:flex-row gap-6 items-start lg:items-center">
+          <div className="flex-1 lg:w-1/2">
+            <h3 className="text-sm font-semibold text-ig-frost mb-2 uppercase tracking-wider text-ig-muted">
+              ISS Cabin — CAD model
+            </h3>
+            <p className="text-sm text-ig-muted mb-4">
+              International Space Station habitable module. Microgravity flame behavior:
+              no buoyant plume, flames creep over surfaces, ventilation flow dominates.
+            </p>
+            <Badge variant="info" size="sm">Microgravity · 0 g</Badge>
+            <Badge variant="verified" size="sm" className="ml-2">Verified · ISS</Badge>
+          </div>
+          <div className="flex-1 lg:w-1/2">
+            <IssCadViewer className="w-full" />
           </div>
         </div>
       </div>

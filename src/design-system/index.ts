@@ -12,3 +12,5 @@ export { Tooltip, Skeleton, EmptyState, Term, CitationChip } from "./common";
 export { ThemeToggle, Collapsible, Logo } from "./layout";
 // Drawer
 export { Drawer } from "./Drawer";
+// ISS CAD viewer
+export { IssCadViewer } from "./IssCadViewer";
