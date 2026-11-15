@@ -2,6 +2,18 @@ import { describe, expect, it } from 'vitest'
 import handler, { handleSiRequest } from '../api/si'
 import { getScenario } from '@/lib/scenarios'
 
+/**
+ * The route runs on the Edge runtime in production, so these tests drive it the
+ * way Vercel does: a fetch-style `Request` in, a `Response` out.
+ */
+
+const post = (body: unknown, method = 'POST') =>
+  new Request('https://ignis.local/api/si', {
+    method,
+    headers: { 'Content-Type': 'application/json' },
+    body: method === 'POST' ? JSON.stringify(body) : undefined,
+  })
+
 describe('handleSiRequest', () => {
   it('serves the offline answer', async () => {
     const result = await handleSiRequest({ mode: 'interpret', scenario: getScenario('mars') })
@@ -17,37 +29,29 @@ describe('handleSiRequest', () => {
   })
 })
 
-describe('default handler', () => {
+describe('edge handler', () => {
   it('rejects a non-POST method', async () => {
-    const chunks: string[] = []
-    const res = {
-      statusCode: 0,
-      setHeader: () => undefined,
-      end: (body?: string) => {
-        if (body) chunks.push(body)
-      },
-    }
-
-    await handler({ method: 'GET' }, res)
-
-    expect(res.statusCode).toBe(405)
-    expect(chunks[0]).toContain('POST')
+    const response = await handler(post(undefined, 'GET'))
+    expect(response.status).toBe(405)
+    const body = (await response.json()) as { error: string }
+    expect(body.error).toContain('POST')
   })
 
   it('returns JSON for a POST', async () => {
-    const chunks: string[] = []
-    const res = {
-      statusCode: 0,
-      setHeader: () => undefined,
-      end: (body?: string) => {
-        if (body) chunks.push(body)
-      },
-    }
+    const response = await handler(post({ mode: 'ask', question: 'oxygen' }))
+    expect(response.status).toBe(200)
+    expect(response.headers.get('content-type')).toContain('application/json')
+    const body = (await response.json()) as { answerMarkdown: string }
+    expect(body.answerMarkdown.length).toBeGreaterThan(0)
+  })
 
-    await handler({ method: 'POST', body: { mode: 'playbook' } }, res)
-
-    expect(res.statusCode).toBe(200)
-    const parsed = JSON.parse(chunks[0]) as { answerMarkdown: string }
-    expect(parsed.answerMarkdown).toContain('Detect')
+  it('treats an unreadable body as an empty request instead of a 500', async () => {
+    const response = await handler(
+      new Request('https://ignis.local/api/si', { method: 'POST', body: 'not json' }),
+    )
+    expect(response.status).toBe(200)
+    const body = (await response.json()) as { answerMarkdown: string; fallback: boolean }
+    expect(body.fallback).toBe(true)
+    expect(body.answerMarkdown.length).toBeGreaterThan(0)
   })
 })
