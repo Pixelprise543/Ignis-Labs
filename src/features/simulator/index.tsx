@@ -147,10 +147,10 @@ export function SimulatorPage() {
                 id="sim-material"
                 value={materialId}
                 onChange={(event) => setMaterialId(event.target.value)}
-                className="mt-1 h-9 w-full rounded-field border border-ig-glass-field-rim bg-ig-glass-field px-2 text-sm text-[#000000]"
+                className="mt-1 h-9 w-full rounded-field border border-ig-glass-field-rim bg-ig-glass-field px-2 text-sm text-ig-frost"
               >
                 {materials.map((entry) => (
-                  <option key={entry.id} value={entry.id}>
+                  <option key={entry.id} value={entry.id} className="text-[#000000]">
                     {entry.name}
                   </option>
                 ))}
