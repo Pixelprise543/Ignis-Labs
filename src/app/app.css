@@ -9,9 +9,8 @@
 /* --- Backdrop -------------------------------------------------------------- */
 
 /**
- * The one image in the app: "Pillars of Creation", NASA/ESA Hubble, public
- * domain (NASA image library id GSFC_20171208_Archive_e000842, use restrictions
- * "none"). Committed byte-for-byte to public/hero-pillars-of-creation.jpg.
+ * The one image in the app: NASA science image (science.nasa.gov), public
+ * domain. Committed byte-for-byte to public/hero-pillars-of-creation.jpg.
  *
  * It is fixed behind everything and never moves with the UI. The scrim on
  * ::after is what buys contrast: it leaves the nebula readable at the top of the
