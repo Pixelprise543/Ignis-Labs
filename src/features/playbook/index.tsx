@@ -74,7 +74,7 @@ export function PlaybookPage() {
           </div>
         </div>
 
-        <p className="mt-3 rounded-control border border-ig-line bg-ig-hull px-3 py-2 text-xs leading-5 text-ig-muted">
+        <p className="mt-3 rounded-control border border-ig-glass-field-rim bg-ig-glass-sunken px-3 py-2 text-xs leading-5 text-ig-muted">
           Scenario: <span className="text-ig-frost">{scenario.label}</span> ·{" "}
           <span className="ig-num">
             {scenario.gravityG.toFixed(2)}g · {scenario.o2Percent ?? "—"}% O2 ·{" "}
@@ -119,7 +119,7 @@ export function PlaybookPage() {
                       <div className="flex gap-2.5">
                         <span
                           aria-hidden="true"
-                          className="ig-num mt-0.5 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full border border-ig-line text-[10px] text-ig-muted"
+                          className="ig-num mt-0.5 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full border border-ig-glass-control-rim bg-ig-glass-control text-[10px] text-ig-muted"
                         >
                           {index + 1}
                         </span>

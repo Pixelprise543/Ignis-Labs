@@ -46,7 +46,9 @@ export function InsightCard({ insight, compact = false, showActions = true }: In
   return (
     <article
       className={clsx(
-        "rounded-panel border border-l-2 border-ig-line bg-ig-hull",
+        // The left severity stripe stays a real 2px border so the card keeps its
+        // colour + word + icon signal; the 1px rim comes from .ig-glass.
+        "ig-glass rounded-panel border-l-2",
         severityBorder[insight.severity],
       )}
       aria-labelledby={`insight-${insight.id}`}
@@ -104,7 +106,7 @@ export function InsightCard({ insight, compact = false, showActions = true }: In
           }
         >
           <div className="space-y-3">
-            <div className="rounded-control border border-ig-line bg-ig-raised px-3 py-2">
+            <div className="rounded-control border border-ig-glass-field-rim bg-ig-glass-sunken px-3 py-2">
               <p className="flex items-center gap-1.5 text-xs font-medium text-ig-frost">
                 <ShieldCheck size={13} aria-hidden="true" className="text-ig-quench" />
                 Recommended crew action

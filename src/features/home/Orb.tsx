@@ -30,8 +30,13 @@ function flamePath(gravityG: number): string {
   return `${points.join(" ")} Z`;
 }
 
-const GOLD = "#E3B76B";
-const AMBER = "#F5B942";
+/**
+ * Fill tokens. These were local hex literals that happened to match the theme
+ * exactly; reading them from CSS keeps the orb in step with any future theme
+ * change instead of silently drifting away from it.
+ */
+const GOLD = "var(--ig-flame-blue)";
+const AMBER = "var(--ig-amber)";
 
 export interface FlameOrbProps {
   gravityG: number;
@@ -45,7 +50,7 @@ export function FlameOrb({ gravityG, scenarioLabel }: FlameOrbProps) {
   const t = Math.min(Math.max(gravityG, 0), 1);
 
   return (
-    <div className="rounded-panel border border-ig-line bg-ig-hull p-4">
+    <div className="ig-glass rounded-panel p-4">
       <div className="flex items-start justify-between gap-3">
         <div>
           <p className="text-xs text-ig-muted">Flame shape</p>
@@ -55,7 +60,7 @@ export function FlameOrb({ gravityG, scenarioLabel }: FlameOrbProps) {
           type="button"
           onClick={() => setPaused((value) => !value)}
           aria-pressed={paused}
-          className="inline-flex h-8 items-center gap-1.5 rounded-control border border-ig-line px-2 text-xs text-ig-muted hover:bg-ig-raised hover:text-ig-frost"
+          className="inline-flex h-8 items-center gap-1.5 rounded-control border border-ig-glass-control-rim px-2 text-xs text-ig-muted hover:bg-ig-glass-hover hover:text-ig-frost"
         >
           {paused ? <Play size={12} aria-hidden="true" /> : <Pause size={12} aria-hidden="true" />}
           {paused ? "Play motion" : "Pause motion"}

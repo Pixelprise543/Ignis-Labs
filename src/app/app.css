@@ -113,18 +113,18 @@
 }
 
 .ig-markdown code {
-  border: 1px solid var(--ig-line);
+  border: 1px solid var(--ig-glass-field-rim);
   border-radius: var(--ig-radius-control);
-  background: var(--ig-raised);
+  background: var(--ig-glass-field);
   padding: 0.05rem 0.3rem;
   font-size: 0.8em;
 }
 
 .ig-markdown pre {
   overflow-x: auto;
-  border: 1px solid var(--ig-line);
+  border: 1px solid var(--ig-glass-field-rim);
   border-radius: var(--ig-radius-panel);
-  background: var(--ig-raised);
+  background: var(--ig-glass-field);
   padding: 0.75rem;
 }
 
@@ -179,7 +179,7 @@
 }
 
 .ig-cmd [cmdk-item][data-selected="true"] {
-  background: var(--ig-raised);
+  background: var(--ig-glass-pressed);
   color: var(--ig-frost);
 }
 

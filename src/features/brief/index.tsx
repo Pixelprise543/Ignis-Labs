@@ -89,7 +89,7 @@ export function BriefPage() {
       </header>
 
       {error ? (
-        <p role="alert" className="rounded-control border border-ig-alarm px-3 py-2 text-sm text-ig-alarm">
+        <p role="alert" className="rounded-control border border-ig-alarm bg-ig-glass-sunken px-3 py-2 text-sm text-ig-alarm">
           {error}
         </p>
       ) : null}

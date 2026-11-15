@@ -22,6 +22,7 @@ export function MethodPage() {
           summary="Change gravity once. Rankings, insights, simulator and playbook follow."
           openLabel="Read"
           closeLabel="Close"
+          className="ig-glass--solid"
         >
           <p>
             Every experiment is a record with a facility, gravity regime, fuel, conditions, findings, a
@@ -39,6 +40,7 @@ export function MethodPage() {
           summary="Four sub-scores, weighted and normalised, with a visible rationale."
           openLabel="Read"
           closeLabel="Close"
+          className="ig-glass--solid"
         >
           <p>
             Each experiment gets four sub-scores from 0 to 100: hazard severity, exploration value,
@@ -64,6 +66,7 @@ export function MethodPage() {
           summary="Verified, curated and illustrative, and what each one does not promise."
           openLabel="Read"
           closeLabel="Close"
+          className="ig-glass--solid"
         >
           <dl className="space-y-3">
             <div>
@@ -99,6 +102,7 @@ export function MethodPage() {
           summary="Dataset-only answers, citation auditing, offline fallback."
           openLabel="Read"
           closeLabel="Close"
+          className="ig-glass--solid"
         >
           <p>
             The assistant answers only from the experiments, insights, materials and playbooks in this
@@ -120,6 +124,7 @@ export function MethodPage() {
           summary="Four adjustments, each explained and evidence-linked. Estimates only."
           openLabel="Read"
           closeLabel="Close"
+          className="ig-glass--solid"
         >
           <p>
             The simulator combines a qualitative material baseline with oxygen, gravity, pressure and
@@ -138,6 +143,7 @@ export function MethodPage() {
           summary="Empty cells are missing research, not safe conditions."
           openLabel="Read"
           closeLabel="Close"
+          className="ig-glass--solid"
         >
           <p>
             The coverage map counts experiments per gravity and oxygen band. The{" "}
@@ -153,6 +159,7 @@ export function MethodPage() {
           summary="microgravity, buoyancy and friends, in plain language."
           openLabel="Read"
           closeLabel="Close"
+          className="ig-glass--solid"
         >
           <p>
             <Term id="microgravity" /> removes <Term id="buoyancy" />, so a flame can settle into a
@@ -170,6 +177,7 @@ export function MethodPage() {
           summary="Six limits that apply to every number on this site."
           openLabel="Read"
           closeLabel="Close"
+          className="ig-glass--solid"
           defaultOpen
         >
           <ul className="list-disc space-y-1.5 pl-5">

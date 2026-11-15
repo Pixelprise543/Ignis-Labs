@@ -85,7 +85,7 @@ export function InsightsPage() {
           </Button>
         </div>
 
-        <p className="mt-3 rounded-control border border-ig-line bg-ig-hull px-3 py-2 text-xs leading-5 text-ig-muted">
+        <p className="mt-3 rounded-control border border-ig-glass-field-rim bg-ig-glass-sunken px-3 py-2 text-xs leading-5 text-ig-muted">
           {scenario.description}{" "}
           <span className="ig-num">
             {scenario.gravityG.toFixed(2)}g · {scenario.o2Percent ?? "—"}% O2 ·{" "}

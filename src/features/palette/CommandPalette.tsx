@@ -49,10 +49,10 @@ export function CommandPalette() {
         if (event.key === "Escape") close();
       }}
     >
-      <div aria-hidden="true" className="absolute inset-0 bg-ig-vacuum/80" onClick={close} />
+      <div aria-hidden="true" className="ig-glass-scrim absolute inset-0" onClick={close} />
       <Command
         label="Command palette"
-        className="ig-cmd relative w-full max-w-[560px] overflow-hidden rounded-panel border border-ig-line bg-ig-hull"
+        className="ig-cmd ig-glass-overlay relative w-full max-w-[560px] overflow-hidden"
       >
         <Command.Input
           ref={inputRef}
@@ -121,7 +121,7 @@ export function CommandPalette() {
         <div className="flex items-center justify-between gap-2 border-t border-ig-line px-3 py-2 text-[11px] text-ig-muted">
           <span>Enter to open</span>
           <span className="inline-flex items-center gap-1">
-            <kbd className="rounded-control border border-ig-line px-1">Esc</kbd> to close
+            <kbd className="rounded-control border border-ig-glass-field-rim bg-ig-glass-field px-1">Esc</kbd> to close
           </span>
         </div>
       </Command>

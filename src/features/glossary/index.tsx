@@ -42,7 +42,7 @@ export function GlossaryPage() {
           value={query}
           onChange={(event) => setQuery(event.target.value)}
           placeholder="Search terms, definitions or related ideas"
-          className="h-10 w-full rounded-control border border-ig-line bg-ig-hull pl-8 pr-3 text-sm text-ig-frost placeholder:text-ig-muted"
+          className="h-10 w-full rounded-field border border-ig-glass-field-rim bg-ig-glass-field pl-8 pr-3 text-sm text-ig-frost placeholder:text-ig-muted"
         />
       </div>
 
@@ -64,7 +64,7 @@ export function GlossaryPage() {
                 title={term.term}
                 bodyClassName="px-4 pb-4"
                 padded={false}
-                className="scroll-mt-24"
+                className="ig-glass--solid scroll-mt-24"
               >
                 <div className="px-4 pb-4 pt-3">
                   <p className="text-sm leading-6 text-ig-frost">{term.plain}</p>
@@ -77,7 +77,7 @@ export function GlossaryPage() {
                           key={related}
                           type="button"
                           onClick={() => setQuery(related.replace(/-/g, " "))}
-                          className="rounded-control border border-ig-line px-1.5 py-0.5 text-xs text-ig-muted hover:bg-ig-raised hover:text-ig-frost"
+                          className="rounded-control border border-ig-glass-control-rim bg-ig-glass-control px-1.5 py-0.5 text-xs text-ig-muted hover:bg-ig-glass-hover hover:text-ig-frost"
                         >
                           {related.replace(/-/g, " ")}
                         </button>

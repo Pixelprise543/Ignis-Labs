@@ -147,7 +147,7 @@ export function SimulatorPage() {
                 id="sim-material"
                 value={materialId}
                 onChange={(event) => setMaterialId(event.target.value)}
-                className="mt-1 h-9 w-full rounded-control border border-ig-line bg-ig-vacuum px-2 text-sm text-ig-frost"
+                className="mt-1 h-9 w-full rounded-field border border-ig-glass-field-rim bg-ig-glass-field px-2 text-sm text-ig-frost"
               >
                 {materials.map((entry) => (
                   <option key={entry.id} value={entry.id}>
@@ -216,7 +216,7 @@ export function SimulatorPage() {
                   key={preset.label}
                   type="button"
                   onClick={preset.apply}
-                  className="rounded-control border border-ig-line px-2 py-1 text-xs text-ig-muted hover:bg-ig-raised hover:text-ig-frost"
+                  className="rounded-control border border-ig-glass-control-rim bg-ig-glass-control px-2 py-1 text-xs text-ig-muted hover:bg-ig-glass-hover hover:text-ig-frost"
                 >
                   {preset.label}
                 </button>
@@ -229,7 +229,7 @@ export function SimulatorPage() {
                   setPressure(scenario.pressureKPa);
                   setFlow(0);
                 }}
-                className="inline-flex items-center gap-1 rounded-control px-2 py-1 text-xs text-ig-flame-blue hover:bg-ig-raised"
+                className="inline-flex items-center gap-1 rounded-control px-2 py-1 text-xs text-ig-flame-blue hover:bg-ig-glass-hover"
               >
                 <RotateCcw size={12} aria-hidden="true" />
                 Reset to scenario
