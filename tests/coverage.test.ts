@@ -7,6 +7,9 @@ import {
   O2_NOT_REPORTED_BAND,
   getCoverage,
   getGaps,
+  getPartialGravityExperiments,
+  hasPartialGravityData,
+  maxMeasuredPartialGravityG,
 } from '@/lib/coverage'
 import { getExperiments } from '@/lib/data'
 import { getScenario } from '@/lib/scenarios'
@@ -32,13 +35,18 @@ describe('getCoverage', () => {
     }
   })
 
-  it('exposes the partial-gravity row as empty', () => {
+  it('fills the partial-gravity row from lunar records instead of leaving it empty', () => {
     const partial = getCoverage().filter((cell) => cell.gravityBand === 'partial-gravity')
     expect(partial).toHaveLength(4)
-    for (const cell of partial) {
-      expect(cell.count).toBe(0)
-      expect(cell.gap).toBe(true)
+    const populated = partial.filter((cell) => cell.count > 0)
+    expect(populated.length).toBeGreaterThan(0)
+    for (const cell of populated) {
+      for (const id of cell.experimentIds) {
+        expect(getExperiments().find((experiment) => experiment.id === id)?.regime).toBe('partial-g')
+      }
     }
+    // Mars gravity (0.38 g) is still outside anything measured.
+    expect(maxMeasuredPartialGravityG()).toBeLessThan(0.38)
   })
 
   it('has at least one populated microgravity cell', () => {
@@ -92,11 +100,14 @@ describe('getGaps', () => {
     }
   })
 
-  it('reports the whole partial-gravity row as missing for lunar and Mars', () => {
+  it('reports only the still-empty partial-gravity cells for lunar and Mars', () => {
     for (const id of ['lunar', 'mars'] as const) {
       const gaps = getGaps(getScenario(id))
-      expect(gaps).toHaveLength(4)
       expect(gaps.every((cell) => cell.gravityBand === 'partial-gravity')).toBe(true)
+      // Lunar evidence fills some cells, so Mars (0.38 g) now has a real gap and
+      // lunar keeps only the atmosphere bands nobody flew.
+      expect(gaps.length).toBeGreaterThan(0)
+      expect(gaps.length).toBeLessThan(4)
     }
   })
 
@@ -114,8 +125,35 @@ describe('getGaps', () => {
 
   it('returns a copy', () => {
     const first = getGaps(getScenario('lunar'))
+    const before = first.length
     first.pop()
-    expect(getGaps(getScenario('lunar'))).toHaveLength(4)
+    expect(getGaps(getScenario('lunar'))).toHaveLength(before)
+  })
+})
+
+describe('partial-gravity helpers', () => {
+  it('returns only partial-gravity records, and says the data exists', () => {
+    const records = getPartialGravityExperiments()
+    expect(records.length).toBeGreaterThan(0)
+    for (const experiment of records) expect(experiment.regime).toBe('partial-g')
+    expect(hasPartialGravityData()).toBe(true)
+  })
+
+  it('reports the highest measured partial gravity so Mars can be called extrapolation', () => {
+    const measured = maxMeasuredPartialGravityG()
+    expect(measured).toBeGreaterThan(0)
+    expect(measured).toBeLessThan(1)
+    expect(measured).toBeCloseTo(
+      Math.max(...getPartialGravityExperiments().map((e) => e.conditions.gravityG)),
+      5,
+    )
+  })
+
+  it('hands back a fresh array, so a caller cannot drop a record', () => {
+    const first = getPartialGravityExperiments()
+    const before = first.length
+    first.pop()
+    expect(getPartialGravityExperiments()).toHaveLength(before)
   })
 })
 

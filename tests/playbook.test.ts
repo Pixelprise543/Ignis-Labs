@@ -74,9 +74,9 @@ describe('getPlaybook: scenario sensitivity', () => {
     expect(text).not.toMatch(/airlock/i)
   })
 
-  it('warns that a lunar or Mars playbook is an extrapolation', () => {
+  it('warns that a lunar or Mars playbook is an interpolation, naming the gravity it was measured at', () => {
     for (const id of ['lunar', 'mars'] as const) {
-      expect(getPlaybook(id).caveats.join(' ')).toMatch(/no partial-gravity|extrapolat/i)
+      expect(getPlaybook(id).caveats.join(' ')).toMatch(/lunar gravity|no partial-gravity|interpolat/i)
     }
   })
 

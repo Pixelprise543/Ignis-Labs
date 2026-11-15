@@ -64,6 +64,13 @@ the same key and unit, otherwise compare and chart views break silently.
 | `ambient-flow` | Ambient flow speed | `cm/s` | flex-2j |
 | `reaction-temperature` | Cool-flame temperature | `K` | cfi |
 | `free-fall-duration` | Free-fall duration | `s` | drop-tower-2-2s |
+| `flame-lifetime` | Flame lifetime | `min` | candle-flames |
+| `flame-oscillation` | Pre-extinction oscillation | `Hz` | candle-flames |
+| `flame-balls` | Flame-ball configurations tested | `flames` | sofbail |
+| `smolder-rate` | Smoulder propagation rate | `mm/min` | msc |
+| `jet-exit-velocity` | Jet exit velocity | `m/s` | tgdf |
+| `spin-rate` | Vehicle spin rate | `RPM` | luci |
+| `test-samples` | Samples planned | `samples` | fm2 |
 
 Adding a key? Add the row here in the same commit.
 
@@ -73,25 +80,46 @@ Free-form in the contract, controlled in practice. Reuse these before inventing:
 
 `fire-safety`, `flame-spread`, `solid-fuel`, `gaseous`, `droplet`, `cool-flame`,
 `material-flammability`, `extinction`, `extinction-limit`, `suppression`,
-`ignition`, `smoke`, `soot`, `oxygen-enriched`, `pressure`, `ventilation`,
+`ignition`, `smoke`, `soot`, `smouldering`, `oxygen-enriched`, `pressure`, `ventilation`,
 `low-flow`, `narrow-channel`, `concealed-fire`, `re-ignition`, `detection`,
 `habitat-atmosphere`, `modelling`, `screening`, `method`, `scale`, `data-set`,
 `heritage`, `ground-test`, `safety-case`, `trade-off`, `cygnus`, `cir`, `msg`,
-`sofie`, `acme`, `combustion-science`, `lunar-habitat`, `mars-transit`.
+`sofie`, `acme`, `combustion-science`, `lunar-habitat`, `mars-transit`,
+`partial-gravity`, `sounding-rocket`.
+
+## Year rule for new records
+
+`years` is the flight or test window when the retrieved page states it (mission
+names, campaign dates). When the page genuinely does not say - older conference
+papers often do not - use the report's publication window instead and say so in
+the record's `summary`, in the form "The retrieved report ... does not state the
+flight date, so the year shown is the report year." A reader must never have to
+guess which convention a record uses. `recency` scoring reads this field, so the
+note also explains why an old experiment scores as old.
 
 ## Coverage fact the UI must not paper over
 
-All flight records are `microgravity`. The only other gravity regime in the set is
-`normal-g` (none of the records actually fly at 1 g, but the drop tower is
-microgravity and the ground comparison point is the reader's own experience).
-There is **no partial-gravity flame-spread experiment** in the dataset, because no
-such flight experiment exists in the retrieved sources.
+The partial-gravity row is **partially** covered, and the app has to say exactly
+which part. Two records sit there, both lunar gravity (about 0.16 g):
 
-Consequence: lunar (0.16 g) and Mars (0.38 g) scenarios are extrapolations from
-microgravity plus theory. The coverage view must show those bands as gaps, and
-the simulator must include a caveat saying so. The scenario presets already carry
-`assumption: true` for exactly this reason - keep that badge visible wherever a
-lunar, Mars or custom scenario is compared with the ISS or EVA.
+- `luci` - measured in flight (spinning New Shepard), 21% oxygen in air
+- `fm2` - a payload in preparation, designed for 21% at 14.7 psia and 34%
+  oxygen at 8.2 psia; its record is a plan, not a result
+
+Everything else in `partial-gravity` is a gap, and **Mars gravity (0.38 g) has no
+record at all**. So:
+
+- a lunar scenario is an interpolation from one measured gravity level
+- a Mars scenario is an extrapolation past the highest gravity anyone measured
+- the ISS and EVA scenarios are unaffected
+
+Copy must not hardcode "no partial-gravity data exists". Call
+`hasPartialGravityData()` / `maxMeasuredPartialGravityG()` from
+`src/lib/coverage.ts` and branch, so the sentence stays true if a Mars-gravity
+record ever lands.
+
+The scenario presets still carry `assumption: true` for lunar, Mars and custom -
+keep that badge visible wherever those are compared with the ISS or EVA.
 
 ## Sources
 
@@ -107,6 +135,19 @@ a URL, the confidence enum, `years[0] <= years[1]`, and at least one metric and
 one finding. Across the catalogue it checks that every material, insight and
 playbook `evidenceIds` entry resolves to a real finding, that glossary `related`
 ids resolve, and that the 12-cell coverage grid lists each experiment once.
+
+Added for the 30-record dataset - each one closes a way the hand-written data
+actually drifted:
+
+| Rule | Why |
+|---|---|
+| `value: null` needs a `note` of 12+ characters | otherwise "not published" renders as an empty cell and looks like a missing feature |
+| `pressureKPa` must be `> 0` when present | `0` means vacuum, and every record here burned in a gas; "unknown" is `null` |
+| `verified` / `curated` sources must be on `nasa.gov` | the honesty rule says NASA sources only at those tiers; a non-NASA page forces `illustrative` |
+| finding id must start with `<experiment-id>-f` | a copied finding becomes visible in its own id instead of citing someone else's number |
+| no two records may share a finding sentence | a repeated sentence means a record was copied rather than read |
+| `regime` must match the numeric `gravityG` band | a label that disagrees with its gravity silently moves a coverage row |
+| summary and takeaway must not contain filler markers | `TODO`, `TBD`, `lorem ipsum`, `placeholder` are what a half-written record looks like |
 
 The script loads the validator through Vite, not plain Node, because the data
 modules import `@/contracts/types` and each other without extensions.

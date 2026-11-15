@@ -183,7 +183,7 @@ export function ExplorePage() {
         {compareIds.length > 0 ? ` · ${compareIds.length} in compare` : ''}
       </p>
 
-      <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_340px]">
+      <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_minmax(0,360px)]">
         <div className="min-w-0">
           {visible.length === 0 ? (
             <EmptyState

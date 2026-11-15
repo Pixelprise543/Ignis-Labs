@@ -11,9 +11,10 @@ import { getExperiments } from './data'
  * Evidence coverage: how many experiments sit in each gravity x oxygen cell.
  *
  * The grid is deliberately fixed, including empty rows, because the empty row is
- * the finding. Every flight record in the dataset is microgravity, so the entire
- * partial-gravity row is a gap for lunar and Mars design work. Rendering that row
- * as blank-but-present is more honest than hiding it.
+ * the finding. The partial-gravity row was entirely empty until LUCI and FM2
+ * landed; it now holds lunar-gravity records at 21% and 34% oxygen, while Mars
+ * gravity (0.38 g) still has no record at all. Rendering every cell - empty or
+ * not - keeps that distinction visible instead of hiding it.
  *
  * `not specified` is a real oxygen band, not a bug: most records were retrieved
  * without a published cabin oxygen fraction, and moving them into a numeric band
@@ -111,6 +112,32 @@ export function getCoverage(): CoverageCell[] {
   }
 
   return cells
+}
+
+/**
+ * Experiments actually measured at partial gravity, if any.
+ *
+ * Copy elsewhere in the app used to hardcode "no partial-gravity data exists".
+ * Once LUCI landed that sentence became a lie, so callers ask this instead of
+ * asserting. Mars (0.38 g) is still uncovered; lunar (0.16 g) is not.
+ */
+export function getPartialGravityExperiments(): Experiment[] {
+  return getExperiments().filter((experiment) => experiment.regime === 'partial-g')
+}
+
+export function hasPartialGravityData(): boolean {
+  return getPartialGravityExperiments().length > 0
+}
+
+/**
+ * The highest gravity any partial-gravity record was measured at, in g.
+ * Returns null when there is no partial-gravity evidence at all. Used to say
+ * whether a Mars scenario is inside the measured range or outside it.
+ */
+export function maxMeasuredPartialGravityG(): number | null {
+  const records = getPartialGravityExperiments()
+  if (records.length === 0) return null
+  return Math.max(...records.map((experiment) => experiment.conditions.gravityG))
 }
 
 /**

@@ -5,6 +5,7 @@ import type {
   ScenarioId,
 } from '@/contracts/types'
 import { getMaterials } from './data'
+import { hasPartialGravityData } from './coverage'
 import { getScenario } from './scenarios'
 import { levelForRisk } from './severity'
 
@@ -89,7 +90,9 @@ function riskFor(material: Material, scenario: Scenario): MaterialRisk {
 
   const extrapolated =
     scenario.gravityG >= 0.01 && scenario.gravityG < 0.9
-      ? ' No partial-gravity flame-spread data exists, so this row is an extrapolation from microgravity evidence.'
+      ? hasPartialGravityData()
+        ? ' Partial-gravity evidence exists only at lunar gravity (about 0.16 g), so this row interpolates between that data point and microgravity evidence.'
+        : ' No partial-gravity flame-spread data exists, so this row is an extrapolation from microgravity evidence.'
       : ''
 
   return {

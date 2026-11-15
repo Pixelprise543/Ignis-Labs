@@ -10,7 +10,7 @@ import {
 import type { Experiment } from '@/contracts/types'
 import { ChartFrame } from './ChartFrame'
 import { FlatTooltip } from './FlatTooltip'
-import { CHART_TOKENS, SERIES_STYLES } from './chartTheme'
+import { CHART_CANVAS_TALL, CHART_TOKENS, SERIES_STYLES } from './chartTheme'
 import { CONDITION_AXES, completeConditionRows, type ConditionRow } from './chartData'
 
 const MAX_SERIES = 3
@@ -44,7 +44,7 @@ export interface ConditionsRadarProps {
  * condition are omitted rather than plotted as zero, because a missing
  * measurement is not the same as a measured zero.
  */
-export function ConditionsRadar({ experiments, height = 320 }: ConditionsRadarProps) {
+export function ConditionsRadar({ experiments, height }: ConditionsRadarProps) {
   const { rows, omitted } = completeConditionRows(experiments)
   const shown = rows.slice(0, MAX_SERIES)
   const truncated = rows.length - shown.length
@@ -79,7 +79,7 @@ export function ConditionsRadar({ experiments, height = 320 }: ConditionsRadarPr
     <ChartFrame
       title="Condition profile"
       summary={parts.join(' ')}
-      minHeight={height}
+      minHeight={height ?? 260}
       empty={shown.length === 0}
       emptyMessage="This set has no experiment with all four conditions recorded. Pick experiments that report gravity, oxygen, pressure and flow."
       table={{
@@ -115,33 +115,41 @@ export function ConditionsRadar({ experiments, height = 320 }: ConditionsRadarPr
           )
         })}
       </ul>
-      <ResponsiveContainer width="100%" height={height - 24}>
-        <RadarChart data={radarData} outerRadius="72%">
-          <PolarGrid stroke={CHART_TOKENS.line} />
-          <PolarAngleAxis
-            dataKey="axis"
-            tick={{ fill: CHART_TOKENS.axis, fontSize: 10, fontFamily: CHART_TOKENS.sans }}
-          />
-          <PolarRadiusAxis domain={[0, 100]} tick={false} axisLine={false} />
-          <Tooltip content={<RadarTooltip />} wrapperStyle={{ outline: 'none', boxShadow: 'none' }} />
-          {shown.map((experiment, index) => {
-            const style = SERIES_STYLES[index % SERIES_STYLES.length]
-            return (
-              <Radar
-                key={experiment.id}
-                name={experiment.acronym}
-                dataKey={`s${index}`}
-                stroke={style.color}
-                fill={style.color}
-                fillOpacity={0.12}
-                strokeWidth={2}
-                strokeDasharray={style.dash === '0' ? undefined : style.dash}
-                isAnimationActive={false}
-              />
-            )
-          })}
-        </RadarChart>
-      </ResponsiveContainer>
+      <div
+        className={height ? undefined : CHART_CANVAS_TALL}
+        style={height ? { height: height - 24 } : undefined}
+      >
+        <ResponsiveContainer width="100%" height="100%">
+          <RadarChart data={radarData} outerRadius="72%">
+            <PolarGrid stroke={CHART_TOKENS.line} />
+            <PolarAngleAxis
+              dataKey="axis"
+              tick={{ fill: CHART_TOKENS.axis, fontSize: 10, fontFamily: CHART_TOKENS.sans }}
+            />
+            <PolarRadiusAxis domain={[0, 100]} tick={false} axisLine={false} />
+            <Tooltip
+              content={<RadarTooltip />}
+              wrapperStyle={{ outline: 'none', boxShadow: 'none' }}
+            />
+            {shown.map((experiment, index) => {
+              const style = SERIES_STYLES[index % SERIES_STYLES.length]
+              return (
+                <Radar
+                  key={experiment.id}
+                  name={experiment.acronym}
+                  dataKey={`s${index}`}
+                  stroke={style.color}
+                  fill={style.color}
+                  fillOpacity={0.12}
+                  strokeWidth={2}
+                  strokeDasharray={style.dash === '0' ? undefined : style.dash}
+                  isAnimationActive={false}
+                />
+              )
+            })}
+          </RadarChart>
+        </ResponsiveContainer>
+      </div>
     </ChartFrame>
   )
 }

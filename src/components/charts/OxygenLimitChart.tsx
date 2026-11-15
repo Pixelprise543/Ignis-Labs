@@ -46,7 +46,9 @@ export interface OxygenLimitChartProps {
  */
 export function OxygenLimitChart({ experiments, height }: OxygenLimitChartProps) {
   const rows = oxygenLimitRows(experiments)
-  const chartHeight = height ?? Math.min(480, Math.max(220, rows.length * 30 + 56))
+  // Height follows the row count, so a long list is never squeezed into a fixed
+  // box (bars used to overlap past ~14 experiments) and a short list is not padded.
+  const chartHeight = height ?? Math.min(640, Math.max(220, rows.length * 34 + 64))
   const regimes = REGIME_STYLES.filter((style) => rows.some((row) => row.regime === style.key)).map(
     (style) => style.key,
   )

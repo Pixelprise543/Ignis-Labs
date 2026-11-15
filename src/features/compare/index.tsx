@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
+import type { ReactNode } from 'react'
 import { Link } from 'react-router-dom'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
@@ -131,6 +132,55 @@ export function ComparePage() {
           .filter((experiment): experiment is Experiment => Boolean(experiment))
       : []
 
+  /**
+   * Below 640px, four experiment columns cannot fit without a horizontal
+   * scrollbar. The same fields render as one stacked block per experiment
+   * instead of shrinking the table until the numbers wrap.
+   */
+  const conditionFields: Array<{ label: string; value: (experiment: Experiment) => ReactNode }> = [
+    { label: 'Gravity regime', value: (experiment) => <RegimeBadge regime={experiment.regime} /> },
+    {
+      label: 'Gravity',
+      value: (experiment) => <span className="ig-num">{formatValue(experiment.conditions.gravityG, 'g')}</span>,
+    },
+    {
+      label: 'Oxygen',
+      value: (experiment) => <span className="ig-num">{formatValue(experiment.conditions.o2Percent, '%')}</span>,
+    },
+    { label: 'Diluent', value: (experiment) => experiment.conditions.diluent },
+    {
+      label: 'Pressure',
+      value: (experiment) => (
+        <span className="ig-num">{formatValue(experiment.conditions.pressureKPa, 'kPa')}</span>
+      ),
+    },
+    {
+      label: 'Flow',
+      value: (experiment) => (
+        <span className="ig-num">{formatValue(experiment.conditions.flowCmPerS, 'cm/s')}</span>
+      ),
+    },
+    {
+      label: 'Fuel',
+      value: (experiment) => (
+        <>
+          {experiment.fuel}
+          <span className="block text-[11px] text-ig-muted">{experiment.fuelType}</span>
+        </>
+      ),
+    },
+    { label: 'Facility', value: (experiment) => experiment.facility },
+    {
+      label: 'Years',
+      value: (experiment) => (
+        <span className="ig-num">
+          {experiment.years[0]}–{experiment.years[1] ?? 'now'}
+        </span>
+      ),
+    },
+    { label: 'Confidence', value: (experiment) => <ConfidenceBadge confidence={experiment.confidence} /> },
+  ]
+
   return (
     <div className="space-y-8">
       <PageHeading
@@ -187,8 +237,8 @@ export function ComparePage() {
         title="Conditions"
         description={`Reported conditions for the ${selected.length} selected experiments`}
       >
-        <div className="mt-4 overflow-x-auto">
-          <table className="w-full min-w-[640px] border-collapse text-left text-sm">
+        <div className="mt-4 hidden overflow-x-auto sm:block">
+          <table className="w-full border-collapse text-left text-sm">
             <caption className="sr-only">
               Reported conditions for the {selected.length} selected experiments
             </caption>
@@ -201,7 +251,7 @@ export function ComparePage() {
                   <th
                     key={experiment.id}
                     scope="col"
-                    className="px-4 py-3 align-top font-medium text-ig-frost"
+                    className="px-2 py-3 sm:px-4 align-top font-medium text-ig-frost"
                   >
                     <span className="block font-mono text-[10px] text-ig-muted uppercase tracking-wider">
                       {experiment.acronym}
@@ -217,7 +267,7 @@ export function ComparePage() {
                   Gravity regime
                 </th>
                 {selected.map((experiment) => (
-                  <td key={experiment.id} className="px-4 py-3">
+                  <td key={experiment.id} className="px-2 py-3 sm:px-4">
                     <RegimeBadge regime={experiment.regime} />
                   </td>
                 ))}
@@ -227,7 +277,7 @@ export function ComparePage() {
                   Gravity
                 </th>
                 {selected.map((experiment) => (
-                  <td key={experiment.id} className="px-4 py-3 font-mono text-xs tabular-nums text-ig-frost">
+                  <td key={experiment.id} className="px-2 py-3 sm:px-4 font-mono text-xs tabular-nums text-ig-frost">
                     {formatValue(experiment.conditions.gravityG, 'g')}
                   </td>
                 ))}
@@ -237,7 +287,7 @@ export function ComparePage() {
                   Oxygen
                 </th>
                 {selected.map((experiment) => (
-                  <td key={experiment.id} className="px-4 py-3 font-mono text-xs tabular-nums text-ig-frost">
+                  <td key={experiment.id} className="px-2 py-3 sm:px-4 font-mono text-xs tabular-nums text-ig-frost">
                     {formatValue(experiment.conditions.o2Percent, '%')}
                   </td>
                 ))}
@@ -247,7 +297,7 @@ export function ComparePage() {
                   Diluent
                 </th>
                 {selected.map((experiment) => (
-                  <td key={experiment.id} className="px-4 py-3 text-xs text-ig-frost">
+                  <td key={experiment.id} className="px-2 py-3 sm:px-4 text-xs text-ig-frost">
                     {experiment.conditions.diluent}
                   </td>
                 ))}
@@ -257,7 +307,7 @@ export function ComparePage() {
                   Pressure
                 </th>
                 {selected.map((experiment) => (
-                  <td key={experiment.id} className="px-4 py-3 font-mono text-xs tabular-nums text-ig-frost">
+                  <td key={experiment.id} className="px-2 py-3 sm:px-4 font-mono text-xs tabular-nums text-ig-frost">
                     {formatValue(experiment.conditions.pressureKPa, 'kPa')}
                   </td>
                 ))}
@@ -267,7 +317,7 @@ export function ComparePage() {
                   Flow
                 </th>
                 {selected.map((experiment) => (
-                  <td key={experiment.id} className="px-4 py-3 font-mono text-xs tabular-nums text-ig-frost">
+                  <td key={experiment.id} className="px-2 py-3 sm:px-4 font-mono text-xs tabular-nums text-ig-frost">
                     {formatValue(experiment.conditions.flowCmPerS, 'cm/s')}
                   </td>
                 ))}
@@ -277,7 +327,7 @@ export function ComparePage() {
                   Fuel
                 </th>
                 {selected.map((experiment) => (
-                  <td key={experiment.id} className="px-4 py-3 text-xs text-ig-frost">
+                  <td key={experiment.id} className="px-2 py-3 sm:px-4 text-xs text-ig-frost">
                     <span className="block">{experiment.fuel}</span>
                     <span className="block mt-0.5 text-[10px] text-ig-muted">{experiment.fuelType}</span>
                   </td>
@@ -288,7 +338,7 @@ export function ComparePage() {
                   Facility
                 </th>
                 {selected.map((experiment) => (
-                  <td key={experiment.id} className="px-4 py-3 text-xs text-ig-frost">
+                  <td key={experiment.id} className="px-2 py-3 sm:px-4 text-xs text-ig-frost">
                     {experiment.facility}
                   </td>
                 ))}
@@ -298,7 +348,7 @@ export function ComparePage() {
                   Years
                 </th>
                 {selected.map((experiment) => (
-                  <td key={experiment.id} className="px-4 py-3 font-mono text-xs tabular-nums text-ig-frost">
+                  <td key={experiment.id} className="px-2 py-3 sm:px-4 font-mono text-xs tabular-nums text-ig-frost">
                     {experiment.years[0]}–{experiment.years[1] ?? 'now'}
                   </td>
                 ))}
@@ -308,13 +358,34 @@ export function ComparePage() {
                   Confidence
                 </th>
                 {selected.map((experiment) => (
-                  <td key={experiment.id} className="px-4 py-3">
+                  <td key={experiment.id} className="px-2 py-3 sm:px-4">
                     <ConfidenceBadge confidence={experiment.confidence} />
                   </td>
                 ))}
               </tr>
             </tbody>
           </table>
+        </div>
+
+        <div className="mt-4 space-y-3 sm:hidden">
+          {selected.map((experiment) => (
+            <section
+              key={experiment.id}
+              aria-label={experiment.name}
+              className="rounded-control border border-ig-line bg-ig-vacuum p-3"
+            >
+              <p className="font-mono text-[11px] text-ig-muted">{experiment.acronym}</p>
+              <h3 className="text-sm font-semibold text-ig-frost">{experiment.name}</h3>
+              <dl className="mt-2 divide-y divide-ig-line border-t border-ig-line text-xs">
+                {conditionFields.map((field) => (
+                  <div key={field.label} className="flex items-start justify-between gap-4 py-1.5">
+                    <dt className="text-ig-muted">{field.label}</dt>
+                    <dd className="text-right text-ig-frost">{field.value(experiment)}</dd>
+                  </div>
+                ))}
+              </dl>
+            </section>
+          ))}
         </div>
       </Panel>
 
@@ -327,8 +398,8 @@ export function ComparePage() {
             None of the selected experiments reports a numeric metric.
           </p>
         ) : (
-          <div className="mt-4 overflow-x-auto">
-            <table className="w-full min-w-[640px] border-collapse text-left text-sm">
+          <div className="mt-4 hidden overflow-x-auto sm:block">
+            <table className="w-full border-collapse text-left text-sm">
               <caption className="sr-only">Reported metrics for the selected experiments</caption>
               <thead>
                 <tr className="border-b border-ig-line">
@@ -339,7 +410,7 @@ export function ComparePage() {
                     <th
                       key={experiment.id}
                       scope="col"
-                      className="px-4 py-3 font-mono text-[10px] font-medium text-ig-muted uppercase tracking-wider"
+                      className="px-2 py-3 sm:px-4 font-mono text-[10px] font-medium text-ig-muted uppercase tracking-wider"
                     >
                       {experiment.acronym}
                     </th>
@@ -360,7 +431,7 @@ export function ComparePage() {
                       return (
                         <td
                           key={experiment.id}
-                          className="px-4 py-3 font-mono text-xs tabular-nums text-ig-frost"
+                          className="px-2 py-3 sm:px-4 font-mono text-xs tabular-nums text-ig-frost"
                         >
                           {metric && typeof metric.value === 'number' ? metric.value : '—'}
                         </td>
@@ -370,6 +441,37 @@ export function ComparePage() {
                 ))}
               </tbody>
             </table>
+          </div>
+        )}
+
+        {metricRows.length === 0 ? null : (
+          <div className="mt-4 space-y-3 sm:hidden">
+            {selected.map((experiment) => (
+              <section
+                key={experiment.id}
+                aria-label={experiment.name}
+                className="rounded-control border border-ig-line bg-ig-vacuum p-3"
+              >
+                <p className="font-mono text-[11px] text-ig-muted">{experiment.acronym}</p>
+                <h3 className="text-sm font-semibold text-ig-frost">{experiment.name}</h3>
+                <dl className="mt-2 divide-y divide-ig-line border-t border-ig-line text-xs">
+                  {metricRows.map((row) => {
+                    const metric = experiment.metrics.find((entry) => entry.key === row.key)
+                    return (
+                      <div key={row.key} className="flex items-start justify-between gap-4 py-1.5">
+                        <dt className="text-ig-muted">
+                          {row.label}
+                          <span className="ml-1 font-mono text-[11px]">{row.unit}</span>
+                        </dt>
+                        <dd className="ig-num text-right text-ig-frost">
+                          {metric && typeof metric.value === 'number' ? metric.value : '—'}
+                        </dd>
+                      </div>
+                    )
+                  })}
+                </dl>
+              </section>
+            ))}
           </div>
         )}
       </Panel>
@@ -438,7 +540,7 @@ export function ComparePage() {
             </Card>
           ) : siState.status === 'ready' ? (
             <>
-              <div className="text-sm leading-relaxed text-ig-muted [&_h3]:mt-4 [&_h3]:text-sm [&_h3]:font-semibold [&_h3]:text-ig-frost [&_li]:mt-1 [&_li]:border-l [&_li]:border-ig-line [&_li]:pl-3 [&_strong]:text-ig-frost [&_ul]:mt-2 [&_ul]:space-y-1">
+              <div className="overflow-x-auto text-sm leading-relaxed text-ig-muted [&_h3]:mt-4 [&_h3]:text-sm [&_h3]:font-semibold [&_h3]:text-ig-frost [&_li]:mt-1 [&_li]:border-l [&_li]:border-ig-line [&_li]:pl-3 [&_strong]:text-ig-frost [&_ul]:mt-2 [&_ul]:space-y-1">
                 <ReactMarkdown
                   remarkPlugins={[remarkGfm]}
                   components={{

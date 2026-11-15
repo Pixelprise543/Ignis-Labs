@@ -79,29 +79,39 @@ describe('getInsights: shape and grounding', () => {
 })
 
 describe('getInsights: scenario sensitivity', () => {
-  it('does not claim a partial-gravity gap for the ISS cabin', () => {
+  it('does not claim a partial-gravity evidence problem for the ISS cabin', () => {
     const ids = getInsights(getScenario('iss')).map((entry) => entry.id)
     expect(ids).not.toContain('no-partial-gravity-data')
+    expect(ids).not.toContain('partial-gravity-evidence-thin')
   })
 
-  it('flags the partial-gravity gap for lunar and Mars scenarios', () => {
+  it('reports the thin partial-gravity evidence for lunar and Mars, not a missing one', () => {
     for (const id of ['lunar', 'mars'] as const) {
-      const insight = getInsights(getScenario(id)).find(
-        (entry) => entry.id === 'no-partial-gravity-data',
-      )
+      const insights = getInsights(getScenario(id))
+      const insight = insights.find((entry) => entry.id === 'partial-gravity-evidence-thin')
       expect(insight, id).toBeDefined()
-      expect(insight?.summary).toMatch(/extrapolat/i)
+      expect(insight?.summary).toMatch(/lunar gravity|interpolat/i)
       expect(insight?.confidence).toBeLessThan(60)
+      // The old "no data at all" rule must stay silent while lunar data exists.
+      expect(insights.map((entry) => entry.id)).not.toContain('no-partial-gravity-data')
     }
   })
 
-  it('flags the gap for a custom partial-gravity design', () => {
-    const ids = getInsights(customScenario(0.2, 21, 101.3)).map((entry) => entry.id)
-    expect(ids).toContain('no-partial-gravity-data')
+  it('says the Mars value was not measured rather than presenting it as one', () => {
+    const mars = getInsights(getScenario('mars')).find(
+      (entry) => entry.id === 'partial-gravity-evidence-thin',
+    )
+    expect(mars?.summary).toContain('Nothing here was measured')
   })
 
-  it('does not flag the gap for a custom microgravity design', () => {
+  it('flags a custom partial-gravity design with the same thin-evidence insight', () => {
+    const ids = getInsights(customScenario(0.2, 21, 101.3)).map((entry) => entry.id)
+    expect(ids).toContain('partial-gravity-evidence-thin')
+  })
+
+  it('does not flag the thin-evidence insight for a custom microgravity design', () => {
     const ids = getInsights(customScenario(0, 21, 101.3)).map((entry) => entry.id)
+    expect(ids).not.toContain('partial-gravity-evidence-thin')
     expect(ids).not.toContain('no-partial-gravity-data')
   })
 

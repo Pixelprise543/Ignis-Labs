@@ -1,6 +1,6 @@
 import type { Experiment, Scenario, ScoreWeights } from '@/contracts/types'
 import { getExperiment, getExperiments } from './data'
-import { getGaps } from './coverage'
+import { getGaps, hasPartialGravityData } from './coverage'
 import { getInsights } from './insights'
 import { getPlaybook } from './playbook'
 import { defaultWeights, rankExperiments } from './scoring'
@@ -96,7 +96,9 @@ function gapsSection(scenario: Scenario): string {
   if (scenario.gravityG >= 0.01 && scenario.gravityG < 0.9) {
     lines.push(
       '',
-      'No partial-gravity flame-spread data exists in this dataset, so every design claim for this habitat is an extrapolation.',
+      hasPartialGravityData()
+        ? `Partial-gravity data exists for lunar gravity (about 0.16 g) only; nothing in this dataset was measured at ${formatGravity(scenario.gravityG)}, so this habitat is an interpolation.`
+        : 'No partial-gravity flame-spread data exists in this dataset, so every design claim for this habitat is an extrapolation.',
     )
   }
 
@@ -222,7 +224,9 @@ export function buildBriefMarkdown(
 
   if (scenario.gravityG >= 0.01 && scenario.gravityG < 0.9) {
     parts.push(
-      '- This habitat is in partial gravity. No partial-gravity flame-spread experiment exists in the dataset, so the brief extrapolates from microgravity and theory.',
+      hasPartialGravityData()
+        ? `- This habitat is in partial gravity. The only partial-gravity records here were measured at lunar gravity (about 0.16 g), so the brief interpolates to ${formatGravity(scenario.gravityG)} rather than reporting a measurement at that gravity.`
+        : '- This habitat is in partial gravity. No partial-gravity flame-spread experiment exists in the dataset, so the brief extrapolates from microgravity and theory.',
     )
   }
 

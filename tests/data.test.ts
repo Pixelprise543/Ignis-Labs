@@ -11,8 +11,8 @@ import {
 } from '@/lib/data'
 
 describe('getExperiments', () => {
-  it('returns the full twenty-record evidence base', () => {
-    expect(getExperiments()).toHaveLength(20)
+  it('returns the full thirty-record evidence base', () => {
+    expect(getExperiments()).toHaveLength(30)
   })
 
   it('gives every record a unique kebab-case id', () => {
@@ -63,7 +63,7 @@ describe('getExperiments', () => {
   it('is read-only from the caller side', () => {
     const first = getExperiments()
     first.pop()
-    expect(getExperiments()).toHaveLength(20)
+    expect(getExperiments()).toHaveLength(30)
   })
 })
 

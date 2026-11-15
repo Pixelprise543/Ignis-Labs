@@ -333,4 +333,61 @@ export const legacyExperiments: Experiment[] = [
     confidence: 'verified',
     tags: ['ground-test', 'drop-tower', 'screening', 'glenn'],
   },
+  {
+    id: 'bass-ii',
+    name: 'Burning and Suppression of Solids II',
+    acronym: 'BASS-II',
+    summary:
+      'The second BASS campaign burned solid samples in a small flow duct inside the Microgravity Science Glovebox, with an astronaut running ignition and fan speed while the science team watched from the ground. Its novelty was diluting the glovebox working volume with gaseous nitrogen, which let the team set the oxygen concentration for each test on orbit instead of only at launch.',
+    facility: 'ISS-MSG',
+    regime: 'microgravity',
+    years: [2021, 2021],
+    fuelType: 'solid',
+    fuel: 'Solid samples of varied type, thickness and geometry',
+    conditions: {
+      gravityG: 0,
+      o2Percent: null,
+      diluent: 'air',
+      pressureKPa: null,
+      flowCmPerS: null,
+    },
+    metrics: [
+      {
+        key: 'oxygen-concentration',
+        label: 'Ambient oxygen concentration',
+        unit: '% O2',
+        value: null,
+        note: 'Deliberately varied by nitrogen dilution; the retrieved summary gives no single value.',
+      },
+      {
+        key: 'burn-duration',
+        label: 'Burn duration',
+        unit: 'min',
+        value: null,
+        note: 'Varied by sample and flow condition; not stated in the retrieved summary.',
+      },
+    ],
+    findings: [
+      {
+        id: 'bass-ii-f1',
+        text: 'Oxygen concentration, ventilation velocity and fuel type, thickness and geometry were varied together, which is what makes the campaign a design matrix rather than a set of one-off burns.',
+        tags: ['oxygen-concentration', 'ventilation', 'material-flammability'],
+      },
+      {
+        id: 'bass-ii-f2',
+        text: 'Diluting the working volume with nitrogen made ambient oxygen a controlled test variable on orbit, so a material can now be screened at the fraction a future cabin will actually use.',
+        tags: ['habitat-atmosphere', 'method', 'screening'],
+      },
+      {
+        id: 'bass-ii-f3',
+        text: 'Combustion-product readings were taken before and after each test with the station sensors, which connects the burn to the smoke and carbon monoxide a crew would be exposed to.',
+        tags: ['smoke', 'detection', 'safety-case'],
+      },
+    ],
+    safetyTakeaway:
+      'Oxygen fraction is a test variable a crewed campaign can move on orbit, so material screening can be repeated at the intended cabin atmosphere rather than assumed from air.',
+    sources: [SRC.ntrsBassII, SRC.cir],
+    confidence: 'curated',
+    tags: ['fire-safety', 'material-flammability', 'oxygen-enriched', 'ventilation', 'msg'],
+  },
 ]
