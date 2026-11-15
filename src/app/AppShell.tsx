@@ -1,5 +1,5 @@
 import { clsx } from "clsx";
-import { Command as CommandIcon, Menu, Sparkles, X } from "lucide-react";
+import { ChevronRight, Command as CommandIcon, Menu, Sparkles, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link, NavLink, useLocation } from "react-router-dom";
 import {
@@ -7,11 +7,13 @@ import {
   MOBILE_TABS,
   NAV_GROUPS,
   PLATFORM_HOME,
+  PLATFORM_ROUTES,
   platformRoutesByGroup,
 } from "./nav";
-import type { RouteDefinition } from "./nav";
+import type { NavGroup, RouteDefinition } from "./nav";
 import { ScenarioBar } from "./ScenarioBar";
 import { useIgnis } from "./data";
+import { Collapsible } from "@/design-system";
 import { AskIgnisDrawer } from "@/features/assistant";
 import { CommandPalette } from "@/features/palette";
 import { CorporateShell } from "./corporate/CorporateShell";
@@ -69,27 +71,86 @@ function RailLink({ route }: { route: RouteDefinition }) {
   );
 }
 
+/**
+ * Folded rail groups.
+ *
+ * Landing on the platform used to show all fourteen views at once, which read as
+ * the old app's feature list. Groups now start folded and only the group that
+ * contains the current page opens, so arrival is a short menu rather than a wall.
+ */
+function RailGroups() {
+  const location = useLocation();
+  const activeGroup =
+    PLATFORM_ROUTES.find((route) => route.path === location.pathname)?.group ?? null;
+
+  const [openGroups, setOpenGroups] = useState<NavGroup[]>(() =>
+    activeGroup ? [activeGroup] : [],
+  );
+
+  useEffect(() => {
+    if (!activeGroup) return;
+    setOpenGroups((current) =>
+      current.includes(activeGroup) ? current : [...current, activeGroup],
+    );
+  }, [activeGroup]);
+
+  function toggle(group: NavGroup) {
+    setOpenGroups((current) =>
+      current.includes(group) ? current.filter((value) => value !== group) : [...current, group],
+    );
+  }
+
+  return (
+    <nav aria-label="Main" className="ig-scroll-y mt-5 min-h-0 flex-1 space-y-3 overflow-y-auto pr-1">
+      {NAV_GROUPS.map((group) => {
+        const routes = platformRoutesByGroup(group);
+        if (routes.length === 0) return null;
+        const isOpen = openGroups.includes(group);
+        const isActive = activeGroup === group;
+        const panelId = `rail-group-${group.replace(/\s+/g, "-").toLowerCase()}`;
+
+        return (
+          <div key={group}>
+            <button
+              type="button"
+              onClick={() => toggle(group)}
+              aria-expanded={isOpen}
+              aria-controls={panelId}
+              className={clsx(
+                "flex w-full items-center gap-1.5 rounded-control px-2.5 py-1.5 text-left text-xs font-medium transition-colors",
+                isActive ? "text-ig-frost" : "text-ig-muted",
+                "hover:bg-ig-raised hover:text-ig-frost",
+              )}
+            >
+              <ChevronRight
+                size={13}
+                aria-hidden="true"
+                className={clsx(
+                  "shrink-0 transition-transform duration-150",
+                  isOpen ? "rotate-90" : "rotate-0",
+                )}
+              />
+              <span className="flex-1 truncate">{group}</span>
+              <span className="ig-num text-[11px] leading-none text-ig-muted">{routes.length}</span>
+            </button>
+
+            <div id={panelId} hidden={!isOpen} className="mt-0.5 space-y-0.5">
+              {routes.map((route) => (
+                <RailLink key={route.path} route={route} />
+              ))}
+            </div>
+          </div>
+        );
+      })}
+    </nav>
+  );
+}
+
 function SideRail({ onOpenPalette, onOpenAsk }: { onOpenPalette: () => void; onOpenAsk: () => void }) {
   return (
     <aside className="sticky top-0 hidden h-dvh w-[236px] shrink-0 flex-col border-r border-ig-line bg-ig-vacuum px-3 py-4 lg:flex">
       <Brand />
-
-      <nav aria-label="Main" className="ig-scroll-y mt-5 min-h-0 flex-1 space-y-5 overflow-y-auto pr-1">
-        {NAV_GROUPS.map((group) => {
-          const routes = platformRoutesByGroup(group);
-          if (routes.length === 0) return null;
-          return (
-            <div key={group}>
-              <p className="px-2.5 pb-1.5 text-xs font-medium text-ig-muted">{group}</p>
-              <div className="space-y-0.5">
-                {routes.map((route) => (
-                  <RailLink key={route.path} route={route} />
-                ))}
-              </div>
-            </div>
-          );
-        })}
-      </nav>
+      <RailGroups />
 
       <div className="mt-4 space-y-2 border-t border-ig-line pt-3">
         <button
@@ -205,6 +266,9 @@ function MobileTabs({ onMore }: { onMore: () => void }) {
 
 function MoreSheet({ open, onClose }: { open: boolean; onClose: () => void }) {
   const { setDrawerOpen } = useIgnis();
+  const location = useLocation();
+  const activeGroup =
+    PLATFORM_ROUTES.find((route) => route.path === location.pathname)?.group ?? null;
 
   useEffect(() => {
     if (!open) return;
@@ -237,24 +301,40 @@ function MoreSheet({ open, onClose }: { open: boolean; onClose: () => void }) {
             <X size={16} aria-hidden="true" />
           </button>
         </div>
-        <div className="grid grid-cols-2 gap-1">
-          {NAV_GROUPS.flatMap((group) =>
-            platformRoutesByGroup(group).map((route) => {
-              const Icon = route.icon;
-              return (
-                <Link
-                  key={route.path}
-                  to={route.path}
-                  onClick={onClose}
-                  className="flex min-h-11 items-center gap-2 rounded-control px-2.5 text-sm text-ig-muted hover:bg-ig-raised hover:text-ig-frost"
-                >
-                  <Icon size={16} aria-hidden="true" />
-                  {route.label}
-                </Link>
-              );
-            }),
-          )}
+
+        <div className="space-y-2">
+          {NAV_GROUPS.map((group) => {
+            const routes = platformRoutesByGroup(group);
+            if (routes.length === 0) return null;
+            return (
+              <Collapsible
+                key={group}
+                title={group}
+                summary={`${routes.length} ${routes.length === 1 ? "view" : "views"}`}
+                defaultOpen={group === activeGroup}
+                headingLevel={2}
+              >
+                <div className="space-y-0.5">
+                  {routes.map((route) => {
+                    const Icon = route.icon;
+                    return (
+                      <Link
+                        key={route.path}
+                        to={route.path}
+                        onClick={onClose}
+                        className="flex min-h-11 items-center gap-2 rounded-control px-2.5 text-sm text-ig-muted hover:bg-ig-raised hover:text-ig-frost"
+                      >
+                        <Icon size={16} aria-hidden="true" />
+                        {route.label}
+                      </Link>
+                    );
+                  })}
+                </div>
+              </Collapsible>
+            );
+          })}
         </div>
+
         <button
           type="button"
           onClick={() => {

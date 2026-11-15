@@ -17,7 +17,8 @@ test.describe("experience shell", () => {
     await expect(page.getByRole("heading", { level: 1 })).toContainText(
       "Fire behaves differently when nothing falls",
     );
-    await expect(page.getByText("NASA records with sources")).toBeVisible();
+    await expect(page.getByText("Verified records")).toBeVisible();
+    await expect(page.getByRole("link", { name: "Enter workspace" })).toBeVisible();
 
     const orb = page.locator('svg[aria-label^="Schematic flame shape"] path');
     const before = await orb.getAttribute("d");
@@ -129,6 +130,11 @@ test.describe("mobile shell", () => {
     await tabs.getByRole("button", { name: "More" }).click();
     const sheet = page.getByRole("dialog", { name: "All views" });
     await expect(sheet).toBeVisible();
+
+    // Views used to be one flat list; groups now start folded so the sheet opens
+    // as five short sections. The current group is the only one prefilled.
+    await expect(sheet.getByRole("link", { name: "Method" })).toHaveCount(0);
+    await sheet.getByRole("button", { name: /^Resources/ }).click();
     await expect(sheet.getByRole("link", { name: "Method" })).toBeVisible();
 
     await sheet.getByRole("link", { name: "Glossary" }).click();

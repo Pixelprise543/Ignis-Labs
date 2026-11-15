@@ -1,101 +1,129 @@
 import { ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
-import { Badge, Card, CardContent } from "@/design-system";
+import { Badge, Card, CardContent, Collapsible } from "@/design-system";
 
-const solutions = [
+const SOLUTIONS = [
   {
     id: "aerospace",
-    title: "Aerospace Research",
-    problem: "Combustion research is scattered across publications, datasets and technical reports spanning decades. Finding the right experiment for a lunar habitat design is slow.",
-    solution: "Ignis indexes 20 verified NASA microgravity combustion experiments with full findings, conditions and sources in one searchable library.",
-    features: ["Experiment library search", "Scenario-based filtering", "Evidence gap identification"],
-    limitation: "Dataset covers microgravity only; lunar/Mars results are extrapolations.",
+    title: "Aerospace research",
+    summary: "Find the one experiment that fits your habitat design question.",
+    problem:
+      "Combustion results are scattered across decades of publications, datasets and technical reports, so finding the right experiment is slow.",
+    solution:
+      "Twenty verified NASA microgravity experiments, with findings, conditions and sources, in one searchable library.",
+    features: ["Library search", "Scenario filters", "Gap identification"],
+    limitation: "Dataset covers microgravity only. Lunar and Mars results are extrapolations.",
   },
   {
     id: "fire-safety",
-    title: "Spacecraft Fire-Safety Research",
-    problem: "Fire behaves differently in microgravity - no buoyant plume, unpredictable flame spread, hidden smouldering. Designing fire-safe cabins requires evidence specific to space conditions.",
-    solution: "Rank experiments by relevance to your scenario, compare materials across gravity regimes, and generate crew response playbooks with cited evidence.",
-    features: ["Scenario-based ranking", "Material risk matrix", "Crew response playbooks", "Coverage gap analysis"],
-    limitation: "No partial-gravity flight data exists; lunar and Mars habitats are extrapolations.",
+    title: "Spacecraft fire safety",
+    summary: "Rank evidence by scenario and turn it into a crew playbook.",
+    problem:
+      "No buoyant plume, unpredictable spread and hidden smouldering mean cabin fire safety needs space-specific evidence.",
+    solution:
+      "Rank experiments for your scenario, compare materials across gravity regimes, and generate crew response steps with cited evidence.",
+    features: ["Scenario ranking", "Material risk matrix", "Crew playbooks"],
+    limitation: "No partial-gravity flight data exists. Lunar and Mars habitat views extrapolate.",
   },
   {
     id: "academic",
-    title: "Academic Research",
-    problem: "Researchers need to compare experimental findings, verify citations and build on prior work without manually aggregating records from multiple papers.",
-    solution: "Every finding links to its experiment and source. The citation audit strips unsupported claims. Export mission safety briefs with full citation chains.",
-    features: ["Citation auditing", "Full-text experiment records", "Markdown brief export", "Source traceability"],
-    limitation: "20 experiments only; does not cover all combustion research domains.",
+    title: "Academic research",
+    summary: "Every finding links back to its experiment and source.",
+    problem:
+      "Comparing findings and verifying citations usually means manually aggregating records from many papers.",
+    solution:
+      "Each finding links to its experiment and source. The citation audit strips unsupported claims before anything is shown.",
+    features: ["Citation auditing", "Full records", "Markdown export"],
+    limitation: "Twenty experiments only. It does not cover every combustion domain.",
   },
   {
     id: "engineering",
     title: "Engineering R&D",
-    problem: "Engineers need to know how materials behave at specific gravity, oxygen and pressure combinations before building flight hardware.",
-    solution: "Run what-if simulations with the material risk matrix and simulator. See explained risk drivers and nearest supporting experiments for any condition.",
-    features: ["Material × scenario risk matrix", "What-if risk simulator", "Nearest experiment matching"],
+    summary: "Check a material at a specific gravity, oxygen and pressure.",
+    problem:
+      "Engineers need material behaviour at a given condition before hardware is built.",
+    solution:
+      "Run a what-if with the material matrix and the simulator. See the risk drivers and the nearest supporting experiments.",
+    features: ["Material matrix", "What-if simulator", "Nearest evidence"],
     limitation: "Scores are qualitative indices, not physics simulations.",
   },
   {
     id: "knowledge",
-    title: "Scientific Knowledge Management",
-    problem: "Research teams need a single source of truth for combustion findings, glossary terms and methodology without hunting through PDFs.",
-    solution: "Glossary with inline tooltips, methodology documentation, timeline of combustion research, and a unified data model for all records.",
-    features: ["21-term glossary", "Research timeline", "Methodology documentation", "Unified data contract"],
-    limitation: "Curated scope - focused on microgravity combustion, not all aerospace research.",
+    title: "Knowledge management",
+    summary: "One glossary, one timeline, one cited data model.",
+    problem:
+      "Teams need a single source of truth for terms, findings and method without hunting through PDFs.",
+    solution:
+      "Plain-language glossary with inline tooltips, a research timeline, and method notes that explain every score.",
+    features: ["Glossary", "Timeline", "Method notes"],
+    limitation: "Curated scope, focused on microgravity combustion.",
   },
 ];
 
 export function SolutionsPage() {
   return (
-    <div className="space-y-12">
-      <section className="rounded-panel border border-ig-line bg-ig-hull p-8 lg:p-12">
-        <div className="grid gap-6 lg:grid-cols-12">
-          <div className="lg:col-span-7">
-            <p className="text-[10px] font-semibold text-ig-muted uppercase tracking-wider">Solutions</p>
-            <h1 className="mt-2 max-w-2xl text-3xl font-semibold leading-tight text-ig-frost lg:text-4xl">Research problems Ignis addresses</h1>
-            <p className="mt-4 max-w-xl text-sm leading-6 text-ig-muted">Select a problem area to see how Ignis helps, which platform features support it, and what limitations remain.</p>
-          </div>
-        </div>
+    <div className="space-y-8">
+      <section className="rounded-panel border border-ig-line bg-ig-hull p-6 lg:p-10">
+        <p className="text-xs font-medium text-ig-muted">Solutions</p>
+        <h1 className="mt-2 max-w-2xl text-3xl font-semibold leading-tight text-ig-frost lg:text-4xl">
+          Research problems Ignis addresses.
+        </h1>
+        <p className="mt-3 max-w-md text-sm leading-6 text-ig-muted">
+          Five problem areas. Open one to see the fix and the limit.
+        </p>
       </section>
 
-      <section className="grid gap-4">
-        {solutions.map((sol) => (
-          <Card key={sol.id} bordered padding="md" className="group hover:bg-ig-raised transition-colors">
+      <section className="grid gap-2">
+        {SOLUTIONS.map((solution) => (
+          <Card key={solution.id} bordered padding="none">
             <CardContent>
-              <div className="flex flex-col gap-4">
-                <div className="flex items-start justify-between gap-3">
-                  <div>
-                    <h3 className="text-sm font-semibold text-ig-frost">{sol.title}</h3>
-                    <p className="text-sm leading-6 text-ig-muted">{sol.problem}</p>
+              <Collapsible
+                tone="plain"
+                className="px-4"
+                title={solution.title}
+                summary={solution.summary}
+                openLabel="Details"
+                closeLabel="Close"
+              >
+                <div className="space-y-3 pb-1">
+                  <p>
+                    <span className="font-medium text-ig-frost">Problem.</span> {solution.problem}
+                  </p>
+                  <p>
+                    <span className="font-medium text-ig-frost">What Ignis does.</span>{" "}
+                    {solution.solution}
+                  </p>
+                  <div className="flex flex-wrap gap-1.5">
+                    {solution.features.map((feature) => (
+                      <Badge key={feature} tone="neutral">
+                        {feature}
+                      </Badge>
+                    ))}
                   </div>
-                  <Badge tone="amber" className="text-[10px]">Scenario-dependent</Badge>
+                  <p className="rounded-control border border-ig-amber px-3 py-2 text-xs leading-5 text-ig-amber">
+                    <span className="font-semibold">Limit.</span> {solution.limitation}
+                  </p>
                 </div>
-                <p className="text-sm text-ig-frost">{sol.solution}</p>
-                <div className="mt-4 flex flex-wrap gap-2">{sol.features.map((f) => <Badge key={f} tone="neutral" className="text-[10px]">{f}</Badge>)}</div>
-                <div className="mt-3 rounded-control border border-[var(--ig-amber)] bg-[var(--ig-hull)]/50 px-3 py-2 text-[10px] text-ig-amber">
-                  <span className="font-semibold">Limitation:</span> {sol.limitation}
-                </div>
-              </div>
+              </Collapsible>
             </CardContent>
           </Card>
         ))}
       </section>
 
-      <section className="rounded-panel border border-ig-line bg-ig-hull p-8 lg:p-10">
-        <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4">
-          <div>
-            <p className="text-[10px] font-semibold text-ig-muted uppercase tracking-wider">Honesty about scope</p>
-            <h2 className="mt-2 text-xl font-semibold text-ig-frost">What Ignis does not claim</h2>
-            <ul className="mt-3 text-sm leading-6 text-ig-muted space-y-2">
-              <li>No claim that NASA, aerospace contractors or research institutions currently use Ignis.</li>
-              <li>No claim that partial-gravity fire behaviour is measured - only microgravity data exists.</li>
-              <li>No claim that scores predict ignition or fire spread in real cabins.</li>
-            </ul>
-          </div>
-          <div className="flex justify-end">
-            <Link to="/app/explore" className="inline-flex h-10 items-center gap-2 rounded-control bg-ig-flame-blue px-4 text-sm font-medium text-ig-on-accent hover:bg-ig-amber">Start exploring<ArrowRight size={15} aria-hidden="true" /></Link>
-          </div>
-        </div>
+      <section className="rounded-panel border border-ig-line bg-ig-hull p-6 lg:p-8">
+        <h2 className="text-base font-semibold text-ig-frost">What Ignis does not claim</h2>
+        <ul className="mt-3 list-disc space-y-1.5 pl-5 text-sm leading-6 text-ig-muted">
+          <li>No claim that NASA, aerospace contractors or research institutions use Ignis.</li>
+          <li>No claim that partial-gravity fire behaviour is measured. Only microgravity data exists.</li>
+          <li>No claim that scores predict ignition or fire spread in a real cabin.</li>
+        </ul>
+        <Link
+          to="/app"
+          className="mt-5 inline-flex h-10 items-center gap-2 rounded-control bg-ig-flame-blue px-4 text-sm font-medium text-ig-on-accent hover:bg-ig-amber"
+        >
+          Open platform
+          <ArrowRight size={15} aria-hidden="true" />
+        </Link>
       </section>
     </div>
   );

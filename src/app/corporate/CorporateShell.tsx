@@ -11,7 +11,7 @@ function Brand() {
       </span>
       <span className="min-w-0">
         <span className="block text-sm font-semibold leading-tight text-ig-frost">Ignis Labs</span>
-        <span className="block text-[10px] leading-tight text-ig-muted uppercase tracking-wider">Scientific intelligence</span>
+        <span className="block text-xs leading-tight text-ig-muted">Scientific intelligence</span>
       </span>
     </NavLink>
   );
@@ -29,7 +29,7 @@ function NavLinkItem({ route }: { route: typeof CORPORATE_ROUTES[number] }) {
 }
 
 /**
- * Marketing chrome for the corporate pages. "Launch Platform" is the single
+ * Marketing chrome for the corporate pages. "Open platform" is the single
  * entry point into the research app and always lands on the mission overview,
  * never on a deep view.
  */
@@ -61,7 +61,7 @@ export function CorporateShell({ children }: { children: React.ReactNode }) {
               className="hidden h-8 items-center gap-2 rounded-control bg-ig-flame-blue px-4 text-xs font-medium text-ig-on-accent hover:bg-ig-amber lg:inline-flex"
             >
               <Sparkles size={13} aria-hidden="true" />
-              Launch Platform
+              Open platform
             </NavLink>
             <button
               type="button"
@@ -113,7 +113,7 @@ export function CorporateShell({ children }: { children: React.ReactNode }) {
                 onClick={() => setMenuOpen(false)}
                 className="flex h-11 w-full items-center justify-center gap-2 rounded-control bg-ig-flame-blue text-sm font-medium text-ig-on-accent hover:bg-ig-amber"
               >
-                Launch Platform
+                Open platform
                 <ArrowRight size={15} aria-hidden="true" />
               </NavLink>
             </div>

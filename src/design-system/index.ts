@@ -28,4 +28,7 @@ export type { TermProps } from "./Term";
 export { CitationChip } from "./CitationChip";
 export type { CitationChipProps } from "./CitationChip";
 
+export { Collapsible } from "./Collapsible";
+export type { CollapsibleProps } from "./Collapsible";
+
 export { ThemeToggle } from "./ThemeToggle";

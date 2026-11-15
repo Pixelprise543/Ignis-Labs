@@ -3,7 +3,7 @@ import { useMemo } from "react";
 import type { Severity } from "@/contracts/types";
 import { Link } from "react-router-dom";
 import { getExperiments, getInsights, useIgnis } from "@/app/data";
-import { Badge, Button, Card, CardContent, CardFooter } from "@/design-system";
+import { Badge, Button, Card, CardContent } from "@/design-system";
 import { InsightCard } from "@/features/insights/InsightCard";
 import { FlameOrb } from "./Orb";
 
@@ -15,28 +15,17 @@ const SEVERITY_ORDER: Record<Severity, number> = {
 };
 
 const ENTRY_POINTS = [
-  {
-    to: "/app/explore",
-    title: "Explore the library",
-    text: "Search NASA fire experiments by fuel, facility, gravity regime and oxygen band.",
-  },
-  {
-    to: "/app/simulator",
-    title: "Run a what-if",
-    text: "Change gravity, oxygen, pressure and flow to see the explained risk drivers.",
-  },
-  {
-    to: "/app/brief",
-    title: "Mission safety brief",
-    text: "Export a cited Markdown brief for your crew or reviewer.",
-  },
-  {
-    to: "/app/insights",
-    title: "Fire-safety insights",
-    text: "Read evidence-linked findings tuned to your scenario.",
-  },
+  { to: "/app/explore", title: "Explore", text: "Search the experiment library." },
+  { to: "/app/simulator", title: "Simulator", text: "Test a cabin condition." },
+  { to: "/app/brief", title: "Brief", text: "Export a cited safety brief." },
+  { to: "/app/insights", title: "Insights", text: "Read what the evidence says." },
 ];
 
+/**
+ * Platform landing. Deliberately short: three numbers, three insights, four
+ * doors. Every list and caveat lives one click deeper so arriving here does not
+ * feel like opening the whole old app at once.
+ */
 export function HomePage() {
   const { scenario, setDrawerOpen } = useIgnis();
   const experiments = getExperiments();
@@ -55,28 +44,48 @@ export function HomePage() {
 
   const verified = experiments.filter((experiment) => experiment.confidence === "verified").length;
 
+  const stats = [
+    { label: "Experiments", value: experiments.length },
+    { label: "Verified records", value: verified },
+    { label: "Insights now", value: insights.length },
+  ];
+
   return (
-    <div className="space-y-12">
+    <div className="space-y-8">
       {/* Hero */}
-      <section className="rounded-panel border border-ig-line bg-ig-hull p-8 lg:p-12">
+      <section className="rounded-panel border border-ig-line bg-ig-hull p-6 lg:p-10">
         <div className="grid gap-6 lg:grid-cols-12">
           <div className="lg:col-span-7">
-            <p className="text-[10px] font-semibold text-ig-muted uppercase tracking-wider">
-              Mission overview
-            </p>
+            <p className="text-xs font-medium text-ig-muted">Mission overview</p>
             <h1 className="mt-2 max-w-2xl text-3xl font-semibold leading-tight text-ig-frost lg:text-4xl">
               Fire behaves differently when nothing falls.
             </h1>
-            <p className="mt-4 max-w-xl text-sm leading-6 text-ig-muted">
-              Ignis turns decades of microgravity combustion research into fire-safety answers for the
-              Moon and Mars. Pick a scenario once and every view follows it.
+            <p className="mt-3 max-w-md text-sm leading-6 text-ig-muted">
+              Pick a scenario once. Every ranking, insight and playbook follows it.
             </p>
+
+            <div className="mt-6 flex flex-wrap gap-3">
+              <Link
+                to="/app/explore"
+                className="inline-flex h-11 items-center gap-2 rounded-control bg-ig-flame-blue px-5 text-sm font-medium text-ig-on-accent hover:bg-ig-amber"
+              >
+                Enter workspace
+                <ArrowRight size={15} aria-hidden="true" />
+              </Link>
+              <Button
+                variant="outline"
+                size="lg"
+                icon={<Sparkles size={15} />}
+                onClick={() => setDrawerOpen(true)}
+              >
+                Ask Ignis
+              </Button>
+            </div>
           </div>
+
           <div className="lg:col-span-5 space-y-3">
             <div className="flex flex-wrap items-center gap-3">
-              <Badge tone="gold" className="text-[10px]">
-                {scenario.label}
-              </Badge>
+              <Badge tone="gold">{scenario.label}</Badge>
               <span className="ig-num text-xs leading-none text-ig-muted">
                 {scenario.gravityG.toFixed(2)}g
               </span>
@@ -87,75 +96,39 @@ export function HomePage() {
                 {scenario.pressureKPa ? scenario.pressureKPa.toFixed(1) : "—"} kPa
               </span>
               {scenario.assumption && (
-                <span className="text-[10px] font-medium text-ig-ember">Assumed values — verify</span>
+                <span className="text-xs font-medium text-ig-ember">Assumed — verify</span>
               )}
             </div>
             <FlameOrb gravityG={scenario.gravityG} scenarioLabel={scenario.label} />
           </div>
         </div>
-
-        <div className="mt-8 flex flex-wrap gap-3 lg:mt-10">
-          <Link
-            to="/app/explore"
-            className="inline-flex h-11 items-center gap-2 rounded-control bg-ig-flame-blue px-5 text-sm font-medium text-ig-on-accent hover:bg-ig-amber"
-          >
-            Explore the evidence
-            <ArrowRight size={15} aria-hidden="true" />
-          </Link>
-          <Button variant="outline" size="lg" icon={<Sparkles size={15} />} onClick={() => setDrawerOpen(true)}>
-            Ask Ignis
-          </Button>
-        </div>
       </section>
 
-      {/* Stats */}
-      <section aria-label="Dataset at a glance" className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-        <Card padding="md" bordered>
-          <CardContent>
-            <p className="text-xs font-medium text-ig-muted">Experiments</p>
-            <p className="mt-1 text-2xl font-semibold text-ig-frost">{experiments.length}</p>
-            <p className="mt-0.5 text-[10px] text-ig-muted">NASA records with sources</p>
-          </CardContent>
-        </Card>
-        <Card padding="md" bordered>
-          <CardContent>
-            <p className="text-xs font-medium text-ig-muted">Verified</p>
-            <p className="mt-1 text-2xl font-semibold text-ig-frost">{verified}</p>
-            <p className="mt-0.5 text-[10px] text-ig-muted">From cited NASA sources</p>
-          </CardContent>
-        </Card>
-        <Card padding="md" bordered>
-          <CardContent>
-            <p className="text-xs font-medium text-ig-muted">Insights</p>
-            <p className="mt-1 text-2xl font-semibold text-ig-frost">{insights.length}</p>
-            <p className="mt-0.5 text-[10px] text-ig-muted">For this scenario</p>
-          </CardContent>
-        </Card>
-        <Card padding="md" bordered>
-          <CardContent>
-            <p className="text-xs font-medium text-ig-muted">Evidence links</p>
-            <p className="mt-1 text-2xl font-semibold text-ig-frost">{insights.length}</p>
-            <p className="mt-0.5 text-[10px] text-ig-muted">Traceable, not invented</p>
-          </CardContent>
-        </Card>
+      {/* Three numbers, nothing else */}
+      <section aria-label="Dataset at a glance" className="grid grid-cols-3 gap-3">
+        {stats.map((stat) => (
+          <Card key={stat.label} padding="sm" bordered>
+            <CardContent>
+              <p className="ig-num text-2xl font-semibold leading-none text-ig-frost">
+                {stat.value}
+              </p>
+              <p className="mt-2 text-xs leading-4 text-ig-muted">{stat.label}</p>
+            </CardContent>
+          </Card>
+        ))}
       </section>
 
       {/* Top insights */}
       <section aria-labelledby="top-insights">
-        <div className="mb-6 flex flex-wrap items-end justify-between gap-3">
-          <div>
-            <h2 id="top-insights" className="text-sm font-semibold text-ig-frost">
-              Top insights for {scenario.label}
-            </h2>
-            <p className="mt-0.5 text-[10px] text-ig-muted">
-              Sorted by severity, then confidence. Change the scenario bar to reshuffle.
-            </p>
-          </div>
+        <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+          <h2 id="top-insights" className="text-base font-semibold text-ig-frost">
+            Top insights for {scenario.label}
+          </h2>
           <Link
             to="/app/insights"
-            className="inline-flex items-center gap-1 text-[10px] font-medium text-ig-flame-blue hover:underline"
+            className="inline-flex items-center gap-1 text-sm font-medium text-ig-flame-blue hover:underline"
           >
-            All insights <ArrowRight size={11} aria-hidden="true" />
+            All insights <ArrowRight size={13} aria-hidden="true" />
           </Link>
         </div>
 
@@ -166,7 +139,7 @@ export function HomePage() {
             </CardContent>
           </Card>
         ) : (
-          <div className="grid gap-4 lg:grid-cols-3">
+          <div className="grid gap-3 lg:grid-cols-3">
             {topInsights.map((insight) => (
               <InsightCard key={insight.id} insight={insight} compact showActions={false} />
             ))}
@@ -174,35 +147,29 @@ export function HomePage() {
         )}
       </section>
 
-      {/* Entry points */}
+      {/* Four doors */}
       <section aria-labelledby="entry-points">
-        <h2 id="entry-points" className="text-sm font-semibold text-ig-frost">Go deeper</h2>
-        <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        <h2 id="entry-points" className="mb-3 text-base font-semibold text-ig-frost">
+          Go deeper
+        </h2>
+        <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
           {ENTRY_POINTS.map((entry) => (
             <Link
               key={entry.to}
               to={entry.to}
-              className="block"
+              className="group flex items-center justify-between gap-3 rounded-panel border border-ig-line bg-ig-vacuum px-4 py-3 hover:bg-ig-raised"
             >
-              <Card
-                bordered
-                padding="none"
-                className="group hover:bg-ig-raised transition-colors"
-              >
-                <CardContent>
-                  <div className="p-5">
-                    <span className="text-sm font-medium text-ig-frost group-hover:text-ig-flame-blue">
-                      {entry.title}
-                    </span>
-                    <p className="mt-1 text-[10px] leading-5 text-ig-muted">{entry.text}</p>
-                  </div>
-                </CardContent>
-                <CardFooter>
-                  <span className="text-[10px] font-medium text-ig-flame-blue hover:underline flex items-center gap-1">
-                    Open <ArrowRight size={11} aria-hidden="true" />
-                  </span>
-                </CardFooter>
-              </Card>
+              <span className="min-w-0">
+                <span className="block text-sm font-medium text-ig-frost group-hover:text-ig-flame-blue">
+                  {entry.title}
+                </span>
+                <span className="mt-0.5 block text-xs leading-4 text-ig-muted">{entry.text}</span>
+              </span>
+              <ArrowRight
+                size={14}
+                aria-hidden="true"
+                className="shrink-0 text-ig-muted group-hover:text-ig-flame-blue"
+              />
             </Link>
           ))}
         </div>

@@ -3,7 +3,7 @@ import type { LucideIcon } from "lucide-react";
 import { useMemo } from "react";
 import type { PlaybookStep } from "@/contracts/types";
 import { getPlaybook, useIgnis } from "@/app/data";
-import { Button, CitationChip, Panel } from "@/design-system";
+import { Button, CitationChip, Collapsible } from "@/design-system";
 
 type Phase = PlaybookStep["phase"];
 
@@ -94,7 +94,9 @@ export function PlaybookPage() {
 
           return (
             <li key={phase.id}>
-              <Panel
+              <Collapsible
+                tone="panel"
+                defaultOpen={phaseIndex === 0}
                 title={
                   <span className="inline-flex items-center gap-2">
                     <Icon size={15} aria-hidden="true" className="text-ig-flame-blue" />
@@ -104,7 +106,9 @@ export function PlaybookPage() {
                     </span>
                   </span>
                 }
-                description={phase.headline}
+                summary={phase.headline}
+                openLabel={`${steps.length} ${steps.length === 1 ? "step" : "steps"}`}
+                closeLabel="Close"
               >
                 <ol className="space-y-3">
                   {steps.map((step, index) => (
@@ -123,7 +127,7 @@ export function PlaybookPage() {
                           <p className="text-sm font-medium leading-6 text-ig-frost">{step.action}</p>
                           <p className="mt-1 text-sm leading-6 text-ig-muted">{step.rationale}</p>
                           <div className="mt-2 flex flex-wrap items-center gap-1.5">
-                            <span className="text-[11px] text-ig-muted">Evidence</span>
+                            <span className="text-xs text-ig-muted">Evidence</span>
                             {step.evidenceIds.map((id) => (
                               <CitationChip key={id} id={id} />
                             ))}
@@ -133,25 +137,23 @@ export function PlaybookPage() {
                     </li>
                   ))}
                 </ol>
-              </Panel>
+              </Collapsible>
             </li>
           );
         })}
       </ol>
 
-      <Panel title="Caveats" description="What this playbook is not.">
+      <Collapsible title="Caveats" summary="What this playbook is not.">
         <ul className="space-y-2">
           {playbook.caveats.map((caveat) => (
-            <li key={caveat} className="text-sm leading-6 text-ig-muted">
-              {caveat}
-            </li>
+            <li key={caveat}>{caveat}</li>
           ))}
-          <li className="text-sm leading-6 text-ig-muted">
+          <li>
             Atmosphere values come from the scenario bar. A real crew response uses the vehicle's
             current readings, not a planning baseline.
           </li>
         </ul>
-      </Panel>
+      </Collapsible>
     </div>
   );
 }
