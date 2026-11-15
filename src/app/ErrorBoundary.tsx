@@ -28,7 +28,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
   render() {
     if (this.state.error) {
       return (
-        <div className="grid min-h-dvh place-items-center bg-ig-vacuum p-6">
+        <div className="grid min-h-dvh place-items-center p-6">
           <EmptyState
             className="max-w-xl"
             title="Something went wrong"

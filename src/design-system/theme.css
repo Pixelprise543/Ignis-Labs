@@ -206,8 +206,11 @@
     backface-visibility: hidden;
   }
 
-  /* A sheet with no rim, for cards that sit inside another sheet. */
-  .ig-glass--borderless {
+  /* A sheet with no rim, for surfaces that sit flush against a viewport edge
+     (the left rail, the mobile header) and keep a single 1px hairline instead.
+     Two classes, so it beats .ig-glass-nav's ring regardless of source order. */
+  .ig-glass.ig-glass--borderless,
+  .ig-glass-nav.ig-glass--borderless {
     box-shadow: none;
   }
 

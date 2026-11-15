@@ -22,7 +22,7 @@ function Brand({ compact = false }: { compact?: boolean }) {
   return (
     <Link
       to={PLATFORM_HOME}
-      className="flex items-center gap-2.5 rounded-control p-1 hover:bg-ig-raised"
+      className="flex items-center gap-2.5 rounded-control p-1 hover:bg-ig-glass-hover"
     >
       <span
         aria-hidden="true"
@@ -50,8 +50,8 @@ function RailLink({ route }: { route: RouteDefinition }) {
         clsx(
           "relative flex h-9 items-center gap-2.5 rounded-control px-2.5 text-sm transition-colors",
           isActive
-            ? "bg-ig-raised font-medium text-ig-frost"
-            : "text-ig-muted hover:bg-ig-raised hover:text-ig-frost",
+            ? "bg-ig-glass-pressed font-medium text-ig-frost"
+            : "text-ig-muted hover:bg-ig-glass-hover hover:text-ig-frost",
         )
       }
     >
@@ -119,7 +119,7 @@ function RailGroups() {
               className={clsx(
                 "flex w-full items-center gap-1.5 rounded-control px-2.5 py-1.5 text-left text-xs font-medium transition-colors",
                 isActive ? "text-ig-frost" : "text-ig-muted",
-                "hover:bg-ig-raised hover:text-ig-frost",
+                "hover:bg-ig-glass-hover hover:text-ig-frost",
               )}
             >
               <ChevronRight
@@ -148,7 +148,7 @@ function RailGroups() {
 
 function SideRail({ onOpenPalette, onOpenAsk }: { onOpenPalette: () => void; onOpenAsk: () => void }) {
   return (
-    <aside className="sticky top-0 hidden h-dvh w-[236px] shrink-0 flex-col border-r border-ig-line bg-ig-vacuum px-3 py-4 lg:flex">
+    <aside className="ig-glass-nav ig-glass--borderless sticky top-0 hidden h-dvh w-[236px] shrink-0 flex-col border-r border-ig-line px-3 py-4 lg:flex">
       <Brand />
       <RailGroups />
 
@@ -164,19 +164,19 @@ function SideRail({ onOpenPalette, onOpenAsk }: { onOpenPalette: () => void; onO
         <button
           type="button"
           onClick={onOpenPalette}
-          className="flex h-9 w-full items-center justify-between gap-2 rounded-control px-2.5 text-sm text-ig-muted hover:bg-ig-raised hover:text-ig-frost"
+          className="flex h-9 w-full items-center justify-between gap-2 rounded-control px-2.5 text-sm text-ig-muted hover:bg-ig-glass-hover hover:text-ig-frost"
         >
           <span className="inline-flex items-center gap-2">
             <CommandIcon size={16} aria-hidden="true" />
             Command palette
           </span>
-          <kbd className="rounded-control border border-ig-line px-1.5 py-0.5 text-[10px] text-ig-muted">
+          <kbd className="rounded-control border border-ig-glass-field-rim bg-ig-glass-field px-1.5 py-0.5 text-[10px] text-ig-muted">
             ⌘K
           </kbd>
         </button>
         <Link
           to="/"
-          className="flex h-9 w-full items-center gap-2 rounded-control px-2.5 text-sm text-ig-muted hover:bg-ig-raised hover:text-ig-frost"
+          className="flex h-9 w-full items-center gap-2 rounded-control px-2.5 text-sm text-ig-muted hover:bg-ig-glass-hover hover:text-ig-frost"
         >
           Ignis Labs site
         </Link>
@@ -193,14 +193,14 @@ function MobileHeader({
   onOpenAsk: () => void;
 }) {
   return (
-    <div className="flex items-center justify-between gap-2 border-b border-ig-line bg-ig-vacuum px-3 py-2 lg:hidden">
+    <div className="ig-glass-nav ig-glass--borderless flex items-center justify-between gap-2 border-b border-ig-line px-3 py-2 lg:hidden">
       <Brand compact />
       <div className="flex items-center gap-1">
         <button
           type="button"
           onClick={onOpenPalette}
           aria-label="Open command palette"
-          className="inline-flex h-9 w-9 items-center justify-center rounded-control text-ig-muted hover:bg-ig-raised hover:text-ig-frost"
+          className="inline-flex h-9 w-9 items-center justify-center rounded-control text-ig-muted hover:bg-ig-glass-hover hover:text-ig-frost"
         >
           <CommandIcon size={18} aria-hidden="true" />
         </button>
@@ -221,7 +221,7 @@ function MobileTabs({ onMore }: { onMore: () => void }) {
   return (
     <nav
       aria-label="Main"
-      className="fixed inset-x-0 bottom-0 z-30 grid grid-cols-5 border-t border-ig-line bg-ig-vacuum pb-[env(safe-area-inset-bottom)] lg:hidden"
+      className="ig-glass-nav fixed inset-x-2 bottom-[calc(0.5rem+env(safe-area-inset-bottom))] z-30 grid grid-cols-5 rounded-panel lg:hidden"
     >
       {MOBILE_TABS.map((route) => {
         const Icon = route.icon;
@@ -283,12 +283,12 @@ function MoreSheet({ open, onClose }: { open: boolean; onClose: () => void }) {
 
   return (
     <div className="fixed inset-0 z-50 flex flex-col justify-end lg:hidden">
-      <div aria-hidden="true" className="absolute inset-0 bg-ig-vacuum/80" onClick={onClose} />
+      <div aria-hidden="true" className="ig-glass-scrim absolute inset-0" onClick={onClose} />
       <div
         role="dialog"
         aria-modal="true"
         aria-label="All views"
-        className="relative max-h-[80dvh] overflow-y-auto rounded-t-panel border border-ig-line bg-ig-hull p-4 pb-[calc(1rem+env(safe-area-inset-bottom))]"
+        className="ig-glass-overlay relative m-2 max-h-[80dvh] overflow-y-auto rounded-panel p-4 pb-[calc(1rem+env(safe-area-inset-bottom))]"
       >
         <div className="mb-3 flex items-center justify-between">
           <p className="text-sm font-semibold text-ig-frost">All views</p>
@@ -296,7 +296,7 @@ function MoreSheet({ open, onClose }: { open: boolean; onClose: () => void }) {
             type="button"
             onClick={onClose}
             aria-label="Close menu"
-            className="inline-flex h-8 w-8 items-center justify-center rounded-control text-ig-muted hover:bg-ig-raised hover:text-ig-frost"
+            className="inline-flex h-8 w-8 items-center justify-center rounded-control text-ig-muted hover:bg-ig-glass-hover hover:text-ig-frost"
           >
             <X size={16} aria-hidden="true" />
           </button>
@@ -322,7 +322,7 @@ function MoreSheet({ open, onClose }: { open: boolean; onClose: () => void }) {
                         key={route.path}
                         to={route.path}
                         onClick={onClose}
-                        className="flex min-h-11 items-center gap-2 rounded-control px-2.5 text-sm text-ig-muted hover:bg-ig-raised hover:text-ig-frost"
+                        className="flex min-h-11 items-center gap-2 rounded-control px-2.5 text-sm text-ig-muted hover:bg-ig-glass-hover hover:text-ig-frost"
                       >
                         <Icon size={16} aria-hidden="true" />
                         {route.label}
@@ -349,7 +349,7 @@ function MoreSheet({ open, onClose }: { open: boolean; onClose: () => void }) {
         <Link
           to="/"
           onClick={onClose}
-          className="mt-2 flex h-10 w-full items-center justify-center rounded-control border border-ig-line text-sm text-ig-muted hover:bg-ig-raised hover:text-ig-frost"
+          className="mt-2 flex h-10 w-full items-center justify-center rounded-control border border-ig-glass-control-rim text-sm text-ig-muted hover:bg-ig-glass-hover hover:text-ig-frost"
         >
           Ignis Labs site
         </Link>
@@ -384,10 +384,10 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <div className="min-h-dvh bg-ig-vacuum">
+    <div className="min-h-dvh">
       <a
         href="#main"
-        className="sr-only focus:not-sr-only focus:fixed focus:left-3 focus:top-3 focus:z-50 focus:rounded-control focus:bg-ig-raised focus:px-3 focus:py-2 focus:text-sm focus:text-ig-frost"
+        className="sr-only focus:not-sr-only focus:fixed focus:left-3 focus:top-3 focus:z-50 focus:rounded-control focus:bg-ig-hull focus:px-3 focus:py-2 focus:text-sm focus:text-ig-frost"
       >
         Skip to content
       </a>

@@ -5,7 +5,7 @@ import type { Scenario } from "@/contracts/types";
 import { SCENARIOS, customScenario, useIgnis } from "@/app/data";
 
 const fieldClass =
-  "h-8 w-20 rounded-control border border-ig-line bg-ig-vacuum px-2 text-sm text-ig-frost ig-num";
+  "h-8 w-20 rounded-field border border-ig-glass-field-rim bg-ig-glass-field px-2 text-sm text-ig-frost ig-num";
 
 function formatGravity(value: number): string {
   if (value === 0) return "0g";
@@ -43,7 +43,7 @@ export function ScenarioBar() {
   return (
     <section
       aria-label="Active scenario"
-      className="sticky top-0 z-30 border-b border-ig-line bg-ig-vacuum"
+      className="ig-glass-nav ig-glass--borderless sticky top-0 z-30 border-b border-ig-line"
     >
       <div className="flex flex-wrap items-center gap-2 px-3 py-2 lg:px-5">
         <span className="hidden text-xs font-medium text-ig-muted sm:inline">Scenario</span>
@@ -51,7 +51,7 @@ export function ScenarioBar() {
         <div
           role="group"
           aria-label="Choose a mission scenario"
-          className="ig-scroll-x flex min-w-0 flex-1 items-center gap-1 overflow-x-auto rounded-control border border-ig-line bg-ig-hull p-1"
+          className="ig-scroll-x flex min-w-0 flex-1 items-center gap-1 overflow-x-auto rounded-control border border-ig-glass-control-rim bg-ig-glass-field p-1"
         >
           {SCENARIOS.map((entry) => {
             const active = entry.id === scenario.id;
@@ -64,8 +64,8 @@ export function ScenarioBar() {
                 className={clsx(
                   "relative h-8 shrink-0 rounded-control px-3 text-sm font-medium transition-colors",
                   active
-                    ? "bg-ig-raised text-ig-frost"
-                    : "text-ig-muted hover:bg-ig-raised hover:text-ig-frost",
+                    ? "bg-ig-glass-pressed text-ig-frost"
+                    : "text-ig-muted hover:bg-ig-glass-hover hover:text-ig-frost",
                 )}
               >
                 {active ? (
