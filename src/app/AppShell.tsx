@@ -62,16 +62,7 @@ function TopBar({ onOpenAsk }: { onOpenAsk: () => void }) {
           </nav>
         </div>
         <div className="flex items-center gap-2">
-          <Button variant="ghost" size="sm" icon={<Sparkles size={14} />} onClick={onOpenAsk}>
-            Ask
-          </Button>
-          <Button
-            variant="primary"
-            size="sm"
-            icon={<Sparkles size={13} />}
-            onClick={onOpenAsk}
-            className="hidden lg:flex px-3"
-          >
+          <Button variant="primary" size="sm" icon={<Sparkles size={13} />} onClick={onOpenAsk}>
             Ask Ignis
           </Button>
           <ThemeToggle />
