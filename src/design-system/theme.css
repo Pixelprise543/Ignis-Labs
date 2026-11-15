@@ -1,0 +1,117 @@
+@import "@fontsource-variable/inter";
+
+/* ============================================================================
+   Ignis — Ember Professional (rebuilt)
+   Dark, flat, warm-toned mission-control UI over a space/nebula background.
+   Font: Inter (from Image 1). Background: nebula (Image 2).
+   ============================================================================ */
+
+:root {
+  /* Surfaces (glass, translucent so the nebula shows through) */
+  --ig-vacuum: #0b0908;        /* app bg — warm near-black fallback */
+  --ig-hull: rgba(35, 29, 24, 0.55);   /* panels, tables — translucent warm charcoal */
+  --ig-raised: rgba(46, 38, 32, 0.65); /* hover, selected, popovers */
+  --ig-line: #40362d;          /* 1px borders, dividers */
+
+  /* Text */
+  --ig-frost: #f6efe6;         /* primary text, warm cream */
+  --ig-muted: #b3a394;         /* secondary text */
+
+  /* Accents (Ember Professional) */
+  --ig-flame-blue: #e8a24a;    /* brand, microgravity data, links, primary button (warm gold) */
+  --ig-quench: #8dbf6a;        /* low risk, partial-g (warm olive) */
+  --ig-amber: #f5b942;         /* caution, normal-g */
+  --ig-ember: #ee7b3a;         /* high risk */
+  --ig-alarm: #e5484d;         /* critical only */
+
+  /* Typography */
+  --ig-font-sans: "Inter Variable", Inter, system-ui, sans-serif;
+  --ig-font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+
+  /* Background (Image 2 — nebula). Place the file at public/nebula-bg.jpg or .svg */
+  --ig-bg-image: url("/nebula-bg.svg");
+
+  /* Radius */
+  --ig-radius-panel: 12px;
+  --ig-radius-control: 8px;
+  --ig-radius-pill: 999px;
+
+  /* z-index scale */
+  --ig-z-drawer: 50;
+  --ig-z-palette: 60;
+  --ig-z-tooltip: 70;
+}
+
+/* ============================================================================
+   Base — body is transparent so the nebula background shows through.
+   ============================================================================ */
+* {
+  box-sizing: border-box;
+}
+
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  color: var(--ig-frost);
+  font-family: var(--ig-font-sans);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Full-bleed nebula background (Image 2), fixed behind everything */
+.ig-bg {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  width: 100vw;
+  height: 100vh;
+  background: var(--ig-bg-image);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+}
+
+/* Body fallback color when image hasn't loaded */
+body {
+  background: var(--ig-vacuum);
+  min-height: 100vh;
+}
+
+/* Glass sheet — translucent warm-charcoal base + white sheen + 1px inset rim.
+   Blur lives on .ig-glass::before, never on the rim/content element. */
+.ig-glass {
+  position: relative;
+  background: var(--ig-hull);
+  border: 1px solid var(--ig-line);
+  border-radius: var(--ig-radius-panel);
+}
+
+.ig-glass::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background: linear-gradient(160deg, #ffffff14, #ffffff05);
+}
+
+/* ============================================================================
+   Typography utilities
+   ============================================================================ */
+.ig-text-muted { color: var(--ig-muted); }
+.ig-text-mono  { font-family: var(--ig-font-mono); font-variant-numeric: tabular-nums; }
+.ig-semibold   { font-weight: 600; }
+
+/* ============================================================================
+   Reduced motion
+   ============================================================================ */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
