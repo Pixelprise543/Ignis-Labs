@@ -1,4 +1,4 @@
-import type { GravityRegime } from '@/contracts/types'
+﻿import type { GravityRegime } from '@/contracts/types'
 
 export type MarkerShape = 'circle' | 'diamond' | 'square'
 
@@ -25,7 +25,7 @@ export const REGIME_STYLES: RegimeStyle[] = [
   {
     key: 'microgravity',
     label: 'Microgravity',
-    short: 'µg',
+    short: '┬╡g',
     color: 'var(--ig-flame-blue)',
     shape: 'circle',
   },

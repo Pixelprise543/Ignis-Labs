@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+﻿import { useEffect, useMemo, useState } from 'react'
 import type { ReactNode } from 'react'
 import { Link } from 'react-router-dom'
 import ReactMarkdown from 'react-markdown'
@@ -26,7 +26,7 @@ type SIState =
   | { status: 'error'; message: string }
 
 function formatValue(value: number | null, unit = ''): string {
-  if (value === null) return '—'
+  if (value === null) return 'ΓÇö'
   return `${value}${unit ? ` ${unit}` : ''}`
 }
 
@@ -174,7 +174,7 @@ export function ComparePage() {
       label: 'Years',
       value: (experiment) => (
         <span className="ig-num">
-          {experiment.years[0]}–{experiment.years[1] ?? 'now'}
+          {experiment.years[0]}ΓÇô{experiment.years[1] ?? 'now'}
         </span>
       ),
     },
@@ -220,7 +220,7 @@ export function ComparePage() {
                 aria-label={`Remove ${experiment.name} from compare`}
                 className="ml-auto rounded-control p-1 text-ig-muted hover:bg-ig-glass-hover hover:text-ig-frost focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ig-flame-blue"
               >
-                ×
+                ├ù
               </button>
             </CardContent>
           </Card>
@@ -349,7 +349,7 @@ export function ComparePage() {
                 </th>
                 {selected.map((experiment) => (
                   <td key={experiment.id} className="px-2 py-3 sm:px-4 font-mono text-xs tabular-nums text-ig-frost">
-                    {experiment.years[0]}–{experiment.years[1] ?? 'now'}
+                    {experiment.years[0]}ΓÇô{experiment.years[1] ?? 'now'}
                   </td>
                 ))}
               </tr>
@@ -433,7 +433,7 @@ export function ComparePage() {
                           key={experiment.id}
                           className="px-2 py-3 sm:px-4 font-mono text-xs tabular-nums text-ig-frost"
                         >
-                          {metric && typeof metric.value === 'number' ? metric.value : '—'}
+                          {metric && typeof metric.value === 'number' ? metric.value : 'ΓÇö'}
                         </td>
                       )
                     })}
@@ -464,7 +464,7 @@ export function ComparePage() {
                           <span className="ml-1 font-mono text-[11px]">{row.unit}</span>
                         </dt>
                         <dd className="ig-num text-right text-ig-frost">
-                          {metric && typeof metric.value === 'number' ? metric.value : '—'}
+                          {metric && typeof metric.value === 'number' ? metric.value : 'ΓÇö'}
                         </dd>
                       </div>
                     )
@@ -533,7 +533,7 @@ export function ComparePage() {
                   The comparison could not be generated: {siState.message}
                 </p>
                 <p className="mt-1 text-xs text-ig-muted">
-                  Try Regenerate. If it keeps failing, read the conditions table above — it uses the
+                  Try Regenerate. If it keeps failing, read the conditions table above ΓÇö it uses the
                   same records.
                 </p>
               </CardContent>
@@ -638,8 +638,8 @@ export function ComparePage() {
                 <ul className="mt-4 space-y-1 text-[10px] text-ig-muted">
                   {experiment.sources.map((source) => (
                     <li key={`${source.title}-${source.org}`}>
-                      {source.title} · {source.org}
-                      {source.year ? ` · ${source.year}` : ''}
+                      {source.title} ┬╖ {source.org}
+                      {source.year ? ` ┬╖ ${source.year}` : ''}
                     </li>
                   ))}
                 </ul>

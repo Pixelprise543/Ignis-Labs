@@ -1,4 +1,4 @@
-import {
+﻿import {
   Bar,
   BarChart,
   CartesianGrid,
@@ -27,7 +27,7 @@ function OxygenTooltip({ active, payload }: OxygenTooltipProps) {
   return (
     <FlatTooltip
       title={row.acronym}
-      subtitle={`${row.name} · ${regimeStyle(row.regime).label}`}
+      subtitle={`${row.name} ┬╖ ${regimeStyle(row.regime).label}`}
       rows={[{ label: 'Limiting oxygen', value: `${formatNumber(row.o2)} ${row.unit}` }]}
       note={`Confidence: ${row.confidence}`}
     />

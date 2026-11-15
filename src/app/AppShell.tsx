@@ -1,4 +1,4 @@
-import { clsx } from "clsx";
+﻿import { clsx } from "clsx";
 import { ChevronRight, Command as CommandIcon, Menu, Sparkles, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link, NavLink, useLocation } from "react-router-dom";
@@ -171,7 +171,7 @@ function SideRail({ onOpenPalette, onOpenAsk }: { onOpenPalette: () => void; onO
             Command palette
           </span>
           <kbd className="rounded-control border border-ig-glass-field-rim bg-ig-glass-field px-1.5 py-0.5 text-[10px] text-ig-muted">
-            ⌘K
+            ΓîÿK
           </kbd>
         </button>
         <Link
@@ -360,7 +360,7 @@ function MoreSheet({ open, onClose }: { open: boolean; onClose: () => void }) {
 
 /**
  * Two shells, one router:
- * - Marketing pages (`/`, `/product`, …) render the corporate shell.
+ * - Marketing pages (`/`, `/product`, ΓÇª) render the corporate shell.
  * - Every research view renders the platform shell: left rail on desktop,
  *   bottom tabs plus a "More" sheet on mobile, scenario bar on both.
  */

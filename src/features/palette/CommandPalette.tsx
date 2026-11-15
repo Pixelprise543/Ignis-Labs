@@ -1,4 +1,4 @@
-import { Command } from "cmdk";
+﻿import { Command } from "cmdk";
 import { Sparkles } from "lucide-react";
 import { useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
@@ -61,7 +61,7 @@ export function CommandPalette() {
         />
         <Command.List className="max-h-[55vh] overflow-y-auto p-1.5">
           <Command.Empty className="px-3 py-6 text-center text-sm text-ig-muted">
-            No match. Try “rankings”, “Mars” or “brief”.
+            No match. Try ΓÇ£rankingsΓÇ¥, ΓÇ£MarsΓÇ¥ or ΓÇ£briefΓÇ¥.
           </Command.Empty>
 
           <Command.Group heading="Views">

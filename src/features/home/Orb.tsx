@@ -1,4 +1,4 @@
-import { motion, useReducedMotion } from "framer-motion";
+﻿import { motion, useReducedMotion } from "framer-motion";
 import { Pause, Play } from "lucide-react";
 import { useMemo, useState } from "react";
 
