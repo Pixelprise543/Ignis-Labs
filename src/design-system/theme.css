@@ -1,65 +1,40 @@
-/* ==========================================================================
-   Ignis - Professional theme (per ui-ux-pro-max design system)
-   Pattern: Minimalism & Swiss Style — clean, simple, spacious, functional
-   Primary: Navy (#1E3A5F)   Accent/CTA: Green (#059669)
-   Background: #F8FAFC   Foreground: #0F172A
+﻿/* ==========================================================================
+   Ignis - "Ember Professional" theme
+   Owner: PC3 (do not edit after handoff)
+
+   FLAT RULES (hard): no gradients, no glows, no blurs, no drop shadows.
+   Depth comes only from 1px --ig-line borders and the vacuum/hull/raised
+   background steps. Heatmaps and risk bars use discrete solid steps, never
+   a continuous ramp. "No data" cells use an SVG <pattern> of diagonal lines.
+   Charts use solid fills and strokes. Dark only.
    ========================================================================== */
 
 @import 'tailwindcss';
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Work+Sans:wght@300;400;500;600;700&display=swap');
+@import '@fontsource-variable/inter';
 @import '@fontsource/jetbrains-mono/400.css';
 @import '@fontsource/jetbrains-mono/500.css';
 
 :root {
-  color-scheme: light;
-
-  /* Surfaces */
-  --ig-vacuum: #ffffff;
-  --ig-hull: #f8fafc;
-  --ig-raised: #f1f5f9;
-  --ig-line: #e2e8f0;
-
-  /* Text */
-  --ig-frost: #0f172a;
-  --ig-muted: #475569;
-
-  /* Accents - professional navy + green */
-  --ig-flame-blue: #1e3a5f;   /* primary accent - navy */
-  --ig-quench: #059669;       /* accent/CTA - green */
-  --ig-amber: #ff4500;        /* warning */
-  --ig-ember: #c2410c;        /* danger */
-  --ig-alarm: #dc2626;        /* destructive */
-
-  /* Derived */
-  --ig-on-accent: #ffffff;
-
-  /* Shape */
-  --ig-radius-panel: 8px;
-  --ig-radius-control: 6px;
-}
-
-[data-theme="dark"] {
   color-scheme: dark;
 
-  /* Surfaces - deep navy */
-  --ig-vacuum: #020617;
-  --ig-hull: #0f172a;
-  --ig-raised: #1e293b;
-  --ig-line: #334155;
+  --ig-vacuum: #1a1512;
+  --ig-hull: #231d18;
+  --ig-raised: #2e2620;
+  --ig-line: #40362d;
 
-  /* Text - light on dark */
-  --ig-frost: #f1f5f9;
-  --ig-muted: #94a3b8;
+  --ig-frost: #f6efe6;
+  --ig-muted: #b3a394;
 
-  /* Accents - brighter on dark for contrast */
-  --ig-flame-blue: #60a5fa;   /* primary accent - light blue */
-  --ig-quench: #34d399;       /* accent/CTA - green */
-  --ig-amber: #fbbf24;        /* warning */
-  --ig-ember: #fb923c;        /* danger */
-  --ig-alarm: #f87171;        /* destructive */
+  --ig-flame-blue: #e3b76b;
+  --ig-quench: #8dbf6a;
+  --ig-amber: #f5b942;
+  --ig-ember: #ee7b3a;
+  --ig-alarm: #f06a6e;
 
-  /* Derived */
-  --ig-on-accent: #020617;
+  --ig-on-accent: #1a1512;
+
+  --ig-radius-panel: 6px;
+  --ig-radius-control: 4px;
 }
 
 @theme inline {
@@ -76,11 +51,10 @@
   --color-ig-alarm: var(--ig-alarm);
   --color-ig-on-accent: var(--ig-on-accent);
 
-  --radius-panel: 8px;
-  --radius-control: 6px;
+  --radius-panel: 6px;
+  --radius-control: 4px;
 
-  --font-sans: 'Comic Sans MS', 'Comic Sans', 'Chalkboard SE', cursive, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
-  --font-serif: ui-serif, Georgia, Cambria, 'Times New Roman', Times, serif;
+  --font-sans: 'Inter Variable', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
   --font-mono: 'JetBrains Mono', ui-monospace, 'SFMono-Regular', Menlo, monospace;
 
   --spacing: 0.25rem;
@@ -89,14 +63,9 @@
 @layer base {
   *,
   *::before,
-  *::after {
-    box-sizing: border-box;
-  }
+  *::after { box-sizing: border-box; }
 
-  html {
-    background-color: var(--ig-vacuum);
-    scrollbar-gutter: stable;
-  }
+  html { background-color: var(--ig-vacuum); scrollbar-gutter: stable; }
 
   body {
     margin: 0;
@@ -109,65 +78,18 @@
     -webkit-font-smoothing: antialiased;
   }
 
-  h1 {
-    font-size: 2rem;
-    font-weight: 700;
-    line-height: 1.25;
-    letter-spacing: -0.02em;
-  }
+  h1, h2, h3, h4 { font-weight: 600; line-height: 1.2; text-wrap: balance; }
+  p { text-wrap: pretty; }
 
-  h2 {
-    font-size: 1.5rem;
-    font-weight: 600;
-    line-height: 1.33;
-    letter-spacing: -0.01em;
-  }
+  code, kbd, samp, pre, .ig-num { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
 
-  h3 {
-    font-size: 1.25rem;
-    font-weight: 600;
-    line-height: 1.4;
-  }
+  :focus-visible { outline: 2px solid var(--ig-flame-blue); outline-offset: 2px; border-radius: var(--ig-radius-control); }
+  ::selection { background-color: var(--ig-ember); color: var(--ig-on-accent); }
 
-  .text-sm {
-    font-size: 0.875rem;
-    line-height: 1.5;
-  }
-
-  .text-xs {
-    font-size: 0.8125rem;
-    line-height: 1.5;
-  }
-
-  code,
-  kbd,
-  samp,
-  pre,
-  .ig-num {
-    font-family: var(--font-mono);
-    font-variant-numeric: tabular-nums;
-  }
-
-  :focus-visible {
-    outline: 3px solid var(--ig-flame-blue);
-    outline-offset: 2px;
-    border-radius: var(--ig-radius-control);
-  }
-
-  ::selection {
-    background-color: var(--ig-flame-blue);
-    color: var(--ig-on-accent);
-  }
-
-  * {
-    scrollbar-width: thin;
-    scrollbar-color: var(--ig-line) transparent;
-  }
+  * { scrollbar-width: thin; scrollbar-color: var(--ig-line) transparent; }
 
   @media (prefers-reduced-motion: reduce) {
-    *,
-    *::before,
-    *::after {
+    *, *::before, *::after {
       animation-duration: 0.001ms !important;
       animation-iteration-count: 1 !important;
       transition-duration: 0.001ms !important;
