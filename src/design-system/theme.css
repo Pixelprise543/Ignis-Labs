@@ -270,6 +270,30 @@
     -webkit-backdrop-filter: none;
   }
 
+  /*
+   * ...and a sheet drawn inside another sheet: a Card inside a Panel, a
+   * Collapsible inside a section. Same rule, same reason - one blur per
+   * ancestor chain. The nested fill stays translucent, so the layers still read
+   * as stacked glass; that is the depth cue, since no shadow is allowed.
+   *
+   * --solid sheets are excluded: they already paint an opaque fill and carry no
+   * blur of their own, so a nested sheet must not overwrite their background.
+   */
+  .ig-glass :is(.ig-glass, .ig-glass-nav):not(.ig-glass--solid)::before,
+  .ig-glass-nav :is(.ig-glass, .ig-glass-nav):not(.ig-glass--solid)::before {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    background-image: none;
+    background-color: var(--ig-glass-base-nav);
+  }
+
+  /* An overlay drawn inside an overlay (a tooltip inside the Ask Ignis drawer)
+     keeps the near-solid dialog fill and drops the second blur. */
+  .ig-glass-overlay .ig-glass-overlay {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+
   /* Dialogs, drawers, popovers, tooltips, toasts. */
   .ig-glass-overlay {
     border: 1px solid var(--ig-glass-rim-strong);
